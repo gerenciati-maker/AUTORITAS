@@ -137,18 +137,31 @@ button:disabled {
 
     <!-- SERVICIO -->
 
-    <div class="dato">
+<label for="selectorServicio">
+    Servicio donde registra:
+</label>
 
-        <strong>
-            Servicio donde registra:
-        </strong>
+<select
+    id="selectorServicio"
+    onchange="seleccionarServicio()">
 
-        <span id="servicioTexto">
-            Cargando...
-        </span>
+    <option value="">
+        Cargando servicios...
+    </option>
 
-    </div>
+</select>
 
+<div class="dato">
+
+    <strong>
+        Servicio seleccionado:
+    </strong>
+
+    <span id="servicioTexto">
+        -
+    </span>
+
+</div>
 
     <!-- GPS -->
 
@@ -372,23 +385,6 @@ let codigoServicio = "";
 
 let personalServicio = [];
 
-
-
-/* ============================================================
-   OBTENER SERVICIO DEL QR
-   ============================================================ */
-
-
-const parametros = new URLSearchParams(window.location.search);
-
-codigoServicio = parametros.get("servicio");
-
-console.log("URL COMPLETA:", window.location.href);
-console.log("PARÁMETRO SERVICIO:", codigoServicio);
-
-if (codigoServicio) {
-    codigoServicio = codigoServicio.trim().toUpperCase();
-}
 
 
 /* ============================================================
@@ -795,32 +791,104 @@ function cargarBaseQR() {
    INICIAR SISTEMA
    ============================================================ */
 
+    function cargarServicios() {
 
-function iniciarSistema() {
+    const selector =
+        document.getElementById("selectorServicio");
+
+    selector.innerHTML =
+        '<option value="">Selecciona un servicio</option>';
+
+    const servicios = [];
+
+    empleados.forEach(function(empleado) {
+
+        const existe = servicios.find(function(servicio) {
+
+            return servicio.codigo === empleado.codigoServicio;
+
+        });
+
+        if (!existe) {
+
+            servicios.push({
+
+                codigo: empleado.codigoServicio,
+
+                nombre: empleado.servicio
+
+            });
+
+        }
+
+    });
+
+    servicios
+        .sort(function(a, b) {
+
+            return a.nombre.localeCompare(
+                b.nombre,
+                "es"
+            );
+
+        })
+        .forEach(function(servicio) {
+
+            const opcion =
+                document.createElement("option");
+
+            opcion.value =
+                servicio.codigo;
+
+            opcion.textContent =
+                servicio.nombre;
+
+            selector.appendChild(opcion);
+
+        });
+}
 
 
-    if (
-        !codigoServicio
-    ) {
 
+function seleccionarServicio() {
+
+    const selector =
+        document.getElementById(
+            "selectorServicio"
+        );
+
+    codigoServicio =
+        selector.value
+        .trim()
+        .toUpperCase();
+
+    if (!codigoServicio) {
 
         document.getElementById(
             "servicioTexto"
-        ).textContent =
-            "Servicio no identificado";
-
+        ).textContent = "-";
 
         document.getElementById(
-            "mensaje"
-        ).textContent =
-            "El QR no contiene un servicio válido.";
+            "ubicacion"
+        ).textContent = "Selecciona un servicio";
 
+        document.getElementById(
+            "seleccionTipo"
+        ).classList.add("oculto");
 
         return;
 
     }
 
+    iniciarSistema();
 
+}  
+
+function iniciarSistema() {
+
+    if (!codigoServicio) {
+        return;
+    }
 
     personalServicio =
         empleados.filter(
@@ -834,42 +902,41 @@ function iniciarSistema() {
             }
         );
 
-
-
     if (
         personalServicio.length === 0
     ) {
-
 
         document.getElementById(
             "servicioTexto"
         ).textContent =
             "Servicio no identificado";
 
-
         document.getElementById(
             "mensaje"
         ).textContent =
-            "El QR no corresponde a un servicio válido.";
-
+            "El servicio seleccionado no tiene personal activo.";
 
         return;
 
     }
-
-
 
     document.getElementById(
         "servicioTexto"
     ).textContent =
         personalServicio[0].servicio;
 
+    document.getElementById(
+        "ubicacion"
+    ).textContent =
+        "Validando GPS...";
 
+    document.getElementById(
+        "mensaje"
+    ).textContent = "";
 
     validarGPS();
 
 }
-
 
 
 /* ============================================================
