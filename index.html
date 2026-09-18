@@ -1,1 +1,1013 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
+<title>Registro de Personal</title>
+
+<style>
+
+body {
+    font-family: Arial, sans-serif;
+    background: #f4f6f8;
+    margin: 0;
+    padding: 20px;
+}
+
+.container {
+    max-width: 500px;
+    margin: auto;
+    background: white;
+    padding: 25px;
+    border-radius: 12px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+}
+
+h1 {
+    text-align: center;
+    font-size: 22px;
+    margin-bottom: 25px;
+}
+
+label {
+    display: block;
+    margin-top: 15px;
+    font-weight: bold;
+}
+
+select,
+input {
+    width: 100%;
+    padding: 12px;
+    margin-top: 7px;
+    border: 1px solid #ccc;
+    border-radius: 7px;
+    box-sizing: border-box;
+    font-size: 16px;
+}
+
+button {
+    width: 100%;
+    padding: 13px;
+    margin-top: 20px;
+    border: none;
+    border-radius: 7px;
+    background: #1f4e78;
+    color: white;
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+button:hover {
+    background: #163a5c;
+}
+
+.tipo-container {
+    display: flex;
+    gap: 10px;
+}
+
+.tipo-container button {
+    flex: 1;
+}
+
+.seccion {
+    display: none;
+}
+
+.origen {
+    margin-top: 15px;
+    padding: 12px;
+    background: #f1f3f5;
+    border-radius: 7px;
+}
+
+#mensaje {
+    text-align: center;
+    margin-top: 20px;
+    font-weight: bold;
+}
+
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+    <h1>Registro de Personal</h1>
+
+    <div id="mensaje"></div>
+
+    <!-- PERSONAL DEL SERVICIO / APOYO -->
+
+    <div id="seleccionTipo" style="display:none;">
+
+        <button onclick="seleccionarTipo('PERSONAL')">
+            PERSONAL DEL SERVICIO
+        </button>
+
+        <button onclick="seleccionarTipo('APOYO')">
+            APOYO
+        </button>
+
+    </div>
+
+
+    <!-- PERSONAL DEL SERVICIO -->
+
+    <div id="seccionPersonal" class="seccion">
+
+        <label>Nombre</label>
+
+        <select id="nombrePersonal"
+                onchange="actualizarNumeroPersonal()">
+
+            <option value="">Selecciona tu nombre</option>
+
+        </select>
+
+
+        <label>Número de empleado</label>
+
+        <select id="numeroPersonal">
+
+            <option value="">Selecciona tu número</option>
+
+        </select>
+
+
+        <button onclick="continuarPersonal()">
+            CONTINUAR
+        </button>
+
+    </div>
+
+
+    <!-- APOYO -->
+
+    <div id="seccionApoyo" class="seccion">
+
+        <label>Nombre</label>
+
+        <input
+            type="text"
+            id="nombreApoyo"
+            placeholder="Escribe tu nombre"
+            autocomplete="off"
+        >
+
+
+        <label>Número de empleado</label>
+
+        <input
+            type="text"
+            id="numeroApoyo"
+            placeholder="Escribe tu número de empleado"
+            inputmode="numeric"
+            autocomplete="off"
+            oninput="reconocerApoyo()"
+        >
+
+
+        <div class="origen">
+
+            <strong>Servicio de origen:</strong>
+
+            <span id="servicioOrigen">-</span>
+
+        </div>
+
+
+        <button onclick="continuarApoyo()">
+            CONTINUAR
+        </button>
+
+    </div>
+
+</div>
+
+
+<script>
+
+/* =========================================================
+   CONFIGURACIÓN DE LA NUEVA BASE
+========================================================= */
+
+const ID_ARCHIVO =
+    "1zdYovCmbhHOyMVy-huWqzgB6Q5x1XgL8dghe263TTbU";
+
+const ID_BASE_QR =
+    "1049929211";
+
+
+/* =========================================================
+   VARIABLES
+========================================================= */
+
+let empleados = [];
+let personalServicio = [];
+let servicioActual = "";
+
+
+/* =========================================================
+   OBTENER SERVICIO DEL QR
+========================================================= */
+
+function obtenerServicioQR() {
+
+    const parametros =
+        new URLSearchParams(window.location.search);
+
+    return parametros.get("servicio");
+
+}
+
+
+/* =========================================================
+   CARGAR BASE QR
+========================================================= */
+
+function cargarBaseQR() {
+
+    const url =
+        "https://docs.google.com/spreadsheets/d/" +
+        ID_ARCHIVO +
+        "/gviz/tq?" +
+        "gid=" +
+        ID_BASE_QR +
+        "&tqx=out:json";
+
+    const script =
+        document.createElement("script");
+
+    script.src = url;
+
+    window.google =
+        window.google || {};
+
+    window.google.visualization =
+        window.google.visualization || {};
+
+    document.body.appendChild(script);
+
+}
+
+
+/* =========================================================
+   PROCESAR RESPUESTA GOOGLE SHEETS
+========================================================= */
+
+function procesarDatos(respuesta) {
+
+    try {
+
+        const tabla =
+            respuesta.table;
+
+        empleados = [];
+
+        for (let i = 0; i < tabla.rows.length; i++) {
+
+            const fila =
+                tabla.rows[i].c;
+
+            const nombre =
+                fila[0]?.v || "";
+
+            const numero =
+                fila[1]?.v || "";
+
+            const servicio =
+                fila[2]?.v || "";
+
+            const codigoServicio =
+                fila[3]?.v || "";
+
+            const coordenadas =
+                fila[4]?.v || "";
+
+            const rango =
+                fila[5]?.v || "";
+
+            const estatus =
+                fila[6]?.v || "";
+
+
+            if (
+                estatus.toString()
+                .trim()
+                .toUpperCase()
+                === "ACTIVO"
+            ) {
+
+                empleados.push({
+
+                    nombre:
+                        nombre.toString().trim(),
+
+                    numero:
+                        numero.toString().trim(),
+
+                    servicio:
+                        servicio.toString().trim(),
+
+                    codigoServicio:
+                        codigoServicio.toString().trim(),
+
+                    coordenadas:
+                        coordenadas.toString().trim(),
+
+                    rango:
+                        rango.toString().trim(),
+
+                    estatus:
+                        estatus.toString().trim()
+
+                });
+
+            }
+
+        }
+
+
+        iniciarSistema();
+
+    }
+
+    catch (error) {
+
+        console.error(error);
+
+        document.getElementById("mensaje").textContent =
+            "Error al cargar la base.";
+
+    }
+
+}
+
+
+/* =========================================================
+   INICIAR SISTEMA
+========================================================= */
+
+function iniciarSistema() {
+
+    const codigoQR =
+        obtenerServicioQR();
+
+    if (!codigoQR) {
+
+        document.getElementById("mensaje").textContent =
+            "No se recibió código de servicio.";
+
+        return;
+
+    }
+
+
+    servicioActual =
+        codigoQR;
+
+
+    personalServicio =
+        empleados.filter(function(empleado) {
+
+            return empleado.codigoServicio
+                .trim()
+                .toUpperCase()
+                === codigoQR
+                .trim()
+                .toUpperCase();
+
+        });
+
+
+    if (personalServicio.length === 0) {
+
+        document.getElementById("mensaje").textContent =
+            "No se encontró información para este servicio.";
+
+        return;
+
+    }
+
+
+    validarGPS();
+
+}
+
+
+/* =========================================================
+   VALIDACIÓN GPS
+========================================================= */
+
+function validarGPS() {
+
+    if (!navigator.geolocation) {
+
+        document.getElementById("mensaje").textContent =
+            "Tu dispositivo no permite obtener ubicación.";
+
+        return;
+
+    }
+
+
+    document.getElementById("mensaje").textContent =
+        "Validando ubicación...";
+
+
+    navigator.geolocation.getCurrentPosition(
+
+        function(position) {
+
+            const latUsuario =
+                position.coords.latitude;
+
+            const lonUsuario =
+                position.coords.longitude;
+
+
+            const datosServicio =
+                personalServicio[0];
+
+
+            const coordenadas =
+                datosServicio.coordenadas
+                .split(",");
+
+
+            const latServicio =
+                parseFloat(
+                    coordenadas[0]
+                );
+
+
+            const lonServicio =
+                parseFloat(
+                    coordenadas[1]
+                );
+
+
+            const rango =
+                parseFloat(
+                    datosServicio.rango
+                );
+
+
+            const distancia =
+                calcularDistancia(
+
+                    latUsuario,
+                    lonUsuario,
+
+                    latServicio,
+                    lonServicio
+
+                );
+
+
+            if (distancia <= rango) {
+
+                document.getElementById(
+                    "mensaje"
+                ).textContent =
+                    "Ubicación validada correctamente.";
+
+                document.getElementById(
+                    "seleccionTipo"
+                ).style.display = "block";
+
+            }
+
+            else {
+
+                document.getElementById(
+                    "mensaje"
+                ).textContent =
+                    "No te encuentras dentro del rango permitido.";
+
+            }
+
+        },
+
+        function(error) {
+
+            document.getElementById(
+                "mensaje"
+            ).textContent =
+                "No fue posible obtener tu ubicación.";
+
+        },
+
+        {
+            enableHighAccuracy: true,
+            timeout: 10000,
+            maximumAge: 0
+        }
+
+    );
+
+}
+
+
+/* =========================================================
+   CALCULAR DISTANCIA
+========================================================= */
+
+function calcularDistancia(
+    lat1,
+    lon1,
+    lat2,
+    lon2
+) {
+
+    const R = 6371000;
+
+    const rad =
+        Math.PI / 180;
+
+    const dLat =
+        (lat2 - lat1) * rad;
+
+    const dLon =
+        (lon2 - lon1) * rad;
+
+
+    const a =
+        Math.sin(dLat / 2) *
+        Math.sin(dLat / 2) +
+
+        Math.cos(lat1 * rad) *
+        Math.cos(lat2 * rad) *
+
+        Math.sin(dLon / 2) *
+        Math.sin(dLon / 2);
+
+
+    const c =
+        2 *
+        Math.atan2(
+            Math.sqrt(a),
+            Math.sqrt(1 - a)
+        );
+
+
+    return R * c;
+
+}
+
+
+/* =========================================================
+   SELECCIONAR TIPO
+========================================================= */
+
+function seleccionarTipo(tipo) {
+
+    document.getElementById(
+        "seccionPersonal"
+    ).style.display = "none";
+
+
+    document.getElementById(
+        "seccionApoyo"
+    ).style.display = "none";
+
+
+    if (tipo === "PERSONAL") {
+
+        cargarPersonalServicio();
+
+        document.getElementById(
+            "seccionPersonal"
+        ).style.display = "block";
+
+    }
+
+
+    if (tipo === "APOYO") {
+
+        cargarPersonalApoyo();
+
+        document.getElementById(
+            "seccionApoyo"
+        ).style.display = "block";
+
+    }
+
+}
+
+
+/* =========================================================
+   CARGAR PERSONAL DEL SERVICIO
+========================================================= */
+
+function cargarPersonalServicio() {
+
+    const selectNombre =
+        document.getElementById(
+            "nombrePersonal"
+        );
+
+
+    selectNombre.innerHTML =
+        '<option value="">Selecciona tu nombre</option>';
+
+
+    personalServicio.forEach(
+        function(empleado) {
+
+            const opcion =
+                document.createElement("option");
+
+
+            opcion.value =
+                empleado.nombre;
+
+
+            opcion.textContent =
+                empleado.nombre;
+
+
+            selectNombre.appendChild(
+                opcion
+            );
+
+        }
+    );
+
+
+    document.getElementById(
+        "numeroPersonal"
+    ).innerHTML =
+        '<option value="">Selecciona tu número</option>';
+
+}
+
+
+/* =========================================================
+   ACTUALIZAR NÚMERO PERSONAL
+========================================================= */
+
+function actualizarNumeroPersonal() {
+
+    const nombre =
+        document.getElementById(
+            "nombrePersonal"
+        ).value;
+
+
+    const selectNumero =
+        document.getElementById(
+            "numeroPersonal"
+        );
+
+
+    selectNumero.innerHTML =
+        '<option value="">Selecciona tu número</option>';
+
+
+    const coincidencias =
+        personalServicio.filter(
+            function(empleado) {
+
+                return empleado.nombre
+                    === nombre;
+
+            }
+        );
+
+
+    coincidencias.forEach(
+        function(empleado) {
+
+            const opcion =
+                document.createElement("option");
+
+
+            opcion.value =
+                empleado.numero;
+
+
+            opcion.textContent =
+                empleado.numero;
+
+
+            selectNumero.appendChild(
+                opcion
+            );
+
+        }
+    );
+
+}
+
+
+/* =========================================================
+   CARGAR APOYO
+========================================================= */
+
+function cargarPersonalApoyo() {
+
+    document.getElementById(
+        "nombreApoyo"
+    ).value = "";
+
+
+    document.getElementById(
+        "numeroApoyo"
+    ).value = "";
+
+
+    document.getElementById(
+        "servicioOrigen"
+    ).textContent = "-";
+
+}
+
+
+/* =========================================================
+   RECONOCER SERVICIO DE ORIGEN DEL APOYO
+========================================================= */
+
+function reconocerApoyo() {
+
+    const numero =
+        document.getElementById(
+            "numeroApoyo"
+        ).value.trim();
+
+
+    const servicioOrigen =
+        document.getElementById(
+            "servicioOrigen"
+        );
+
+
+    if (numero === "") {
+
+        servicioOrigen.textContent =
+            "-";
+
+        return;
+
+    }
+
+
+    const coincidencias =
+        empleados.filter(
+            function(empleado) {
+
+                return String(
+                    empleado.numero
+                ).trim()
+                === numero;
+
+            }
+        );
+
+
+    if (coincidencias.length === 0) {
+
+        servicioOrigen.textContent =
+            "Empleado no encontrado";
+
+        return;
+
+    }
+
+
+    if (coincidencias.length > 1) {
+
+        const servicios =
+            coincidencias
+            .map(
+                function(empleado) {
+
+                    return empleado.servicio;
+
+                }
+            )
+            .filter(
+                function(
+                    servicio,
+                    indice,
+                    lista
+                ) {
+
+                    return lista.indexOf(
+                        servicio
+                    ) === indice;
+
+                }
+            );
+
+
+        servicioOrigen.textContent =
+            "DUPLICIDAD: " +
+            servicios.join(" / ");
+
+
+        return;
+
+    }
+
+
+    servicioOrigen.textContent =
+        coincidencias[0].servicio;
+
+}
+
+
+/* =========================================================
+   CONTINUAR PERSONAL
+========================================================= */
+
+function continuarPersonal() {
+
+    const nombre =
+        document.getElementById(
+            "nombrePersonal"
+        ).value;
+
+
+    const numero =
+        document.getElementById(
+            "numeroPersonal"
+        ).value;
+
+
+    if (
+        nombre === "" ||
+        numero === ""
+    ) {
+
+        alert(
+            "Selecciona tu nombre y número de empleado."
+        );
+
+        return;
+
+    }
+
+
+    const empleado =
+        personalServicio.find(
+            function(persona) {
+
+                return (
+                    persona.nombre === nombre &&
+                    persona.numero === numero
+                );
+
+            }
+        );
+
+
+    if (!empleado) {
+
+        alert(
+            "No se encontró el empleado."
+        );
+
+        return;
+
+    }
+
+
+    abrirFormulario(
+
+        empleado.nombre,
+
+        empleado.numero,
+
+        "PERSONAL DEL SERVICIO",
+
+        empleado.servicio
+
+    );
+
+}
+
+
+/* =========================================================
+   CONTINUAR APOYO
+========================================================= */
+
+function continuarApoyo() {
+
+    const nombre =
+        document.getElementById(
+            "nombreApoyo"
+        ).value.trim();
+
+
+    const numero =
+        document.getElementById(
+            "numeroApoyo"
+        ).value.trim();
+
+
+    if (
+        nombre === "" ||
+        numero === ""
+    ) {
+
+        alert(
+            "Escribe tu nombre y número de empleado."
+        );
+
+        return;
+
+    }
+
+
+    abrirFormulario(
+
+        nombre,
+
+        numero,
+
+        "APOYO",
+
+        document.getElementById(
+            "servicioOrigen"
+        ).textContent
+
+    );
+
+}
+
+
+/* =========================================================
+   ABRIR NUEVO GOOGLE FORMS
+========================================================= */
+
+function abrirFormulario(
+
+    nombre,
+    numero,
+    tipo,
+    servicioOrigen
+
+) {
+
+    const formulario =
+        "https://docs.google.com/forms/d/e/" +
+        "1FAIpQLSdY4MOdaUuv3wIN0JKWovq3Hu-3tKy_kXAYVtnOyRFZXBDvgQ" +
+        "/viewform";
+
+
+    const url =
+        formulario +
+        "?usp=pp_url" +
+        "&entry.737145468=" +
+        encodeURIComponent(nombre) +
+        "&entry.1698343083=" +
+        encodeURIComponent(numero);
+
+
+    console.log(
+        "Tipo:",
+        tipo
+    );
+
+
+    console.log(
+        "Servicio origen:",
+        servicioOrigen
+    );
+
+
+    console.log(
+        "URL Forms:",
+        url
+    );
+
+
+    window.location.href =
+        url;
+
+}
+
+
+/* =========================================================
+   INICIAR
+========================================================= */
+
+window.addEventListener(
+    "load",
+    function() {
+
+        cargarBaseQR();
+
+    }
+);
+
+</script>
+
+</body>
+</html>
