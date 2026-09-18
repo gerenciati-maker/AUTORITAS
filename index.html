@@ -1628,86 +1628,61 @@ function continuarApoyo() {
 
 
 function abrirFormulario(
-
     nombre,
-
     numero,
-
     tipo,
-
     servicioOrigen
-
 ) {
 
-
     const formulario =
-
         "https://docs.google.com/forms/d/e/" +
-
         "1FAIpQLSdY4MOdaUuv3wIN0JKWovq3Hu-3tKy_kXAYVtnOyRFZXBDvgQ" +
-
         "/viewform";
 
-
-
-    /*
-       Los únicos campos confirmados
-       del nuevo formulario son:
-
-       Nombre
-       entry.737145468
-
-       Número de empleado
-       entry.1698343083
-    */
-
-
     const url =
-
         formulario +
-
         "?usp=pp_url" +
 
+        // SERVICIO
+        "&entry.1973773208=" +
+        encodeURIComponent(servicioOrigen) +
+
+        // NOMBRE
         "&entry.737145468=" +
+        encodeURIComponent(nombre) +
 
-        encodeURIComponent(
-            nombre
-        ) +
-
+        // NÚMERO DE EMPLEADO
         "&entry.1698343083=" +
-
-        encodeURIComponent(
-            numero
-        );
-
-
+        encodeURIComponent(numero);
 
     console.log(
         "Tipo:",
         tipo
     );
 
-
     console.log(
-        "Servicio origen:",
+        "Servicio:",
         servicioOrigen
     );
 
+    console.log(
+        "Nombre:",
+        nombre
+    );
+
+    console.log(
+        "Número:",
+        numero
+    );
 
     console.log(
         "URL Forms:",
         url
     );
 
-
-
     window.location.href =
         url;
-
 }
-
-
-
 /* ============================================================
    INICIAR CARGA DE BASE
    ============================================================ */
