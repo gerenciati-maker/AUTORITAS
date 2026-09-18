@@ -379,25 +379,16 @@ let personalServicio = [];
    ============================================================ */
 
 
-const parametros =
-    new URLSearchParams(
-        window.location.search
-    );
+const parametros = new URLSearchParams(window.location.search);
 
+codigoServicio = parametros.get("servicio");
 
-codigoServicio =
-    parametros.get("servicio");
-
+console.log("URL COMPLETA:", window.location.href);
+console.log("PARÁMETRO SERVICIO:", codigoServicio);
 
 if (codigoServicio) {
-
-    codigoServicio =
-        codigoServicio
-        .trim()
-        .toUpperCase();
-
+    codigoServicio = codigoServicio.trim().toUpperCase();
 }
-
 
 
 /* ============================================================
