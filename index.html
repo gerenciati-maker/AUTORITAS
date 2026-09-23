@@ -1,24 +1,15 @@
 <!DOCTYPE html>
 <html lang="es">
-
 <head>
-
 <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<meta
-    name="viewport"
-    content="width=device-width, initial-scale=1.0"
->
-
-<title>
-    Estado de Fuerza | Autoritas
-</title>
-
+<title>Estado de Fuerza | Autoritas</title>
 
 <style>
 
 /* =====================================================
-   CONFIGURACIÓN GENERAL
+   BASE
 ===================================================== */
 
 *{
@@ -27,20 +18,48 @@
     padding:0;
 }
 
+:root{
+    --azul:#063b78;
+    --azul-2:#0756a0;
+    --azul-3:#0b6fc4;
+    --azul-claro:#eaf4ff;
+
+    --verde:#16a34a;
+    --verde-claro:#eaf8ef;
+
+    --rojo:#dc2626;
+    --rojo-claro:#fff0f0;
+
+    --amarillo:#d97706;
+    --amarillo-claro:#fff7e8;
+
+    --gris:#64748b;
+    --gris-claro:#f4f7fa;
+    --gris-borde:#dce3ea;
+
+    --texto:#172033;
+    --blanco:#ffffff;
+
+    --sombra:0 8px 24px rgba(0,40,90,.09);
+}
 
 body{
-
     font-family:
+        Inter,
+        "Segoe UI",
         Arial,
-        Helvetica,
         sans-serif;
 
     background:
-        #f3f6fa;
+        linear-gradient(
+            135deg,
+            #eef6ff 0%,
+            #f8fbff 45%,
+            #eef4fa 100%
+        );
 
-    color:
-        #1f2937;
-
+    color:var(--texto);
+    min-height:100vh;
 }
 
 
@@ -49,121 +68,95 @@ body{
 ===================================================== */
 
 .header{
-
     background:
         linear-gradient(
             135deg,
-            #063b73,
-            #0876bd
+            #032c5d,
+            #07559b
         );
 
     color:white;
 
-    padding:
-        20px 30px;
-
-    display:flex;
-
-    align-items:center;
-
-    justify-content:space-between;
+    padding:26px 34px;
 
     box-shadow:
-        0 4px 15px
-        rgba(0,0,0,.15);
+        0 5px 20px rgba(0,0,0,.16);
 
+    position:sticky;
+    top:0;
+    z-index:100;
 }
 
-
-.header-left{
+.header-inner{
+    max-width:1450px;
+    margin:auto;
 
     display:flex;
-
     align-items:center;
+    justify-content:space-between;
 
-    gap:18px;
-
+    gap:25px;
 }
 
+.brand{
+    display:flex;
+    align-items:center;
+    gap:15px;
+}
 
 .logo{
+    width:52px;
+    height:52px;
 
-    width:62px;
-
-    height:62px;
-
-    border-radius:13px;
+    border-radius:14px;
 
     background:white;
 
     display:flex;
-
     align-items:center;
-
     justify-content:center;
 
-    color:#063b73;
+    color:var(--azul);
+    font-size:22px;
+    font-weight:900;
 
-    font-weight:bold;
-
-    font-size:11px;
-
-    text-align:center;
-
+    box-shadow:0 5px 15px rgba(0,0,0,.15);
 }
 
+.brand h1{
+    font-size:25px;
+    font-weight:800;
+    letter-spacing:.2px;
+}
 
-.header h1{
+.brand p{
+    margin-top:3px;
+    font-size:13px;
+    opacity:.78;
+}
 
-    font-size:27px;
+.update-btn{
+    border:1px solid rgba(255,255,255,.25);
+
+    background:
+        rgba(255,255,255,.12);
+
+    color:white;
+
+    padding:11px 18px;
+
+    border-radius:10px;
+
+    cursor:pointer;
 
     font-weight:700;
 
+    transition:.2s;
 }
 
-
-.header p{
-
-    margin-top:5px;
-
-    opacity:.85;
-
-    font-size:14px;
-
-}
-
-
-.connection{
-
-    display:flex;
-
-    align-items:center;
-
-    gap:9px;
-
-    background:
-        rgba(255,255,255,.15);
-
-    padding:
-        10px 15px;
-
-    border-radius:25px;
-
-    font-size:13px;
-
-}
-
-
-.connection-dot{
-
-    width:10px;
-
-    height:10px;
-
-    border-radius:50%;
-
-    background:#f44336;
-
+.update-btn:hover{
+    background:rgba(255,255,255,.2);
+    transform:translateY(-1px);
 }
 
 
@@ -172,278 +165,335 @@ body{
 ===================================================== */
 
 .container{
-
-    max-width:
-        1450px;
-
-    margin:
-        25px auto;
-
-    padding:
-        0 20px;
-
+    width:min(1450px,94%);
+    margin:30px auto 60px;
 }
 
 
 /* =====================================================
-   ERROR
+   TARJETAS PRINCIPALES
 ===================================================== */
 
-.error{
-
-    background:#fff0f0;
-
-    border:
-        1px solid #f0caca;
-
-    color:#b42318;
-
-    padding:18px;
-
-    border-radius:12px;
-
-    margin-bottom:20px;
-
-}
-
-
-/* =====================================================
-   DASHBOARD
-===================================================== */
-
-.dashboard{
-
+.metrics{
     display:grid;
 
     grid-template-columns:
         repeat(4,1fr);
 
-    gap:16px;
+    gap:18px;
 
-    margin-bottom:22px;
-
+    margin-bottom:28px;
 }
 
-
-.card{
-
+.metric{
     background:white;
 
-    border-radius:15px;
+    border:1px solid var(--gris-borde);
 
-    padding:20px;
+    border-radius:18px;
 
-    border:
-        1px solid #e5eaf0;
+    padding:23px;
 
-    box-shadow:
-        0 4px 14px
-        rgba(0,0,0,.06);
+    box-shadow:var(--sombra);
 
+    position:relative;
+
+    overflow:hidden;
 }
 
+.metric::after{
+    content:"";
 
-.card-title{
+    position:absolute;
 
-    color:#6b7280;
+    right:-25px;
+    top:-30px;
 
+    width:110px;
+    height:110px;
+
+    background:
+        rgba(7,86,160,.06);
+
+    border-radius:50%;
+}
+
+.metric-label{
     font-size:12px;
 
-    font-weight:bold;
+    font-weight:800;
 
-    letter-spacing:.3px;
+    letter-spacing:1px;
 
+    color:var(--gris);
+
+    text-transform:uppercase;
 }
 
+.metric-value{
+    margin-top:6px;
 
-.card-value{
+    font-size:34px;
 
-    color:#063b73;
+    font-weight:900;
 
-    font-size:31px;
-
-    font-weight:bold;
-
-    margin-top:7px;
-
+    color:var(--azul);
 }
 
-
-.card-description{
-
-    color:#9ca3af;
-
-    font-size:12px;
-
-    margin-top:4px;
-
+.metric.bajas .metric-value{
+    color:var(--rojo);
 }
 
 
 /* =====================================================
-   BARRA DE CONTROLES
+   CONTROLES
 ===================================================== */
 
 .controls{
-
     background:white;
 
-    padding:17px;
+    border:1px solid var(--gris-borde);
 
-    border-radius:15px;
+    border-radius:16px;
 
-    margin-bottom:25px;
+    padding:18px;
 
-    display:flex;
+    box-shadow:var(--sombra);
 
-    align-items:center;
+    display:grid;
+
+    grid-template-columns:
+        1.4fr
+        1fr
+        1fr
+        auto;
 
     gap:12px;
 
-    flex-wrap:wrap;
-
-    box-shadow:
-        0 4px 14px
-        rgba(0,0,0,.06);
-
+    margin-bottom:28px;
 }
 
-
-.search{
-
-    flex:1;
-
-    min-width:280px;
-
-}
-
-
-input,
-select{
-
+.input,
+.select{
     width:100%;
 
-    border:
-        1px solid #d5dce5;
+    border:1px solid var(--gris-borde);
 
-    border-radius:9px;
+    background:#fbfdff;
 
-    padding:
-        12px 14px;
+    color:var(--texto);
 
-    background:white;
+    padding:12px 14px;
 
-    font-size:14px;
+    border-radius:10px;
 
     outline:none;
 
+    font-size:14px;
 }
 
-
-input:focus,
-select:focus{
-
-    border-color:
-        #0876bd;
+.input:focus,
+.select:focus{
+    border-color:var(--azul-3);
 
     box-shadow:
         0 0 0 3px
-        rgba(8,118,189,.10);
-
+        rgba(11,111,196,.1);
 }
 
+.clear-btn{
+    border:0;
 
-.filter{
-
-    min-width:220px;
-
-}
-
-
-.refresh{
-
-    border:none;
-
-    background:
-        #0876bd;
+    background:var(--azul);
 
     color:white;
 
-    padding:
-        12px 18px;
+    padding:0 18px;
 
-    border-radius:9px;
+    border-radius:10px;
 
-    font-weight:bold;
+    font-weight:700;
 
     cursor:pointer;
-
-    transition:.2s;
-
-}
-
-
-.refresh:hover{
-
-    background:
-        #063b73;
-
-    transform:
-        translateY(-1px);
-
 }
 
 
 /* =====================================================
-   SECCIONES
+   TITULOS
 ===================================================== */
 
-.section{
-
-    margin-bottom:30px;
-
-}
-
-
-.section-header{
-
+.section-title{
     display:flex;
 
     align-items:center;
 
     justify-content:space-between;
 
+    gap:15px;
+
+    margin:28px 0 15px;
+}
+
+.section-title h2{
+    font-size:20px;
+
+    font-weight:850;
+
+    color:#183b63;
+}
+
+.section-title span{
+    color:var(--gris);
+
+    font-size:13px;
+}
+
+
+/* =====================================================
+   AREA
+===================================================== */
+
+.area-block{
+    margin-bottom:30px;
+}
+
+.area-title{
+    background:
+        linear-gradient(
+            90deg,
+            var(--azul),
+            var(--azul-2)
+        );
+
+    color:white;
+
+    padding:13px 17px;
+
+    border-radius:13px;
+
+    font-size:14px;
+
+    font-weight:850;
+
+    letter-spacing:.5px;
+
+    box-shadow:0 5px 14px rgba(0,55,110,.13);
+
     margin-bottom:14px;
-
 }
 
 
-.section-title{
+/* =====================================================
+   PROYECTOS
+===================================================== */
 
-    color:#063b73;
+.projects-grid{
+    display:grid;
 
-    font-size:21px;
+    grid-template-columns:
+        repeat(2,minmax(0,1fr));
 
-    font-weight:bold;
-
+    gap:17px;
 }
 
+.project{
+    background:white;
 
-.section-count{
+    border:1px solid var(--gris-borde);
 
-    color:#0876bd;
+    border-radius:17px;
 
-    background:#e7f2fb;
+    overflow:hidden;
 
-    padding:
-        6px 12px;
+    box-shadow:
+        0 5px 18px
+        rgba(0,35,75,.07);
+}
+
+.project-header{
+    padding:17px 18px;
+
+    display:flex;
+
+    justify-content:space-between;
+
+    align-items:center;
+
+    cursor:pointer;
+
+    background:
+        linear-gradient(
+            135deg,
+            #f7fbff,
+            #eef6ff
+        );
+
+    border-bottom:1px solid var(--gris-borde);
+}
+
+.project-name{
+    display:flex;
+
+    align-items:center;
+
+    gap:11px;
+
+    font-size:16px;
+
+    font-weight:850;
+
+    color:var(--azul);
+}
+
+.project-icon{
+    width:34px;
+    height:34px;
+
+    display:flex;
+    align-items:center;
+    justify-content:center;
+
+    border-radius:9px;
+
+    background:#dceeff;
+
+    color:var(--azul);
+
+    font-weight:900;
+}
+
+.project-count{
+    background:white;
+
+    border:1px solid var(--gris-borde);
 
     border-radius:20px;
 
+    padding:5px 10px;
+
     font-size:12px;
 
-    font-weight:bold;
+    color:var(--gris);
 
+    font-weight:800;
+}
+
+.arrow{
+    transition:.2s;
+}
+
+.project.open .arrow{
+    transform:rotate(180deg);
+}
+
+.project-body{
+    display:none;
+
+    padding:15px;
+}
+
+.project.open .project-body{
+    display:block;
 }
 
 
@@ -451,314 +501,253 @@ select:focus{
    SERVICIOS
 ===================================================== */
 
-.services{
+.service{
+    border:1px solid var(--gris-borde);
 
-    display:grid;
+    border-radius:13px;
 
-    grid-template-columns:
-        repeat(
-            auto-fill,
-            minmax(270px,1fr)
-        );
+    margin-bottom:11px;
 
-    gap:15px;
+    overflow:hidden;
 
+    background:#fff;
 }
 
+.service-header{
+    padding:13px 14px;
 
-.service-card{
+    cursor:pointer;
 
-    background:white;
+    display:flex;
 
-    border:
-        1px solid #e4e9ef;
+    justify-content:space-between;
 
-    border-radius:14px;
+    align-items:center;
 
-    padding:18px;
-
-    box-shadow:
-        0 3px 11px
-        rgba(0,0,0,.05);
-
-    transition:.2s;
-
+    gap:10px;
 }
 
-
-.service-card:hover{
-
-    transform:
-        translateY(-2px);
-
-    box-shadow:
-        0 7px 18px
-        rgba(0,0,0,.08);
-
+.service-header:hover{
+    background:#f8fbff;
 }
 
+.service-info{
+    display:flex;
 
-.service-name{
-
-    color:#063b73;
-
-    font-weight:bold;
-
-    font-size:16px;
-
-}
-
-
-.service-id{
-
-    color:#8a94a0;
-
-    font-size:11px;
-
-    margin-top:5px;
-
-    min-height:16px;
-
-}
-
-
-.service-code{
-
-    color:#0876bd;
-
-    font-size:12px;
-
-    margin-top:4px;
-
-}
-
-
-.service-numbers{
-
-    display:grid;
-
-    grid-template-columns:
-        1fr 1fr;
+    align-items:center;
 
     gap:10px;
 
-    margin-top:15px;
-
+    min-width:0;
 }
 
+.service-icon{
+    width:30px;
+    height:30px;
 
-.number{
+    border-radius:8px;
 
-    background:#f5f8fb;
+    background:var(--azul-claro);
 
-    border-radius:9px;
+    display:flex;
 
-    padding:10px;
+    align-items:center;
+    justify-content:center;
 
-    text-align:center;
+    color:var(--azul);
 
+    font-size:13px;
+
+    flex-shrink:0;
 }
 
+.service-name{
+    font-size:14px;
 
-.number-label{
+    font-weight:800;
 
-    color:#7a8490;
+    color:#243b53;
 
-    font-size:10px;
+    overflow:hidden;
 
-    font-weight:bold;
+    text-overflow:ellipsis;
 
+    white-space:nowrap;
 }
 
+.service-meta{
+    display:flex;
 
-.number-value{
+    align-items:center;
 
-    color:#063b73;
+    gap:7px;
 
-    font-size:21px;
+    flex-shrink:0;
+}
 
-    font-weight:bold;
+.badge{
+    padding:5px 8px;
 
-    margin-top:3px;
+    border-radius:7px;
 
+    font-size:11px;
+
+    font-weight:800;
+
+    background:#f1f5f9;
+
+    color:#475569;
+}
+
+.badge.ok{
+    background:var(--verde-claro);
+
+    color:var(--verde);
+}
+
+.badge.warn{
+    background:var(--amarillo-claro);
+
+    color:var(--amarillo);
+}
+
+.service-body{
+    display:none;
+
+    padding:0 14px 14px;
+}
+
+.service.open .service-body{
+    display:block;
 }
 
 
 /* =====================================================
-   PERSONAL
+   POSICIONES
 ===================================================== */
 
-.people{
+.position{
+    border-top:1px dashed #dfe6ed;
 
-    display:grid;
-
-    grid-template-columns:
-        repeat(
-            auto-fill,
-            minmax(320px,1fr)
-        );
-
-    gap:16px;
-
+    padding:12px 0;
 }
 
-
-.person{
-
-    background:white;
-
-    border:
-        1px solid #e4e9ef;
-
-    border-radius:14px;
-
-    padding:17px;
-
+.position-header{
     display:flex;
 
-    gap:15px;
+    justify-content:space-between;
 
     align-items:center;
 
-    box-shadow:
-        0 3px 11px
-        rgba(0,0,0,.05);
+    margin-bottom:10px;
+}
 
-    transition:.2s;
+.position-name{
+    font-size:12px;
 
+    font-weight:850;
+
+    color:#64748b;
+
+    text-transform:uppercase;
+
+    letter-spacing:.5px;
+}
+
+.position-count{
+    font-size:11px;
+
+    color:#94a3b8;
 }
 
 
-.person:hover{
+/* =====================================================
+   PERSONAS
+===================================================== */
 
-    transform:
-        translateY(-2px);
+.people{
+    display:flex;
 
-    box-shadow:
-        0 7px 18px
-        rgba(0,0,0,.08);
+    flex-wrap:wrap;
 
+    gap:10px;
 }
 
+.person{
+    display:flex;
 
-.photo{
+    align-items:center;
 
-    width:76px;
+    gap:10px;
 
-    height:76px;
+    background:#f8fafc;
 
-    border-radius:13px;
+    border:1px solid #e4eaf0;
+
+    border-radius:12px;
+
+    padding:9px;
+
+    min-width:235px;
+
+    flex:1;
+}
+
+.person-photo{
+    width:52px;
+    height:62px;
+
+    border-radius:8px;
 
     object-fit:cover;
 
-    background:#e7edf4;
+    object-position:center;
+
+    background:#dbe5ef;
 
     flex-shrink:0;
 
+    border:1px solid #d5dee8;
 }
-
 
 .person-info{
-
     min-width:0;
-
-    flex:1;
-
 }
-
 
 .person-name{
+    font-size:12px;
 
-    color:#1f2937;
+    font-weight:850;
 
-    font-weight:bold;
-
-    font-size:15px;
+    color:#1e293b;
 
     line-height:1.25;
-
 }
-
 
 .person-number{
-
-    color:#6b7280;
-
-    font-size:12px;
-
-    margin-top:5px;
-
-}
-
-
-.person-service{
-
-    color:#0876bd;
-
-    font-size:12px;
-
-    font-weight:bold;
-
-    margin-top:5px;
-
-}
-
-
-.person-area{
-
-    color:#7b8490;
-
-    font-size:12px;
-
     margin-top:3px;
-
-}
-
-
-.badge{
-
-    display:inline-block;
-
-    padding:
-        4px 9px;
-
-    border-radius:20px;
-
-    margin-top:8px;
-
-    font-size:10px;
-
-    font-weight:bold;
-
-}
-
-
-.badge-active{
-
-    background:#e5f8eb;
-
-    color:#16833b;
-
-}
-
-
-.badge-baja{
-
-    background:#fde8e8;
-
-    color:#b42318;
-
-}
-
-
-.baja-date{
-
-    color:#9a5555;
 
     font-size:11px;
 
+    color:#64748b;
+}
+
+.person-status{
+    display:inline-block;
+
     margin-top:5px;
 
+    padding:3px 6px;
+
+    border-radius:5px;
+
+    background:var(--verde-claro);
+
+    color:var(--verde);
+
+    font-size:9px;
+
+    font-weight:900;
 }
 
 
@@ -766,62 +755,162 @@ select:focus{
    BAJAS
 ===================================================== */
 
-.bajas-box{
+.bajas-section{
+    margin-top:38px;
 
-    background:#fffafa;
+    background:white;
 
-    border:
-        1px solid #efd6d6;
+    border:1px solid #f0cccc;
 
-    border-radius:15px;
+    border-radius:18px;
 
-    padding:20px;
+    box-shadow:var(--sombra);
 
+    overflow:hidden;
 }
 
+.bajas-header{
+    padding:17px 20px;
+
+    display:flex;
+
+    align-items:center;
+
+    justify-content:space-between;
+
+    cursor:pointer;
+
+    background:
+        linear-gradient(
+            135deg,
+            #fff7f7,
+            #fff1f1
+        );
+}
 
 .bajas-title{
+    display:flex;
 
-    color:#8f2d2d;
+    align-items:center;
 
+    gap:10px;
+
+    color:var(--rojo);
+
+    font-weight:900;
+
+    font-size:17px;
+}
+
+.bajas-count{
+    background:#fee2e2;
+
+    color:var(--rojo);
+
+    padding:5px 10px;
+
+    border-radius:20px;
+
+    font-size:12px;
+
+    font-weight:900;
+}
+
+.bajas-body{
+    display:none;
+
+    padding:18px;
+}
+
+.bajas-section.open .bajas-body{
+    display:block;
+}
+
+.bajas-grid{
+    display:grid;
+
+    grid-template-columns:
+        repeat(auto-fill,minmax(260px,1fr));
+
+    gap:13px;
+}
+
+.baja-card{
+    display:flex;
+
+    gap:12px;
+
+    padding:12px;
+
+    border:1px solid #f0d7d7;
+
+    border-radius:12px;
+
+    background:#fffafa;
+}
+
+.baja-photo{
+    width:58px;
+    height:68px;
+
+    border-radius:8px;
+
+    object-fit:cover;
+
+    background:#eadede;
+
+    flex-shrink:0;
+}
+
+.baja-name{
     font-size:13px;
 
-    margin-bottom:16px;
+    font-weight:850;
 
+    color:#334155;
+}
+
+.baja-data{
+    margin-top:4px;
+
+    font-size:11px;
+
+    line-height:1.55;
+
+    color:#64748b;
+}
+
+.baja-data strong{
+    color:#475569;
 }
 
 
 /* =====================================================
-   LOADING / VACÍO
+   ESTADOS
 ===================================================== */
 
-.loading{
-
-    background:white;
-
-    border-radius:13px;
-
-    padding:40px;
+.loading,
+.empty,
+.error{
+    padding:45px 20px;
 
     text-align:center;
 
-    color:#7b8490;
+    color:var(--gris);
 
+    background:white;
+
+    border:1px solid var(--gris-borde);
+
+    border-radius:16px;
 }
 
+.error{
+    color:var(--rojo);
 
-.empty{
+    border-color:#fecaca;
 
-    background:white;
-
-    border-radius:13px;
-
-    padding:35px;
-
-    text-align:center;
-
-    color:#7b8490;
-
+    background:#fff7f7;
 }
 
 
@@ -830,16 +919,13 @@ select:focus{
 ===================================================== */
 
 .footer{
-
     text-align:center;
 
-    padding:
-        25px 20px 35px;
+    color:#94a3b8;
 
-    color:#8a94a0;
+    font-size:11px;
 
-    font-size:12px;
-
+    margin-top:35px;
 }
 
 
@@ -847,86 +933,78 @@ select:focus{
    RESPONSIVE
 ===================================================== */
 
-@media(max-width:950px){
+@media(max-width:1100px){
 
-    .dashboard{
-
+    .metrics{
         grid-template-columns:
             repeat(2,1fr);
+    }
 
+    .controls{
+        grid-template-columns:
+            1fr 1fr;
+    }
+
+    .projects-grid{
+        grid-template-columns:1fr;
     }
 
 }
 
-
-@media(max-width:650px){
+@media(max-width:700px){
 
     .header{
-
-        padding:
-            18px;
-
+        padding:18px;
     }
 
-
-    .header h1{
-
-        font-size:21px;
-
+    .header-inner{
+        align-items:flex-start;
     }
 
-
-    .connection{
-
-        display:none;
-
+    .brand h1{
+        font-size:19px;
     }
 
+    .logo{
+        width:43px;
+        height:43px;
+    }
 
     .container{
-
-        padding:
-            0 12px;
-
+        width:94%;
+        margin-top:20px;
     }
 
-
-    .dashboard{
-
+    .metrics{
         grid-template-columns:
-            1fr 1fr;
+            repeat(2,1fr);
 
         gap:10px;
-
     }
 
-
-    .people,
-    .services{
-
-        grid-template-columns:
-            1fr;
-
+    .metric{
+        padding:16px;
     }
 
+    .metric-value{
+        font-size:28px;
+    }
 
-    .search{
+    .controls{
+        grid-template-columns:1fr;
+    }
 
+    .clear-btn{
+        height:44px;
+    }
+
+    .person{
         min-width:100%;
-
-    }
-
-
-    .filter{
-
-        flex:1;
-
     }
 
 }
 
 </style>
-
 </head>
 
 
@@ -939,37 +1017,35 @@ select:focus{
 
 <header class="header">
 
-    <div class="header-left">
+    <div class="header-inner">
 
-        <div class="logo">
-            AUTORITAS
+        <div class="brand">
+
+            <div class="logo">
+                AF
+            </div>
+
+            <div>
+
+                <h1>
+                    Estado de Fuerza
+                </h1>
+
+                <p>
+                    Directorio Digital de Personal
+                </p>
+
+            </div>
+
         </div>
 
-        <div>
 
-            <h1>
-                Estado de Fuerza
-            </h1>
-
-            <p>
-                Directorio Digital de Personal
-            </p>
-
-        </div>
-
-    </div>
-
-
-    <div class="connection">
-
-        <span
-            id="connectionDot"
-            class="connection-dot">
-        </span>
-
-        <span id="connectionText">
-            Conectando...
-        </span>
+        <button
+            class="update-btn"
+            onclick="cargarDatos()"
+        >
+            ↻ Actualizar
+        </button>
 
     </div>
 
@@ -981,94 +1057,71 @@ select:focus{
 
 
 <!-- =====================================================
-     ERROR
+     INDICADORES
 ===================================================== -->
 
-<div id="errorContainer"></div>
+<section class="metrics">
 
 
+    <div class="metric">
 
-<!-- =====================================================
-     DASHBOARD
-===================================================== -->
-
-<section class="dashboard">
-
-
-    <div class="card">
-
-        <div class="card-title">
-            PERSONAL ACTIVO
+        <div class="metric-label">
+            Proyectos
         </div>
 
         <div
-            id="totalActivo"
-            class="card-value">
+            class="metric-value"
+            id="totalProyectos"
+        >
             0
-        </div>
-
-        <div class="card-description">
-            Elementos actualmente activos
         </div>
 
     </div>
 
 
+    <div class="metric">
 
-    <div class="card">
-
-        <div class="card-title">
-            PERSONAL DE BAJA
+        <div class="metric-label">
+            Personal
         </div>
 
         <div
-            id="totalBajas"
-            class="card-value">
+            class="metric-value"
+            id="totalPersonal"
+        >
             0
-        </div>
-
-        <div class="card-description">
-            Registros históricos
         </div>
 
     </div>
 
 
+    <div class="metric">
 
-    <div class="card">
-
-        <div class="card-title">
-            SERVICIOS
+        <div class="metric-label">
+            Servicios
         </div>
 
         <div
+            class="metric-value"
             id="totalServicios"
-            class="card-value">
+        >
             0
-        </div>
-
-        <div class="card-description">
-            Servicios registrados
         </div>
 
     </div>
 
 
+    <div class="metric bajas">
 
-    <div class="card">
-
-        <div class="card-title">
-            ACTUALIZACIÓN
+        <div class="metric-label">
+            Bajas
         </div>
 
         <div
-            id="lastUpdate"
-            class="card-value">
-            --
-        </div>
-
-        <div class="card-description">
-            Última consulta
+            class="metric-value"
+            id="totalBajas"
+        >
+            0
         </div>
 
     </div>
@@ -1085,60 +1138,44 @@ select:focus{
 <section class="controls">
 
 
-    <div class="search">
-
-        <input
-            id="search"
-            type="text"
-            placeholder="🔎 Buscar nombre, empleado, servicio o área..."
-        >
-
-    </div>
+    <input
+        id="searchInput"
+        class="input"
+        type="search"
+        autocomplete="off"
+        placeholder="Buscar nombre, número, servicio, proyecto..."
+    >
 
 
+    <select
+        id="areaFilter"
+        class="select"
+    >
 
-    <div class="filter">
+        <option value="">
+            Todas las áreas
+        </option>
 
-        <select id="serviceFilter">
-
-            <option value="">
-                Todos los servicios
-            </option>
-
-        </select>
-
-    </div>
+    </select>
 
 
+    <select
+        id="projectFilter"
+        class="select"
+    >
 
-    <div class="filter">
+        <option value="">
+            Todos los proyectos
+        </option>
 
-        <select id="statusFilter">
-
-            <option value="ACTIVO">
-                Personal activo
-            </option>
-
-            <option value="BAJA">
-                Personal de baja
-            </option>
-
-            <option value="TODOS">
-                Todo el personal
-            </option>
-
-        </select>
-
-    </div>
-
+    </select>
 
 
     <button
-        class="refresh"
-        onclick="cargarDatos()">
-
-        ↻ Actualizar
-
+        class="clear-btn"
+        onclick="limpiarFiltros()"
+    >
+        Limpiar
     </button>
 
 
@@ -1147,74 +1184,31 @@ select:focus{
 
 
 <!-- =====================================================
-     SERVICIOS
+     CONTENIDO
 ===================================================== -->
 
-<section class="section">
+<section>
 
+    <div class="section-title">
 
-    <div class="section-header">
+        <h2>
+            Estructura de personal
+        </h2>
 
-        <div class="section-title">
-            Servicios
-        </div>
-
-        <div
-            id="serviceCount"
-            class="section-count">
-            0 servicios
-        </div>
+        <span id="resultInfo">
+            Cargando...
+        </span>
 
     </div>
 
 
-    <div
-        id="servicesContainer"
-        class="services">
+    <div id="organigrama">
 
         <div class="loading">
-            Cargando servicios...
+            Cargando información...
         </div>
 
     </div>
-
-
-</section>
-
-
-
-<!-- =====================================================
-     PERSONAL ACTIVO
-===================================================== -->
-
-<section class="section">
-
-
-    <div class="section-header">
-
-        <div class="section-title">
-            Directorio de Personal
-        </div>
-
-        <div
-            id="peopleCount"
-            class="section-count">
-            0 elementos
-        </div>
-
-    </div>
-
-
-    <div
-        id="peopleContainer"
-        class="people">
-
-        <div class="loading">
-            Cargando personal...
-        </div>
-
-    </div>
-
 
 </section>
 
@@ -1224,154 +1218,319 @@ select:focus{
      BAJAS
 ===================================================== -->
 
-<section class="section">
+<section
+    id="bajasSection"
+    class="bajas-section"
+>
 
-
-    <div class="section-header">
-
-        <div class="section-title">
-            Apartado de Bajas
-        </div>
-
-        <div
-            id="bajaCount"
-            class="section-count">
-            0 bajas
-        </div>
-
-    </div>
-
-
-    <div class="bajas-box">
-
+    <div
+        class="bajas-header"
+        onclick="toggleBajas()"
+    >
 
         <div class="bajas-title">
 
-            Personal que permanece en la base
-            histórica pero tiene estatus BAJA.
+            <span>
+                🔴
+            </span>
+
+            <span>
+                Personal dado de baja
+            </span>
+
+            <span
+                id="bajasCount"
+                class="bajas-count"
+            >
+                0
+            </span>
 
         </div>
 
-
-        <div
-            id="bajasContainer"
-            class="people">
-
-            <div class="empty">
-                No hay personal de baja.
-            </div>
-
-        </div>
-
+        <span id="bajasArrow">
+            ▼
+        </span>
 
     </div>
 
 
+    <div
+        id="bajasBody"
+        class="bajas-body"
+    >
+
+        <div
+            id="bajasGrid"
+            class="bajas-grid"
+        ></div>
+
+    </div>
+
 </section>
+
+
+
+<div class="footer">
+
+    Estado de Fuerza · Directorio Digital
+
+</div>
 
 
 </main>
 
 
 
-<footer class="footer">
-
-    Estado de Fuerza · Directorio Digital de Personal · Autoritas
-
-</footer>
-
-
-
 <script>
 
+
 /* =====================================================
-   URL APPS SCRIPT
+   CONFIGURACIÓN
 ===================================================== */
 
 const API_URL =
-"https://script.google.com/macros/s/AKfycbxP3-4RBiMMVSmWAyamj9-HC4pR5Z2rx0KzDlyIsWWJ2iHILoFCxzGosRmWcz8rTq4/exec";
+    "https://script.google.com/macros/s/AKfycbxP3-4RBiMMVSmWAyamj9-HC4pR5Z2rx0KzDlyIsWWJ2iHILoFCxzGosRmWcz8rTq4/exec";
 
-
-/* =====================================================
-   VARIABLES
-===================================================== */
 
 let servicios = [];
 
 let personal = [];
 
-let scriptActual = null;
 
 
 /* =====================================================
-   CARGAR DATOS
+   UTILIDADES
 ===================================================== */
 
-function cargarDatos(){
+function norm(valor){
+
+    return String(
+        valor ?? ""
+    )
+    .trim()
+    .toUpperCase();
+
+}
 
 
-    limpiarError();
+function texto(valor){
+
+    return String(
+        valor ?? ""
+    ).trim();
+
+}
 
 
-    cambiarEstado(
-        "Conectando...",
-        "#f44336"
+function esActivo(persona){
+
+    return norm(
+        persona["ESTATUS"]
+    ) === "ACTIVO";
+
+}
+
+
+function esBaja(persona){
+
+    return norm(
+        persona["ESTATUS"]
+    ) === "BAJA";
+
+}
+
+
+function valor(persona,...nombres){
+
+    for(
+        const nombre of nombres
+    ){
+
+        if(
+            Object.prototype
+                .hasOwnProperty
+                .call(
+                    persona,
+                    nombre
+                )
+        ){
+
+            return texto(
+                persona[nombre]
+            );
+
+        }
+
+    }
+
+    return "";
+
+}
+
+
+function unicos(valores){
+
+    return [
+        ...new Set(
+            valores
+            .map(texto)
+            .filter(Boolean)
+        )
+    ]
+    .sort(
+        (a,b)=>
+            a.localeCompare(
+                b,
+                "es",
+                {
+                    sensitivity:"base"
+                }
+            )
     );
 
+}
 
-    if(scriptActual){
 
-        scriptActual.remove();
+/* =====================================================
+   FOTO
+===================================================== */
+
+function crearAvatarSVG(nombre){
+
+    const iniciales =
+        texto(nombre)
+        .split(/\s+/)
+        .filter(Boolean)
+        .slice(0,2)
+        .map(
+            palabra =>
+                palabra.charAt(0)
+        )
+        .join("")
+        .toUpperCase();
+
+    const svg = `
+        <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="160"
+            height="190"
+            viewBox="0 0 160 190"
+        >
+
+            <rect
+                width="160"
+                height="190"
+                rx="14"
+                fill="#dbeafe"
+            />
+
+            <circle
+                cx="80"
+                cy="67"
+                r="31"
+                fill="#94a3b8"
+            />
+
+            <path
+                d="M31 166
+                   C35 125 58 108 80 108
+                   C102 108 125 125 129 166
+                   Z"
+                fill="#94a3b8"
+            />
+
+            <text
+                x="80"
+                y="181"
+                text-anchor="middle"
+                font-family="Arial"
+                font-size="13"
+                font-weight="700"
+                fill="#475569"
+            >
+                ${iniciales || "?"}
+            </text>
+
+        </svg>
+    `;
+
+    return "data:image/svg+xml;charset=UTF-8," +
+        encodeURIComponent(svg);
+
+}
+
+
+function normalizarFoto(url){
+
+    const valorUrl =
+        texto(url);
+
+    if(!valorUrl){
+
+        return "";
 
     }
 
 
-    const callbackName =
+    /*
+     * Google Drive:
+     * /file/d/ID/view
+     */
+
+    const match =
+        valorUrl.match(
+            /\/d\/([^/]+)/
+        );
+
+    if(match){
+
+        return (
+            "https://drive.google.com/thumbnail?id=" +
+            match[1] +
+            "&sz=w300"
+        );
+
+    }
+
+
+    /*
+     * Si ya es una URL directa
+     */
+
+    return valorUrl;
+
+}
+
+
+/* =====================================================
+   CARGA JSONP
+===================================================== */
+
+function cargarDatos(){
+
+    mostrarCarga();
+
+
+    const callback =
         "estadoFuerza_" +
         Date.now();
 
 
-    const script =
-        document.createElement(
-            "script"
-        );
-
-
-    scriptActual =
-        script;
-
-
-    /* ================================================
-       CALLBACK JSONP
-    ================================================= */
-
-    window[callbackName] =
+    window[callback] =
         function(data){
-
 
             try{
 
-
-                console.log(
-                    "Respuesta Apps Script:",
-                    data
-                );
-
-
-                if(!data){
+                if(
+                    !data ||
+                    data.ok === false
+                ){
 
                     throw new Error(
-                        "No se recibió información."
-                    );
-
-                }
-
-
-                if(!data.ok){
-
-                    throw new Error(
-                        data.error ||
-                        "Apps Script devolvió un error."
+                        data &&
+                        data.error
+                            ? data.error
+                            : "No se pudieron obtener los datos."
                     );
 
                 }
@@ -1381,103 +1540,72 @@ function cargarDatos(){
                     Array.isArray(
                         data.servicios
                     )
-                    ?
-                    data.servicios
-                    :
-                    [];
+                    ? data.servicios
+                    : [];
 
 
                 personal =
                     Array.isArray(
                         data.personal
                     )
-                    ?
-                    data.personal
-                    :
-                    [];
+                    ? data.personal
+                    : [];
 
 
-                /* ====================================
-                   CONEXIÓN CORRECTA
-                ==================================== */
-
-                cambiarEstado(
-                    "Conectado",
-                    "#38d66b"
-                );
-
-
-                /* ====================================
-                   ACTUALIZAR PANTALLA
-                ==================================== */
-
-                actualizarResumen();
-
-                cargarFiltroServicios();
-
-                mostrarServicios();
-
-                mostrarPersonal();
-
-                mostrarBajas();
+                actualizarInterfaz();
 
 
             }
             catch(error){
 
                 mostrarError(
-                    error
+                    error.message
                 );
 
             }
+            finally{
 
+                try{
 
-            delete window[
-                callbackName
-            ];
+                    delete window[callback];
 
+                }
+                catch(e){}
 
-            script.remove();
-
+            }
 
         };
 
 
-    /* =================================================
-       URL JSONP
-    ================================================= */
+    const script =
+        document.createElement(
+            "script"
+        );
+
 
     script.src =
         API_URL +
         "?callback=" +
         encodeURIComponent(
-            callbackName
-        );
+            callback
+        ) +
+        "&_=" +
+        Date.now();
 
-
-    /* =================================================
-       ERROR DE SCRIPT
-    ================================================= */
 
     script.onerror =
         function(){
 
-
             mostrarError(
-
-                new Error(
-                    "No fue posible conectar con Apps Script."
-                )
-
+                "No se pudo conectar con la base de datos."
             );
 
+            try{
 
-            delete window[
-                callbackName
-            ];
+                delete window[callback];
 
-
-            script.remove();
+            }
+            catch(e){}
 
         };
 
@@ -1489,127 +1617,69 @@ function cargarDatos(){
 }
 
 
+
 /* =====================================================
-   ESTADO DE CONEXIÓN
+   ACTUALIZAR INTERFAZ
 ===================================================== */
 
-function cambiarEstado(
-    texto,
-    color
-){
+function actualizarInterfaz(){
 
-    document.getElementById(
-        "connectionText"
-    ).textContent =
-        texto;
+    construirFiltros();
 
+    actualizarMetricas();
 
-    document.getElementById(
-        "connectionDot"
-    ).style.background =
-        color;
+    renderizarOrganigrama();
+
+    renderizarBajas();
 
 }
 
 
 /* =====================================================
-   ERROR
+   MÉTRICAS
 ===================================================== */
 
-function mostrarError(error){
-
-
-    console.error(
-        error
-    );
-
-
-    cambiarEstado(
-        "Error de conexión",
-        "#f44336"
-    );
-
-
-    document.getElementById(
-        "errorContainer"
-    ).innerHTML = `
-
-        <div class="error">
-
-            <strong>
-                ❌ Error de conexión
-            </strong>
-
-            <br><br>
-
-            ${escapeHTML(
-                error.message
-            )}
-
-        </div>
-
-    `;
-
-}
-
-
-/* =====================================================
-   LIMPIAR ERROR
-===================================================== */
-
-function limpiarError(){
-
-    document.getElementById(
-        "errorContainer"
-    ).innerHTML =
-        "";
-
-}
-
-
-/* =====================================================
-   RESUMEN
-===================================================== */
-
-function actualizarResumen(){
-
+function actualizarMetricas(){
 
     const activos =
         personal.filter(
-            persona =>
-
-                normalizar(
-                    persona["ESTATUS"]
-                )
-                ===
-                "ACTIVO"
-
+            esActivo
         );
-
 
     const bajas =
         personal.filter(
-            persona =>
-
-                normalizar(
-                    persona["ESTATUS"]
-                )
-                ===
-                "BAJA"
-
+            esBaja
         );
 
 
+    const proyectos =
+        unicos(
+            activos.map(
+                persona =>
+                    valor(
+                        persona,
+                        "PROYECTO"
+                    )
+            )
+        );
+
+
+    /*
+     * IMPORTANTE:
+     * SERVICIOS sale directamente
+     * de la pestaña SERVICIOS.
+     */
+
     document.getElementById(
-        "totalActivo"
+        "totalProyectos"
+    ).textContent =
+        proyectos.length;
+
+
+    document.getElementById(
+        "totalPersonal"
     ).textContent =
         activos.length;
-
-
-    document.getElementById(
-        "totalBajas"
-    ).textContent =
-        bajas.length;
 
 
     document.getElementById(
@@ -1619,97 +1689,116 @@ function actualizarResumen(){
 
 
     document.getElementById(
-        "lastUpdate"
+        "totalBajas"
     ).textContent =
+        bajas.length;
 
-        new Date().toLocaleTimeString(
-            "es-MX",
-            {
-                hour:
-                    "2-digit",
 
-                minute:
-                    "2-digit"
-            }
-        );
+    document.getElementById(
+        "bajasCount"
+    ).textContent =
+        bajas.length;
 
 }
 
 
 /* =====================================================
-   FILTRO DE SERVICIOS
+   FILTROS
 ===================================================== */
 
-function cargarFiltroServicios(){
+function construirFiltros(){
 
-
-    const select =
-        document.getElementById(
-            "serviceFilter"
+    const activos =
+        personal.filter(
+            esActivo
         );
 
 
-    select.innerHTML = `
-
-        <option value="">
-            Todos los servicios
-        </option>
-
-    `;
-
-
-    /*
-     * Tomamos el valor de:
-     * CODIFICACIÓN DE UN FORMULARIO Y SERVICIO
-     */
-
-    const serviciosUnicos =
-
-        [
-            ...
-            new Set(
-
-                servicios
-
-                    .map(
-                        servicio =>
-                            servicio[
-                                "CODIFICACIÓN DE UN FORMULARIO Y SERVICIO"
-                            ]
+    const areas =
+        unicos(
+            activos.map(
+                persona =>
+                    valor(
+                        persona,
+                        "AREA",
+                        "Area"
                     )
-
-                    .filter(
-                        valor =>
-                            valor &&
-                            String(
-                                valor
-                            ).trim() !== ""
-                    )
-
             )
+        );
 
-        ];
+
+    const proyectos =
+        unicos(
+            activos.map(
+                persona =>
+                    valor(
+                        persona,
+                        "PROYECTO"
+                    )
+            )
+        );
 
 
-    serviciosUnicos.forEach(
-        nombre => {
+    const areaSelect =
+        document.getElementById(
+            "areaFilter"
+        );
 
+    const projectSelect =
+        document.getElementById(
+            "projectFilter"
+        );
+
+
+    areaSelect.innerHTML =
+        `<option value="">
+            Todas las áreas
+        </option>`;
+
+
+    areas.forEach(
+        area => {
 
             const option =
                 document.createElement(
                     "option"
                 );
 
-
             option.value =
-                nombre;
-
+                area;
 
             option.textContent =
-                nombre;
+                area;
+
+            areaSelect.appendChild(
+                option
+            );
+
+        }
+    );
 
 
-            select.appendChild(
+    projectSelect.innerHTML =
+        `<option value="">
+            Todos los proyectos
+        </option>`;
+
+
+    proyectos.forEach(
+        proyecto => {
+
+            const option =
+                document.createElement(
+                    "option"
+                );
+
+            option.value =
+                proyecto;
+
+            option.textContent =
+                proyecto;
+
+            projectSelect.appendChild(
                 option
             );
 
@@ -1720,374 +1809,133 @@ function cargarFiltroServicios(){
 
 
 /* =====================================================
-   MOSTRAR SERVICIOS
+   FILTRAR PERSONAL
 ===================================================== */
 
-function mostrarServicios(){
+function obtenerPersonalFiltrado(){
 
-
-    const container =
-        document.getElementById(
-            "servicesContainer"
+    const activos =
+        personal.filter(
+            esActivo
         );
 
 
-    if(!servicios.length){
-
-        container.innerHTML = `
-
-            <div class="empty">
-
-                No hay servicios registrados.
-
-            </div>
-
-        `;
-
-        return;
-
-    }
-
-
-    container.innerHTML =
-        "";
-
-
-    servicios.forEach(
-        servicio => {
-
-
-            const nombre =
-                servicio[
-                    "SERVICIO"
-                ]
-                ||
-                "Sin servicio";
-
-
-            const id =
-                servicio[
-                    "ID SERVICIO"
-                ]
-                ||
-                "";
-
-
-            const codigo =
-                servicio[
-                    "CODIFICACIÓN DE UN FORMULARIO Y SERVICIO"
-                ]
-                ||
-                "";
-
-
-            const debe =
-                servicio[
-                    "DEBE"
-                ]
-                ??
-                0;
-
-
-            const es =
-                servicio[
-                    "ES"
-                ]
-                ??
-                0;
-
-
-            const card =
-                document.createElement(
-                    "div"
-                );
-
-
-            card.className =
-                "service-card";
-
-
-            card.innerHTML = `
-
-                <div class="service-name">
-
-                    ${escapeHTML(
-                        nombre
-                    )}
-
-                </div>
-
-
-                <div class="service-id">
-
-                    ${escapeHTML(
-                        id
-                    )}
-
-                </div>
-
-
-                <div class="service-code">
-
-                    ${escapeHTML(
-                        codigo
-                    )}
-
-                </div>
-
-
-                <div class="service-numbers">
-
-
-                    <div class="number">
-
-                        <div class="number-label">
-                            DEBE
-                        </div>
-
-                        <div class="number-value">
-                            ${escapeHTML(
-                                debe
-                            )}
-                        </div>
-
-                    </div>
-
-
-                    <div class="number">
-
-                        <div class="number-label">
-                            ES
-                        </div>
-
-                        <div class="number-value">
-                            ${escapeHTML(
-                                es
-                            )}
-                        </div>
-
-                    </div>
-
-
-                </div>
-
-            `;
-
-
-            container.appendChild(
-                card
-            );
-
-        }
-    );
-
-
-    document.getElementById(
-        "serviceCount"
-    ).textContent =
-
-        servicios.length +
-        (
-            servicios.length === 1
-            ?
-            " servicio"
-            :
-            " servicios"
-        );
-
-}
-
-
-/* =====================================================
-   MOSTRAR PERSONAL
-===================================================== */
-
-function mostrarPersonal(){
-
-
-    const container =
-        document.getElementById(
-            "peopleContainer"
-        );
-
-
-    const search =
-        normalizar(
+    const busqueda =
+        norm(
             document.getElementById(
-                "search"
+                "searchInput"
             ).value
         );
 
 
-    const service =
-        document.getElementById(
-            "serviceFilter"
-        ).value;
-
-
-    const status =
-        document.getElementById(
-            "statusFilter"
-        ).value;
-
-
-    const filtrados =
-
-        personal.filter(
-            persona => {
-
-
-                const nombre =
-                    normalizar(
-                        persona[
-                            "Nombre"
-                        ]
-                    );
-
-
-                const empleado =
-                    normalizar(
-                        persona[
-                            "No Empleado"
-                        ]
-                    );
-
-
-                const servicio =
-                    normalizar(
-                        persona[
-                            "Servicio"
-                        ]
-                    );
-
-
-                const area =
-                    normalizar(
-                        persona[
-                            "Area"
-                        ]
-                    );
-
-
-                const estatus =
-                    normalizar(
-                        persona[
-                            "ESTATUS"
-                        ]
-                    );
-
-
-                /* =============================
-                   BÚSQUEDA
-                ============================= */
-
-                const coincideBusqueda =
-
-                    !search ||
-
-                    nombre.includes(
-                        search
-                    ) ||
-
-                    empleado.includes(
-                        search
-                    ) ||
-
-                    servicio.includes(
-                        search
-                    ) ||
-
-                    area.includes(
-                        search
-                    );
-
-
-                /* =============================
-                   SERVICIO
-                ============================= */
-
-                const coincideServicio =
-
-                    !service ||
-
-                    persona[
-                        "Servicio"
-                    ] ===
-                    service;
-
-
-                /* =============================
-                   ESTATUS
-                ============================= */
-
-                const coincideStatus =
-
-                    status === "TODOS" ||
-
-                    estatus ===
-                    status;
-
-
-                return (
-
-                    coincideBusqueda &&
-
-                    coincideServicio &&
-
-                    coincideStatus
-
-                );
-
-            }
+    const area =
+        norm(
+            document.getElementById(
+                "areaFilter"
+            ).value
         );
 
 
-    document.getElementById(
-        "peopleCount"
-    ).textContent =
-
-        filtrados.length +
-
-        (
-            filtrados.length === 1
-            ?
-            " elemento"
-            :
-            " elementos"
+    const proyecto =
+        norm(
+            document.getElementById(
+                "projectFilter"
+            ).value
         );
 
 
-    if(!filtrados.length){
-
-        container.innerHTML = `
-
-            <div class="empty">
-
-                No se encontraron registros.
-
-            </div>
-
-        `;
-
-        return;
-
-    }
-
-
-    container.innerHTML =
-        "";
-
-
-    filtrados.forEach(
+    return activos.filter(
         persona => {
 
-            container.appendChild(
+            const nombre =
+                valor(
+                    persona,
+                    "Nombre",
+                    "NOMBRE"
+                );
 
-                crearTarjetaPersona(
-                    persona
+            const numero =
+                valor(
+                    persona,
+                    "No Empleado",
+                    "NO EMPLEADO",
+                    "No. Empleado"
+                );
+
+            const servicio =
+                valor(
+                    persona,
+                    "Servicio",
+                    "SERVICIO"
+                );
+
+            const areaPersona =
+                valor(
+                    persona,
+                    "AREA",
+                    "Area"
+                );
+
+            const proyectoPersona =
+                valor(
+                    persona,
+                    "PROYECTO"
+                );
+
+            const posicion =
+                valor(
+                    persona,
+                    "POSICION",
+                    "Posicion"
+                );
+
+
+            const textoBusqueda =
+                norm(
+                    [
+                        nombre,
+                        numero,
+                        servicio,
+                        areaPersona,
+                        proyectoPersona,
+                        posicion
+                    ].join(" ")
+                );
+
+
+            if(
+                busqueda &&
+                !textoBusqueda.includes(
+                    busqueda
                 )
+            ){
 
-            );
+                return false;
+
+            }
+
+
+            if(
+                area &&
+                norm(areaPersona) !== area
+            ){
+
+                return false;
+
+            }
+
+
+            if(
+                proyecto &&
+                norm(proyectoPersona) !== proyecto
+            ){
+
+                return false;
+
+            }
+
+
+            return true;
 
         }
     );
@@ -2096,60 +1944,36 @@ function mostrarPersonal(){
 
 
 /* =====================================================
-   MOSTRAR BAJAS
+   RENDER ORGANIGRAMA
 ===================================================== */
 
-function mostrarBajas(){
+function renderizarOrganigrama(){
 
-
-    const container =
+    const contenedor =
         document.getElementById(
-            "bajasContainer"
+            "organigrama"
         );
 
 
-    const bajas =
-
-        personal.filter(
-            persona =>
-
-                normalizar(
-                    persona[
-                        "ESTATUS"
-                    ]
-                )
-                ===
-                "BAJA"
-
-        );
+    const activos =
+        obtenerPersonalFiltrado();
 
 
     document.getElementById(
-        "bajaCount"
+        "resultInfo"
     ).textContent =
-
-        bajas.length +
-
-        (
-            bajas.length === 1
-            ?
-            " baja"
-            :
-            " bajas"
-        );
+        activos.length +
+        " personas activas";
 
 
-    if(!bajas.length){
+    if(
+        !activos.length
+    ){
 
-        container.innerHTML = `
-
+        contenedor.innerHTML = `
             <div class="empty">
-
-                No hay personal registrado
-                como baja.
-
+                No se encontraron personas con los filtros actuales.
             </div>
-
         `;
 
         return;
@@ -2157,24 +1981,495 @@ function mostrarBajas(){
     }
 
 
-    container.innerHTML =
-        "";
+    /*
+     * AREA
+     *   └── PROYECTO
+     *          └── SERVICIO
+     *                 └── POSICION
+     *                        └── PERSONAS
+     */
+
+    const areas = {};
 
 
-    bajas.forEach(
+    activos.forEach(
         persona => {
 
-            container.appendChild(
-
-                crearTarjetaPersona(
+            const area =
+                valor(
                     persona,
-                    true
-                )
+                    "AREA",
+                    "Area"
+                ) ||
+                "SIN ÁREA";
 
-            );
+
+            const proyecto =
+                valor(
+                    persona,
+                    "PROYECTO"
+                ) ||
+                "SIN PROYECTO";
+
+
+            const servicio =
+                valor(
+                    persona,
+                    "Servicio",
+                    "SERVICIO"
+                ) ||
+                "SIN SERVICIO";
+
+
+            const posicion =
+                valor(
+                    persona,
+                    "POSICION",
+                    "Posicion"
+                ) ||
+                "SIN POSICIÓN";
+
+
+            if(!areas[area]){
+
+                areas[area] = {};
+
+            }
+
+
+            if(!areas[area][proyecto]){
+
+                areas[area][proyecto] = {};
+
+            }
+
+
+            if(
+                !areas[area][proyecto][servicio]
+            ){
+
+                areas[area][proyecto][servicio] = {};
+
+            }
+
+
+            if(
+                !areas[area]
+                    [proyecto]
+                    [servicio]
+                    [posicion]
+            ){
+
+                areas[area]
+                    [proyecto]
+                    [servicio]
+                    [posicion] = [];
+
+            }
+
+
+            areas[area]
+                [proyecto]
+                [servicio]
+                [posicion]
+                .push(persona);
 
         }
     );
+
+
+    let html = "";
+
+
+    Object.keys(areas)
+    .sort()
+    .forEach(
+        area => {
+
+            html += `
+                <div class="area-block">
+
+                    <div class="area-title">
+                        ${escapeHtml(area)}
+                    </div>
+
+                    <div class="projects-grid">
+            `;
+
+
+            Object.keys(
+                areas[area]
+            )
+            .sort()
+            .forEach(
+                proyecto => {
+
+                    const proyectoData =
+                        areas[area][proyecto];
+
+
+                    let totalPersonas = 0;
+
+
+                    Object.values(
+                        proyectoData
+                    ).forEach(
+                        servicio => {
+
+                            Object.values(
+                                servicio
+                            ).forEach(
+                                posicion => {
+
+                                    totalPersonas +=
+                                        posicion.length;
+
+                                }
+                            );
+
+                        }
+                    );
+
+
+                    const projectId =
+                        "project_" +
+                        Math.random()
+                            .toString(36)
+                            .slice(2);
+
+
+                    html += `
+                        <article
+                            class="project"
+                            data-project="${escapeAttr(projecto)}"
+                        >
+
+                            <div
+                                class="project-header"
+                                onclick="toggleProject(this)"
+                            >
+
+                                <div class="project-name">
+
+                                    <div class="project-icon">
+                                        ▦
+                                    </div>
+
+                                    <span>
+                                        ${escapeHtml(proyecto)}
+                                    </span>
+
+                                </div>
+
+
+                                <div
+                                    style="
+                                        display:flex;
+                                        align-items:center;
+                                        gap:9px;
+                                    "
+                                >
+
+                                    <span class="project-count">
+                                        ${totalPersonas}
+                                        ${totalPersonas === 1 ? "persona" : "personas"}
+                                    </span>
+
+                                    <span class="arrow">
+                                        ▼
+                                    </span>
+
+                                </div>
+
+                            </div>
+
+
+                            <div class="project-body">
+                    `;
+
+
+                    Object.keys(
+                        proyectoData
+                    )
+                    .sort()
+                    .forEach(
+                        servicio => {
+
+                            const servicioData =
+                                proyectoData[
+                                    servicio
+                                ];
+
+
+                            let totalServicio = 0;
+
+
+                            Object.values(
+                                servicioData
+                            ).forEach(
+                                personas =>
+                                    totalServicio +=
+                                        personas.length
+                            );
+
+
+                            const servicioInfo =
+                                buscarServicioInfo(
+                                    servicio
+                                );
+
+
+                            let badgeClass =
+                                "badge";
+
+
+                            if(
+                                servicioInfo
+                                .encontrado
+                            ){
+
+                                if(
+                                    servicioInfo.es >=
+                                    servicioInfo.debe &&
+                                    servicioInfo.debe > 0
+                                ){
+
+                                    badgeClass =
+                                        "badge ok";
+
+                                }
+                                else if(
+                                    servicioInfo.debe > 0
+                                ){
+
+                                    badgeClass =
+                                        "badge warn";
+
+                                }
+
+                            }
+
+
+                            html += `
+                                <div class="service">
+
+                                    <div
+                                        class="service-header"
+                                        onclick="toggleService(this)"
+                                    >
+
+                                        <div class="service-info">
+
+                                            <div class="service-icon">
+                                                ◉
+                                            </div>
+
+                                            <div class="service-name">
+                                                ${escapeHtml(servicio)}
+                                            </div>
+
+                                        </div>
+
+
+                                        <div class="service-meta">
+
+                                            ${
+                                                servicioInfo.encontrado
+                                                ?
+                                                `
+                                                    <span class="${badgeClass}">
+                                                        ${servicioInfo.debe}
+                                                        /
+                                                        ${servicioInfo.es}
+                                                    </span>
+                                                `
+                                                :
+                                                `
+                                                    <span class="badge">
+                                                        ${totalServicio}
+                                                        ${totalServicio === 1 ? "persona" : "personas"}
+                                                    </span>
+                                                `
+                                            }
+
+                                            <span>
+                                                ▼
+                                            </span>
+
+                                        </div>
+
+                                    </div>
+
+
+                                    <div class="service-body">
+                            `;
+
+
+                            Object.keys(
+                                servicioData
+                            )
+                            .sort()
+                            .forEach(
+                                posicion => {
+
+                                    const personas =
+                                        servicioData[
+                                            posicion
+                                        ];
+
+
+                                    html += `
+                                        <div class="position">
+
+                                            <div class="position-header">
+
+                                                <span class="position-name">
+                                                    ${escapeHtml(posicion)}
+                                                </span>
+
+                                                <span class="position-count">
+                                                    ${personas.length}
+                                                </span>
+
+                                            </div>
+
+
+                                            <div class="people">
+                                    `;
+
+
+                                    personas.forEach(
+                                        persona => {
+
+                                            html +=
+                                                crearPersonaCard(
+                                                    persona
+                                                );
+
+                                        }
+                                    );
+
+
+                                    html += `
+                                            </div>
+
+                                        </div>
+                                    `;
+
+                                }
+                            );
+
+
+                            html += `
+                                    </div>
+
+                                </div>
+                            `;
+
+                        }
+                    );
+
+
+                    html += `
+                            </div>
+
+                        </article>
+                    `;
+
+                }
+            );
+
+
+            html += `
+                    </div>
+
+                </div>
+            `;
+
+        }
+    );
+
+
+    contenedor.innerHTML =
+        html;
+
+}
+
+
+/* =====================================================
+   INFO SERVICIO
+===================================================== */
+
+function buscarServicioInfo(
+    nombre
+){
+
+    const objetivo =
+        norm(nombre);
+
+
+    /*
+     * Primero buscamos por:
+     * CODIFICACIÓN...
+     */
+
+    let registro =
+        servicios.find(
+            servicio =>
+                norm(
+                    servicio[
+                        "CODIFICACIÓN DE UN FORMULARIO Y SERVICIO"
+                    ]
+                ) === objetivo
+        );
+
+
+    /*
+     * Segundo intento:
+     * SERVICIO
+     */
+
+    if(!registro){
+
+        registro =
+            servicios.find(
+                servicio =>
+                    norm(
+                        servicio[
+                            "SERVICIO"
+                        ]
+                    ) === objetivo
+            );
+
+    }
+
+
+    if(!registro){
+
+        return {
+            encontrado:false,
+            debe:0,
+            es:0
+        };
+
+    }
+
+
+    return {
+
+        encontrado:true,
+
+        debe:
+            Number(
+                registro["DEBE"]
+            ) || 0,
+
+        es:
+            Number(
+                registro["ES"]
+            ) || 0
+
+    };
 
 }
 
@@ -2183,296 +2478,487 @@ function mostrarBajas(){
    TARJETA PERSONA
 ===================================================== */
 
-function crearTarjetaPersona(
-    persona,
-    esBaja = false
+function crearPersonaCard(
+    persona
 ){
 
-
-    const card =
-        document.createElement(
-            "div"
-        );
-
-
-    card.className =
-        "person";
-
-
     const nombre =
-        persona[
-            "Nombre"
-        ]
-        ||
+        valor(
+            persona,
+            "Nombre",
+            "NOMBRE"
+        ) ||
         "Sin nombre";
 
 
-    const empleado =
-        persona[
-            "No Empleado"
-        ]
-        ||
+    const numero =
+        valor(
+            persona,
+            "No Empleado",
+            "NO EMPLEADO",
+            "No. Empleado"
+        ) ||
         "Sin número";
-
-
-    const servicio =
-        persona[
-            "Servicio"
-        ]
-        ||
-        "Sin servicio";
-
-
-    const area =
-        persona[
-            "Area"
-        ]
-        ||
-        "Sin área";
-
-
-    const estatus =
-        persona[
-            "ESTATUS"
-        ]
-        ||
-        "";
-
-
-    const fechaBaja =
-        persona[
-            "FECHA BAJA"
-        ]
-        ||
-        "";
 
 
     const foto =
         normalizarFoto(
-            persona[
-                "FOTO"
-            ]
+            valor(
+                persona,
+                "FOTO",
+                "Foto",
+                "foto"
+            )
         );
 
 
     const imagen =
-
-        foto
-
-        ?
-
-        escapeAttribute(
-            foto
-        )
-
-        :
-
-        "data:image/svg+xml;charset=UTF-8," +
+        foto ||
         crearAvatarSVG(
             nombre
         );
 
 
-    card.innerHTML = `
+    return `
 
-        <img
+        <div class="person">
 
-            class="photo"
-
-            src="${imagen}"
-
-            alt="Foto de ${escapeAttribute(nombre)}"
-
-            onerror="
-                this.src='data:image/svg+xml;charset=UTF-8,${crearAvatarSVG(nombre)}'
-            "
-
-        >
-
-
-        <div class="person-info">
+            <img
+                class="person-photo"
+                src="${escapeAttr(imagen)}"
+                alt="${escapeAttr(nombre)}"
+                loading="lazy"
+                onerror="
+                    this.onerror=null;
+                    this.src='${escapeAttr(
+                        crearAvatarSVG(nombre)
+                    )}';
+                "
+            >
 
 
-            <div class="person-name">
+            <div class="person-info">
 
-                ${escapeHTML(
-                    nombre
-                )}
-
-            </div>
-
-
-            <div class="person-number">
-
-                No. empleado:
-                ${escapeHTML(
-                    empleado
-                )}
-
-            </div>
-
-
-            <div class="person-service">
-
-                ${escapeHTML(
-                    servicio
-                )}
-
-            </div>
-
-
-            <div class="person-area">
-
-                Área:
-                ${escapeHTML(
-                    area
-                )}
-
-            </div>
-
-
-            <span class="badge ${
-                esBaja
-                ?
-                "badge-baja"
-                :
-                "badge-active"
-            }">
-
-                ${escapeHTML(
-                    estatus
-                )}
-
-            </span>
-
-
-            ${
-                esBaja && fechaBaja
-
-                ?
-
-                `
-
-                <div class="baja-date">
-
-                    Fecha de baja:
-                    ${escapeHTML(
-                        formatearFecha(
-                            fechaBaja
-                        )
-                    )}
-
+                <div class="person-name">
+                    ${escapeHtml(nombre)}
                 </div>
 
-                `
+                <div class="person-number">
+                    No. ${escapeHtml(numero)}
+                </div>
 
-                :
+                <span class="person-status">
+                    ACTIVO
+                </span>
 
-                ""
-
-            }
-
+            </div>
 
         </div>
 
     `;
 
+}
 
-    return card;
+
+/* =====================================================
+   BAJAS
+===================================================== */
+
+function renderizarBajas(){
+
+    const bajas =
+        personal.filter(
+            esBaja
+        );
+
+
+    const contenedor =
+        document.getElementById(
+            "bajasGrid"
+        );
+
+
+    if(!bajas.length){
+
+        contenedor.innerHTML = `
+            <div class="empty">
+                No hay personal dado de baja.
+            </div>
+        `;
+
+        return;
+
+    }
+
+
+    bajas.sort(
+        (a,b) => {
+
+            const nombreA =
+                valor(
+                    a,
+                    "Nombre",
+                    "NOMBRE"
+                );
+
+            const nombreB =
+                valor(
+                    b,
+                    "Nombre",
+                    "NOMBRE"
+                );
+
+            return nombreA.localeCompare(
+                nombreB,
+                "es",
+                {
+                    sensitivity:"base"
+                }
+            );
+
+        }
+    );
+
+
+    contenedor.innerHTML =
+        bajas
+        .map(
+            persona => {
+
+                const nombre =
+                    valor(
+                        persona,
+                        "Nombre",
+                        "NOMBRE"
+                    ) ||
+                    "Sin nombre";
+
+
+                const numero =
+                    valor(
+                        persona,
+                        "No Empleado",
+                        "NO EMPLEADO",
+                        "No. Empleado"
+                    ) ||
+                    "Sin número";
+
+
+                const servicio =
+                    valor(
+                        persona,
+                        "Servicio",
+                        "SERVICIO"
+                    ) ||
+                    "Sin servicio";
+
+
+                const proyecto =
+                    valor(
+                        persona,
+                        "PROYECTO"
+                    ) ||
+                    "Sin proyecto";
+
+
+                const posicion =
+                    valor(
+                        persona,
+                        "POSICION",
+                        "Posicion"
+                    ) ||
+                    "Sin posición";
+
+
+                const fecha =
+                    valor(
+                        persona,
+                        "FECHA BAJA",
+                        "Fecha Baja"
+                    ) ||
+                    "Sin fecha";
+
+
+                const foto =
+                    normalizarFoto(
+                        valor(
+                            persona,
+                            "FOTO",
+                            "Foto",
+                            "foto"
+                        )
+                    );
+
+
+                const imagen =
+                    foto ||
+                    crearAvatarSVG(
+                        nombre
+                    );
+
+
+                return `
+
+                    <div class="baja-card">
+
+                        <img
+                            class="baja-photo"
+                            src="${escapeAttr(imagen)}"
+                            alt="${escapeAttr(nombre)}"
+                            loading="lazy"
+                            onerror="
+                                this.onerror=null;
+                                this.src='${escapeAttr(
+                                    crearAvatarSVG(nombre)
+                                )}';
+                            "
+                        >
+
+
+                        <div>
+
+                            <div class="baja-name">
+                                ${escapeHtml(nombre)}
+                            </div>
+
+
+                            <div class="baja-data">
+
+                                <strong>
+                                    No. empleado:
+                                </strong>
+                                ${escapeHtml(numero)}
+
+                                <br>
+
+                                <strong>
+                                    Proyecto:
+                                </strong>
+                                ${escapeHtml(proyecto)}
+
+                                <br>
+
+                                <strong>
+                                    Servicio:
+                                </strong>
+                                ${escapeHtml(servicio)}
+
+                                <br>
+
+                                <strong>
+                                    Posición:
+                                </strong>
+                                ${escapeHtml(posicion)}
+
+                                <br>
+
+                                <strong>
+                                    Fecha de baja:
+                                </strong>
+                                ${escapeHtml(fecha)}
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                `;
+
+            }
+        )
+        .join("");
 
 }
 
 
 /* =====================================================
-   EVENTOS
+   INTERACCIONES
+===================================================== */
+
+function toggleProject(
+    header
+){
+
+    const project =
+        header.closest(
+            ".project"
+        );
+
+
+    project.classList.toggle(
+        "open"
+    );
+
+}
+
+
+function toggleService(
+    header
+){
+
+    const service =
+        header.closest(
+            ".service"
+        );
+
+
+    service.classList.toggle(
+        "open"
+    );
+
+}
+
+
+function toggleBajas(){
+
+    const section =
+        document.getElementById(
+            "bajasSection"
+        );
+
+
+    section.classList.toggle(
+        "open"
+    );
+
+
+    document.getElementById(
+        "bajasArrow"
+    ).textContent =
+        section.classList.contains(
+            "open"
+        )
+        ? "▲"
+        : "▼";
+
+}
+
+
+/* =====================================================
+   FILTROS EN TIEMPO REAL
 ===================================================== */
 
 document.getElementById(
-    "search"
-).addEventListener(
+    "searchInput"
+)
+.addEventListener(
     "input",
-    mostrarPersonal
+    renderizarOrganigrama
 );
 
 
 document.getElementById(
-    "serviceFilter"
-).addEventListener(
+    "areaFilter"
+)
+.addEventListener(
     "change",
-    mostrarPersonal
+    renderizarOrganigrama
 );
 
 
 document.getElementById(
-    "statusFilter"
-).addEventListener(
+    "projectFilter"
+)
+.addEventListener(
     "change",
-    mostrarPersonal
+    renderizarOrganigrama
 );
 
 
-/* =====================================================
-   NORMALIZAR TEXTO
-===================================================== */
+function limpiarFiltros(){
 
-function normalizar(
-    valor
-){
+    document.getElementById(
+        "searchInput"
+    ).value = "";
 
-    return String(
-        valor ??
-        ""
-    )
 
-    .normalize(
-        "NFD"
-    )
+    document.getElementById(
+        "areaFilter"
+    ).value = "";
 
-    .replace(
-        /[\u0300-\u036f]/g,
-        ""
-    )
 
-    .toUpperCase()
+    document.getElementById(
+        "projectFilter"
+    ).value = "";
 
-    .trim();
+
+    renderizarOrganigrama();
 
 }
 
 
 /* =====================================================
-   ESCAPAR HTML
+   ESTADOS
 ===================================================== */
 
-function escapeHTML(
+function mostrarCarga(){
+
+    document.getElementById(
+        "organigrama"
+    ).innerHTML = `
+
+        <div class="loading">
+            Conectando con la base de personal...
+        </div>
+
+    `;
+
+}
+
+
+function mostrarError(
+    mensaje
+){
+
+    document.getElementById(
+        "organigrama"
+    ).innerHTML = `
+
+        <div class="error">
+
+            <strong>
+                No se pudo cargar la información.
+            </strong>
+
+            <br><br>
+
+            ${escapeHtml(mensaje)}
+
+        </div>
+
+    `;
+
+}
+
+
+/* =====================================================
+   SEGURIDAD HTML
+===================================================== */
+
+function escapeHtml(
     valor
 ){
 
     return String(
-        valor ??
-        ""
+        valor ?? ""
     )
-
     .replace(
         /&/g,
         "&amp;"
     )
-
     .replace(
         /</g,
         "&lt;"
     )
-
     .replace(
         />/g,
         "&gt;"
     )
-
     .replace(
         /"/g,
         "&quot;"
     )
-
     .replace(
         /'/g,
         "&#039;"
@@ -2481,265 +2967,27 @@ function escapeHTML(
 }
 
 
-/* =====================================================
-   ESCAPAR ATRIBUTO
-===================================================== */
-
-function escapeAttribute(
+function escapeAttr(
     valor
 ){
 
-    return String(
-        valor ??
-        ""
-    )
-
-    .replace(
-        /"/g,
-        "&quot;"
-    )
-
-    .replace(
-        /'/g,
-        "&#039;"
+    return escapeHtml(
+        valor
     );
 
 }
 
 
 /* =====================================================
-   FECHA
+   INICIO
 ===================================================== */
 
-function formatearFecha(
-    valor
-){
-
-    if(!valor){
-
-        return "";
-
-    }
-
-
-    const texto =
-        String(
-            valor
-        );
-
-
-    /*
-     * Si Apps Script ya entrega:
-     * DD/MM/YYYY
-     * no intentamos convertirla.
-     */
-
-    if(
-        /^\d{2}\/\d{2}\/\d{4}$/
-        .test(
-            texto
-        )
-    ){
-
-        return texto;
-
-    }
-
-
-    const fecha =
-        new Date(
-            valor
-        );
-
-
-    if(
-        isNaN(
-            fecha
-        )
-    ){
-
-        return texto;
-
-    }
-
-
-    return fecha.toLocaleDateString(
-        "es-MX"
-    );
-
-}
-
-
-/* =====================================================
-   FOTO GOOGLE DRIVE
-===================================================== */
-
-function normalizarFoto(
-    url
-){
-
-    if(!url){
-
-        return "";
-
-    }
-
-
-    url =
-        String(
-            url
-        ).trim();
-
-
-    /*
-     * Drive:
-     * https://drive.google.com/file/d/ID/view
-     */
-
-    const match =
-        url.match(
-            /\/d\/([a-zA-Z0-9_-]+)/
-        );
-
-
-    if(match){
-
-        return (
-
-            "https://drive.google.com/thumbnail" +
-
-            "?id=" +
-
-            match[1] +
-
-            "&sz=w300"
-
-        );
-
-    }
-
-
-    /*
-     * Drive abierto directamente:
-     * ?id=ID
-     */
-
-    if(
-        url.includes(
-            "drive.google.com"
-        )
-        &&
-        url.includes(
-            "id="
-        )
-    ){
-
-        const id =
-            url.split(
-                "id="
-            )[1]
-            .split(
-                "&"
-            )[0];
-
-
-        if(id){
-
-            return (
-
-                "https://drive.google.com/thumbnail" +
-
-                "?id=" +
-
-                id +
-
-                "&sz=w300"
-
-            );
-
-        }
-
-    }
-
-
-    return url;
-
-}
-
-
-/* =====================================================
-   AVATAR AUTOMÁTICO
-===================================================== */
-
-function crearAvatarSVG(
-    nombre
-){
-
-    const inicial =
-
-        String(
-            nombre ||
-            "?"
-        )
-
-        .trim()
-
-        .charAt(
-            0
-        )
-
-        .toUpperCase();
-
-
-    const svg = `
-
-        <svg
-            xmlns="http://www.w3.org/2000/svg"
-            width="150"
-            height="150"
-        >
-
-            <rect
-                width="150"
-                height="150"
-                fill="#e7edf4"
-            />
-
-            <text
-                x="50%"
-                y="54%"
-                dominant-baseline="middle"
-                text-anchor="middle"
-                font-family="Arial"
-                font-size="60"
-                fill="#063b73"
-            >
-
-                ${inicial}
-
-            </text>
-
-        </svg>
-
-    `;
-
-
-    return encodeURIComponent(
-        svg
-    );
-
-}
-
-
-/* =====================================================
-   ARRANQUE
-===================================================== */
-
-cargarDatos();
+document.addEventListener(
+    "DOMContentLoaded",
+    cargarDatos
+);
 
 </script>
 
-
 </body>
-
 </html>
