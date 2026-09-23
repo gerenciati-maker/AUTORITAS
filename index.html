@@ -7,6 +7,7 @@
 <title>Estado de Fuerza | Autoritas</title>
 
 <style>
+
 *{
     box-sizing:border-box;
     margin:0;
@@ -14,19 +15,17 @@
 }
 
 body{
-    font-family:Arial, Helvetica, sans-serif;
+    font-family:Arial,Helvetica,sans-serif;
     background:#f3f6fa;
     color:#1f2937;
 }
 
-/* =========================
-   ENCABEZADO
-========================= */
+/* ================= HEADER ================= */
 
 .header{
     background:linear-gradient(135deg,#063b73,#0876bd);
     color:white;
-    padding:22px 30px;
+    padding:20px 30px;
     display:flex;
     align-items:center;
     justify-content:space-between;
@@ -49,16 +48,15 @@ body{
     justify-content:center;
     color:#063b73;
     font-weight:bold;
-    font-size:14px;
+    font-size:13px;
 }
 
 .header h1{
     font-size:26px;
-    font-weight:700;
 }
 
 .header p{
-    margin-top:4px;
+    margin-top:5px;
     opacity:.85;
     font-size:14px;
 }
@@ -77,12 +75,10 @@ body{
     width:9px;
     height:9px;
     border-radius:50%;
-    background:#38d66b;
+    background:#f44336;
 }
 
-/* =========================
-   CONTENEDOR
-========================= */
+/* ================= CONTENEDOR ================= */
 
 .container{
     max-width:1400px;
@@ -90,9 +86,18 @@ body{
     padding:0 20px;
 }
 
-/* =========================
-   TARJETAS RESUMEN
-========================= */
+/* ================= ERROR ================= */
+
+.error{
+    background:#fff0f0;
+    color:#b42318;
+    border:1px solid #f0caca;
+    padding:18px;
+    border-radius:12px;
+    margin-bottom:20px;
+}
+
+/* ================= RESUMEN ================= */
 
 .summary{
     display:grid;
@@ -127,9 +132,7 @@ body{
     margin-top:4px;
 }
 
-/* =========================
-   CONTROLES
-========================= */
+/* ================= CONTROLES ================= */
 
 .controls{
     background:white;
@@ -167,9 +170,7 @@ select:focus{
     box-shadow:0 0 0 3px rgba(8,118,189,.1);
 }
 
-/* =========================
-   SECCIONES
-========================= */
+/* ================= SECCIONES ================= */
 
 .section{
     margin-bottom:30px;
@@ -197,9 +198,7 @@ select:focus{
     font-weight:bold;
 }
 
-/* =========================
-   SERVICIOS
-========================= */
+/* ================= SERVICIOS ================= */
 
 .services{
     display:grid;
@@ -252,9 +251,7 @@ select:focus{
     color:#063b73;
 }
 
-/* =========================
-   PERSONAL
-========================= */
+/* ================= PERSONAL ================= */
 
 .people{
     display:grid;
@@ -330,9 +327,7 @@ select:focus{
     color:#b42318;
 }
 
-/* =========================
-   BAJAS
-========================= */
+/* ================= BAJAS ================= */
 
 .bajas{
     background:#fffafa;
@@ -341,27 +336,12 @@ select:focus{
     padding:20px;
 }
 
-.bajas .person{
-    background:white;
-}
-
-/* =========================
-   ESTADOS
-========================= */
+/* ================= ESTADOS ================= */
 
 .loading{
     text-align:center;
     padding:50px;
     color:#6b7280;
-}
-
-.error{
-    background:#fff0f0;
-    color:#b42318;
-    border:1px solid #f0caca;
-    padding:18px;
-    border-radius:12px;
-    margin-bottom:20px;
 }
 
 .empty{
@@ -372,9 +352,7 @@ select:focus{
     color:#7b8490;
 }
 
-/* =========================
-   FOOTER
-========================= */
+/* ================= FOOTER ================= */
 
 .footer{
     text-align:center;
@@ -383,14 +361,14 @@ select:focus{
     font-size:12px;
 }
 
-/* =========================
-   RESPONSIVE
-========================= */
+/* ================= RESPONSIVE ================= */
 
 @media(max-width:900px){
+
     .summary{
         grid-template-columns:repeat(2,1fr);
     }
+
 }
 
 @media(max-width:600px){
@@ -401,10 +379,6 @@ select:focus{
 
     .header h1{
         font-size:20px;
-    }
-
-    .header p{
-        font-size:12px;
     }
 
     .status{
@@ -420,24 +394,16 @@ select:focus{
         gap:10px;
     }
 
-    .card{
-        padding:15px;
-    }
-
-    .card-value{
-        font-size:24px;
-    }
-
-    .people{
-        grid-template-columns:1fr;
-    }
-
+    .people,
     .services{
         grid-template-columns:1fr;
     }
+
 }
+
 </style>
 </head>
+
 
 <body>
 
@@ -450,15 +416,31 @@ select:focus{
         </div>
 
         <div>
-            <h1>Estado de Fuerza</h1>
-            <p>Directorio Digital de Personal</p>
+
+            <h1>
+                Estado de Fuerza
+            </h1>
+
+            <p>
+                Directorio Digital de Personal
+            </p>
+
         </div>
 
     </div>
 
+
     <div class="status">
-        <span class="status-dot"></span>
-        <span id="connectionText">Conectando...</span>
+
+        <span
+            class="status-dot"
+            id="statusDot">
+        </span>
+
+        <span id="connectionText">
+            Conectando...
+        </span>
+
     </div>
 
 </header>
@@ -468,42 +450,90 @@ select:focus{
 
     <div id="errorContainer"></div>
 
-    <!-- =========================
-         RESUMEN
-    ========================== -->
+
+    <!-- ================= RESUMEN ================= -->
 
     <section class="summary">
 
         <div class="card">
-            <div class="card-title">PERSONAL ACTIVO</div>
-            <div class="card-value" id="totalActivo">0</div>
-            <div class="card-sub">Elementos activos</div>
+
+            <div class="card-title">
+                PERSONAL ACTIVO
+            </div>
+
+            <div
+                class="card-value"
+                id="totalActivo">
+                0
+            </div>
+
+            <div class="card-sub">
+                Elementos activos
+            </div>
+
         </div>
 
-        <div class="card">
-            <div class="card-title">PERSONAL DE BAJA</div>
-            <div class="card-value" id="totalBajas">0</div>
-            <div class="card-sub">Registros históricos</div>
-        </div>
 
         <div class="card">
-            <div class="card-title">SERVICIOS</div>
-            <div class="card-value" id="totalServicios">0</div>
-            <div class="card-sub">Servicios registrados</div>
+
+            <div class="card-title">
+                PERSONAL DE BAJA
+            </div>
+
+            <div
+                class="card-value"
+                id="totalBajas">
+                0
+            </div>
+
+            <div class="card-sub">
+                Registros históricos
+            </div>
+
         </div>
 
+
         <div class="card">
-            <div class="card-title">ÚLTIMA ACTUALIZACIÓN</div>
-            <div class="card-value" id="lastUpdate">--</div>
-            <div class="card-sub">Datos provenientes de Sheets</div>
+
+            <div class="card-title">
+                SERVICIOS
+            </div>
+
+            <div
+                class="card-value"
+                id="totalServicios">
+                0
+            </div>
+
+            <div class="card-sub">
+                Servicios registrados
+            </div>
+
+        </div>
+
+
+        <div class="card">
+
+            <div class="card-title">
+                ACTUALIZACIÓN
+            </div>
+
+            <div
+                class="card-value"
+                id="lastUpdate">
+                --
+            </div>
+
+            <div class="card-sub">
+                Datos provenientes de Sheets
+            </div>
+
         </div>
 
     </section>
 
 
-    <!-- =========================
-         CONTROLES
-    ========================== -->
+    <!-- ================= FILTROS ================= -->
 
     <section class="controls">
 
@@ -513,9 +543,15 @@ select:focus{
             placeholder="🔎 Buscar por nombre, empleado, servicio o área..."
         >
 
+
         <select id="serviceFilter">
-            <option value="">Todos los servicios</option>
+
+            <option value="">
+                Todos los servicios
+            </option>
+
         </select>
+
 
         <select id="statusFilter">
 
@@ -536,9 +572,7 @@ select:focus{
     </section>
 
 
-    <!-- =========================
-         SERVICIOS
-    ========================== -->
+    <!-- ================= SERVICIOS ================= -->
 
     <section class="section">
 
@@ -548,13 +582,18 @@ select:focus{
                 Servicios
             </div>
 
-            <div class="section-count" id="serviceCount">
+            <div
+                class="section-count"
+                id="serviceCount">
                 0 servicios
             </div>
 
         </div>
 
-        <div class="services" id="servicesContainer">
+
+        <div
+            class="services"
+            id="servicesContainer">
 
             <div class="loading">
                 Cargando servicios...
@@ -565,9 +604,7 @@ select:focus{
     </section>
 
 
-    <!-- =========================
-         PERSONAL
-    ========================== -->
+    <!-- ================= PERSONAL ================= -->
 
     <section class="section">
 
@@ -577,13 +614,18 @@ select:focus{
                 Directorio de Personal
             </div>
 
-            <div class="section-count" id="peopleCount">
+            <div
+                class="section-count"
+                id="peopleCount">
                 0 elementos
             </div>
 
         </div>
 
-        <div class="people" id="peopleContainer">
+
+        <div
+            class="people"
+            id="peopleContainer">
 
             <div class="loading">
                 Cargando personal...
@@ -594,9 +636,7 @@ select:focus{
     </section>
 
 
-    <!-- =========================
-         BAJAS
-    ========================== -->
+    <!-- ================= BAJAS ================= -->
 
     <section class="section">
 
@@ -606,15 +646,20 @@ select:focus{
                 Apartado de Bajas
             </div>
 
-            <div class="section-count" id="bajaCount">
+            <div
+                class="section-count"
+                id="bajaCount">
                 0 bajas
             </div>
 
         </div>
 
+
         <div class="bajas">
 
-            <div class="people" id="bajasContainer">
+            <div
+                class="people"
+                id="bajasContainer">
 
                 <div class="empty">
                     No hay personal registrado como baja.
@@ -639,16 +684,12 @@ select:focus{
 <script>
 
 /* =====================================================
-   CONFIGURACIÓN
+   URL DEL WEB APP
 ===================================================== */
 
 const API_URL =
 "https://script.google.com/macros/s/AKfycbxP3-4RBiMMVSmWAyamj9-HC4pR5Z2rx0KzDlyIsWWJ2iHILoFCxzGosRmWcz8rTq4/exec";
 
-
-/* =====================================================
-   VARIABLES
-===================================================== */
 
 let servicios = [];
 let personal = [];
@@ -658,87 +699,188 @@ let personal = [];
    CARGAR DATOS
 ===================================================== */
 
-async function cargarDatos(){
+function cargarDatos(){
 
-    const connectionText =
-        document.getElementById("connectionText");
+    cambiarEstado(
+        "Conectando...",
+        "#f44336"
+    );
 
-    try{
 
-        connectionText.textContent =
-            "Conectando...";
+    const callbackName =
+        "estadoFuerza_" +
+        Date.now();
 
-        const response =
-            await fetch(API_URL);
 
-        if(!response.ok){
+    const script =
+        document.createElement("script");
 
-            throw new Error(
-                "No se pudo conectar con Apps Script."
+
+    window[callbackName] =
+        function(data){
+
+            try{
+
+                if(!data){
+
+                    throw new Error(
+                        "No se recibieron datos."
+                    );
+
+                }
+
+
+                if(!data.ok){
+
+                    throw new Error(
+                        data.error ||
+                        "Apps Script devolvió un error."
+                    );
+
+                }
+
+
+                servicios =
+                    Array.isArray(
+                        data.servicios
+                    )
+                    ? data.servicios
+                    : [];
+
+
+                personal =
+                    Array.isArray(
+                        data.personal
+                    )
+                    ? data.personal
+                    : [];
+
+
+                cambiarEstado(
+                    "Conectado",
+                    "#38d66b"
+                );
+
+
+                actualizarResumen();
+
+                cargarFiltroServicios();
+
+                mostrarServicios();
+
+                mostrarPersonal();
+
+                mostrarBajas();
+
+
+            }
+            catch(error){
+
+                mostrarError(error);
+
+            }
+
+
+            delete window[callbackName];
+
+            if(script){
+
+                script.remove();
+
+            }
+
+        };
+
+
+    script.src =
+        API_URL +
+        "?callback=" +
+        encodeURIComponent(
+            callbackName
+        );
+
+
+    script.onerror =
+        function(){
+
+            mostrarError(
+                new Error(
+                    "No fue posible conectar con Apps Script."
+                )
             );
 
-        }
 
-        const data =
-            await response.json();
+            delete window[callbackName];
 
-        if(!data.ok){
+            script.remove();
 
-            throw new Error(
-                data.error || "Error desconocido."
-            );
+        };
 
-        }
 
-        servicios =
-            Array.isArray(data.servicios)
-            ? data.servicios
-            : [];
+    document.body.appendChild(
+        script
+    );
 
-        personal =
-            Array.isArray(data.personal)
-            ? data.personal
-            : [];
+}
 
-        connectionText.textContent =
-            "Conectado";
 
-        document.querySelector(".status-dot").style.background =
-            "#38d66b";
+/* =====================================================
+   ESTADO DE CONEXIÓN
+===================================================== */
 
-        actualizarResumen();
+function cambiarEstado(
+    texto,
+    color
+){
 
-        cargarFiltroServicios();
+    document.getElementById(
+        "connectionText"
+    ).textContent =
+        texto;
 
-        mostrarServicios();
 
-        mostrarPersonal();
+    document.getElementById(
+        "statusDot"
+    ).style.background =
+        color;
 
-        mostrarBajas();
+}
 
-    }catch(error){
 
-        console.error(error);
+/* =====================================================
+   ERROR
+===================================================== */
 
-        connectionText.textContent =
-            "Error de conexión";
+function mostrarError(error){
 
-        document.querySelector(".status-dot").style.background =
-            "#e53935";
+    console.error(error);
 
-        document.getElementById("errorContainer").innerHTML = `
 
-            <div class="error">
+    cambiarEstado(
+        "Error de conexión",
+        "#f44336"
+    );
 
-                <strong>Error de conexión</strong><br>
 
-                ${error.message}
+    document.getElementById(
+        "errorContainer"
+    ).innerHTML = `
 
-            </div>
+        <div class="error">
 
-        `;
+            <strong>
+                Error de conexión
+            </strong>
 
-    }
+            <br><br>
+
+            ${escapeHTML(
+                error.message
+            )}
+
+        </div>
+
+    `;
 
 }
 
@@ -751,24 +893,43 @@ function actualizarResumen(){
 
     const activos =
         personal.filter(
-            p => normalizar(p["ESTATUS"]) === "ACTIVO"
+            persona =>
+            normalizar(
+                persona["ESTATUS"]
+            ) === "ACTIVO"
         );
+
 
     const bajas =
         personal.filter(
-            p => normalizar(p["ESTATUS"]) === "BAJA"
+            persona =>
+            normalizar(
+                persona["ESTATUS"]
+            ) === "BAJA"
         );
 
-    document.getElementById("totalActivo").textContent =
+
+    document.getElementById(
+        "totalActivo"
+    ).textContent =
         activos.length;
 
-    document.getElementById("totalBajas").textContent =
+
+    document.getElementById(
+        "totalBajas"
+    ).textContent =
         bajas.length;
 
-    document.getElementById("totalServicios").textContent =
+
+    document.getElementById(
+        "totalServicios"
+    ).textContent =
         servicios.length;
 
-    document.getElementById("lastUpdate").textContent =
+
+    document.getElementById(
+        "lastUpdate"
+    ).textContent =
         new Date().toLocaleTimeString(
             "es-MX",
             {
@@ -787,7 +948,10 @@ function actualizarResumen(){
 function cargarFiltroServicios(){
 
     const select =
-        document.getElementById("serviceFilter");
+        document.getElementById(
+            "serviceFilter"
+        );
+
 
     select.innerHTML = `
         <option value="">
@@ -795,37 +959,60 @@ function cargarFiltroServicios(){
         </option>
     `;
 
+
     const nombres =
-        [...new Set(
-            servicios
-                .map(s => s["CODIFICACIÓN DE UN FORMULARIO Y SERVICIO"])
-                .filter(Boolean)
-        )];
+        [
+            ...new Set(
+                servicios
+                    .map(
+                        servicio =>
+                        servicio[
+                            "CODIFICACIÓN DE UN FORMULARIO Y SERVICIO"
+                        ]
+                    )
+                    .filter(Boolean)
+            )
+        ];
 
-    nombres.forEach(nombre => {
 
-        const option =
-            document.createElement("option");
+    nombres.forEach(
+        nombre => {
 
-        option.value = nombre;
+            const option =
+                document.createElement(
+                    "option"
+                );
 
-        option.textContent = nombre;
 
-        select.appendChild(option);
+            option.value =
+                nombre;
 
-    });
+
+            option.textContent =
+                nombre;
+
+
+            select.appendChild(
+                option
+            );
+
+        }
+    );
 
 }
 
 
 /* =====================================================
-   MOSTRAR SERVICIOS
+   SERVICIOS
 ===================================================== */
 
 function mostrarServicios(){
 
     const container =
-        document.getElementById("servicesContainer");
+        document.getElementById(
+            "servicesContainer"
+        );
+
 
     if(!servicios.length){
 
@@ -836,153 +1023,208 @@ function mostrarServicios(){
         `;
 
         return;
+
     }
+
 
     container.innerHTML = "";
 
-    servicios.forEach(servicio => {
 
-        const nombre =
-            servicio["SERVICIO"] || "Sin servicio";
+    servicios.forEach(
+        servicio => {
 
-        const id =
-            servicio["ID SERVICIO"] || "";
+            const nombre =
+                servicio["SERVICIO"] ||
+                "Sin servicio";
 
-        const codigo =
-            servicio[
-                "CODIFICACIÓN DE UN FORMULARIO Y SERVICIO"
-            ] || "";
 
-        const debe =
-            servicio["DEBE"] ?? 0;
+            const id =
+                servicio["ID SERVICIO"] ||
+                "";
 
-        const es =
-            servicio["ES"] ?? 0;
 
-        const card =
-            document.createElement("div");
+            const codigo =
+                servicio[
+                    "CODIFICACIÓN DE UN FORMULARIO Y SERVICIO"
+                ] ||
+                "";
 
-        card.className =
-            "service-card";
 
-        card.innerHTML = `
+            const debe =
+                servicio["DEBE"] ?? 0;
 
-            <div class="service-name">
-                ${escapeHTML(nombre)}
-            </div>
 
-            <div class="service-id">
-                ${escapeHTML(codigo || id)}
-            </div>
+            const es =
+                servicio["ES"] ?? 0;
 
-            <div class="service-numbers">
 
-                <div class="number-box">
+            const card =
+                document.createElement(
+                    "div"
+                );
 
-                    <div class="number-label">
-                        DEBE
+
+            card.className =
+                "service-card";
+
+
+            card.innerHTML = `
+
+                <div class="service-name">
+                    ${escapeHTML(nombre)}
+                </div>
+
+                <div class="service-id">
+                    ${escapeHTML(
+                        codigo || id
+                    )}
+                </div>
+
+                <div class="service-numbers">
+
+                    <div class="number-box">
+
+                        <div class="number-label">
+                            DEBE
+                        </div>
+
+                        <div class="number-value">
+                            ${debe}
+                        </div>
+
                     </div>
 
-                    <div class="number-value">
-                        ${debe}
+
+                    <div class="number-box">
+
+                        <div class="number-label">
+                            ES
+                        </div>
+
+                        <div class="number-value">
+                            ${es}
+                        </div>
+
                     </div>
 
                 </div>
 
-                <div class="number-box">
+            `;
 
-                    <div class="number-label">
-                        ES
-                    </div>
 
-                    <div class="number-value">
-                        ${es}
-                    </div>
+            container.appendChild(
+                card
+            );
 
-                </div>
+        }
+    );
 
-            </div>
 
-        `;
-
-        container.appendChild(card);
-
-    });
-
-    document.getElementById("serviceCount").textContent =
+    document.getElementById(
+        "serviceCount"
+    ).textContent =
         `${servicios.length} servicios`;
 
 }
 
 
 /* =====================================================
-   MOSTRAR PERSONAL
+   PERSONAL
 ===================================================== */
 
 function mostrarPersonal(){
 
     const container =
-        document.getElementById("peopleContainer");
+        document.getElementById(
+            "peopleContainer"
+        );
+
 
     const search =
         normalizar(
-            document.getElementById("search").value
+            document.getElementById(
+                "search"
+            ).value
         );
 
+
     const service =
-        document.getElementById("serviceFilter").value;
+        document.getElementById(
+            "serviceFilter"
+        ).value;
+
 
     const status =
-        document.getElementById("statusFilter").value;
+        document.getElementById(
+            "statusFilter"
+        ).value;
 
 
-    let filtrados =
-        personal.filter(persona => {
+    const filtrados =
+        personal.filter(
+            persona => {
 
-            const nombre =
-                normalizar(persona["Nombre"]);
-
-            const empleado =
-                normalizar(persona["No Empleado"]);
-
-            const servicio =
-                normalizar(persona["Servicio"]);
-
-            const area =
-                normalizar(persona["Area"]);
-
-            const estatus =
-                normalizar(persona["ESTATUS"]);
+                const nombre =
+                    normalizar(
+                        persona["Nombre"]
+                    );
 
 
-            const coincideBusqueda =
-                !search ||
-                nombre.includes(search) ||
-                empleado.includes(search) ||
-                servicio.includes(search) ||
-                area.includes(search);
+                const empleado =
+                    normalizar(
+                        persona["No Empleado"]
+                    );
 
 
-            const coincideServicio =
-                !service ||
-                persona["Servicio"] === service;
+                const servicio =
+                    normalizar(
+                        persona["Servicio"]
+                    );
 
 
-            const coincideStatus =
-                status === "TODOS" ||
-                estatus === status;
+                const area =
+                    normalizar(
+                        persona["Area"]
+                    );
 
 
-            return (
-                coincideBusqueda &&
-                coincideServicio &&
-                coincideStatus
-            );
-
-        });
+                const estatus =
+                    normalizar(
+                        persona["ESTATUS"]
+                    );
 
 
-    document.getElementById("peopleCount").textContent =
+                const coincideBusqueda =
+                    !search ||
+                    nombre.includes(search) ||
+                    empleado.includes(search) ||
+                    servicio.includes(search) ||
+                    area.includes(search);
+
+
+                const coincideServicio =
+                    !service ||
+                    persona["Servicio"] === service;
+
+
+                const coincideStatus =
+                    status === "TODOS" ||
+                    estatus === status;
+
+
+                return (
+                    coincideBusqueda &&
+                    coincideServicio &&
+                    coincideStatus
+                );
+
+            }
+        );
+
+
+    document.getElementById(
+        "peopleCount"
+    ).textContent =
         `${filtrados.length} elementos`;
 
 
@@ -1001,13 +1243,18 @@ function mostrarPersonal(){
 
     container.innerHTML = "";
 
-    filtrados.forEach(persona => {
 
-        container.appendChild(
-            crearTarjetaPersona(persona)
-        );
+    filtrados.forEach(
+        persona => {
 
-    });
+            container.appendChild(
+                crearTarjetaPersona(
+                    persona
+                )
+            );
+
+        }
+    );
 
 }
 
@@ -1019,15 +1266,23 @@ function mostrarPersonal(){
 function mostrarBajas(){
 
     const container =
-        document.getElementById("bajasContainer");
-
-    const bajas =
-        personal.filter(
-            p => normalizar(p["ESTATUS"]) === "BAJA"
+        document.getElementById(
+            "bajasContainer"
         );
 
 
-    document.getElementById("bajaCount").textContent =
+    const bajas =
+        personal.filter(
+            persona =>
+            normalizar(
+                persona["ESTATUS"]
+            ) === "BAJA"
+        );
+
+
+    document.getElementById(
+        "bajaCount"
+    ).textContent =
         `${bajas.length} bajas`;
 
 
@@ -1046,19 +1301,25 @@ function mostrarBajas(){
 
     container.innerHTML = "";
 
-    bajas.forEach(persona => {
 
-        container.appendChild(
-            crearTarjetaPersona(persona, true)
-        );
+    bajas.forEach(
+        persona => {
 
-    });
+            container.appendChild(
+                crearTarjetaPersona(
+                    persona,
+                    true
+                )
+            );
+
+        }
+    );
 
 }
 
 
 /* =====================================================
-   TARJETA PERSONA
+   TARJETA DE PERSONAL
 ===================================================== */
 
 function crearTarjetaPersona(
@@ -1067,32 +1328,44 @@ function crearTarjetaPersona(
 ){
 
     const card =
-        document.createElement("div");
+        document.createElement(
+            "div"
+        );
+
 
     card.className =
         "person";
 
 
     const nombre =
-        persona["Nombre"] || "Sin nombre";
+        persona["Nombre"] ||
+        "Sin nombre";
+
 
     const empleado =
-        persona["No Empleado"] || "Sin número";
+        persona["No Empleado"] ||
+        "Sin número";
+
 
     const servicio =
-        persona["Servicio"] || "Sin servicio";
+        persona["Servicio"] ||
+        "Sin servicio";
+
 
     const area =
-        persona["Area"] || "Sin área";
+        persona["Area"] ||
+        "Sin área";
+
 
     const estatus =
-        persona["ESTATUS"] || "";
+        persona["ESTATUS"] ||
+        "";
 
-    const fechaIngreso =
-        persona["FECHA INGRESO"] || "";
 
     const fechaBaja =
-        persona["FECHA BAJA"] || "";
+        persona["FECHA BAJA"] ||
+        "";
+
 
     const foto =
         normalizarFoto(
@@ -1106,8 +1379,11 @@ function crearTarjetaPersona(
             class="photo"
             src="${escapeAttribute(foto)}"
             alt="Foto"
-            onerror="this.src='data:image/svg+xml;charset=UTF-8,${crearAvatarSVG(nombre)}'"
+            onerror="
+                this.src='data:image/svg+xml;charset=UTF-8,${crearAvatarSVG(nombre)}'
+            "
         >
+
 
         <div class="person-info">
 
@@ -1115,17 +1391,23 @@ function crearTarjetaPersona(
                 ${escapeHTML(nombre)}
             </div>
 
+
             <div class="person-number">
-                No. empleado: ${escapeHTML(empleado)}
+                No. empleado:
+                ${escapeHTML(empleado)}
             </div>
+
 
             <div class="person-service">
                 ${escapeHTML(servicio)}
             </div>
 
+
             <div class="person-area">
-                Área: ${escapeHTML(area)}
+                Área:
+                ${escapeHTML(area)}
             </div>
+
 
             <span class="badge ${
                 esBaja
@@ -1133,16 +1415,26 @@ function crearTarjetaPersona(
                 : "badge-active"
             }">
 
-                ${escapeHTML(estatus)}
+                ${escapeHTML(
+                    estatus
+                )}
 
             </span>
+
 
             ${
                 esBaja && fechaBaja
                 ?
-                `<div class="person-area">
-                    Fecha de baja: ${escapeHTML(formatearFecha(fechaBaja))}
-                </div>`
+                `
+                <div class="person-area">
+                    Fecha de baja:
+                    ${escapeHTML(
+                        formatearFecha(
+                            fechaBaja
+                        )
+                    )}
+                </div>
+                `
                 :
                 ""
             }
@@ -1161,28 +1453,28 @@ function crearTarjetaPersona(
    EVENTOS
 ===================================================== */
 
-document
-    .getElementById("search")
-    .addEventListener(
-        "input",
-        mostrarPersonal
-    );
+document.getElementById(
+    "search"
+).addEventListener(
+    "input",
+    mostrarPersonal
+);
 
 
-document
-    .getElementById("serviceFilter")
-    .addEventListener(
-        "change",
-        mostrarPersonal
-    );
+document.getElementById(
+    "serviceFilter"
+).addEventListener(
+    "change",
+    mostrarPersonal
+);
 
 
-document
-    .getElementById("statusFilter")
-    .addEventListener(
-        "change",
-        mostrarPersonal
-    );
+document.getElementById(
+    "statusFilter"
+).addEventListener(
+    "change",
+    mostrarPersonal
+);
 
 
 /* =====================================================
@@ -1191,31 +1483,40 @@ document
 
 function normalizar(valor){
 
-    return String(valor ?? "")
-        .normalize("NFD")
-        .replace(/[\u0300-\u036f]/g,"")
-        .toUpperCase()
-        .trim();
+    return String(
+        valor ?? ""
+    )
+    .normalize("NFD")
+    .replace(
+        /[\u0300-\u036f]/g,
+        ""
+    )
+    .toUpperCase()
+    .trim();
 
 }
 
 
 function escapeHTML(valor){
 
-    return String(valor ?? "")
-        .replace(/&/g,"&amp;")
-        .replace(/</g,"&lt;")
-        .replace(/>/g,"&gt;")
-        .replace(/"/g,"&quot;")
-        .replace(/'/g,"&#039;");
+    return String(
+        valor ?? ""
+    )
+    .replace(/&/g,"&amp;")
+    .replace(/</g,"&lt;")
+    .replace(/>/g,"&gt;")
+    .replace(/"/g,"&quot;")
+    .replace(/'/g,"&#039;");
 
 }
 
 
 function escapeAttribute(valor){
 
-    return String(valor ?? "")
-        .replace(/"/g,"&quot;");
+    return String(
+        valor ?? ""
+    )
+    .replace(/"/g,"&quot;");
 
 }
 
@@ -1226,12 +1527,15 @@ function formatearFecha(valor){
         return "";
     }
 
+
     const fecha =
         new Date(valor);
+
 
     if(isNaN(fecha)){
         return valor;
     }
+
 
     return fecha.toLocaleDateString(
         "es-MX"
@@ -1246,30 +1550,35 @@ function normalizarFoto(url){
         return "";
     }
 
+
     url =
         String(url).trim();
 
 
-    /*
-       Si posteriormente usamos enlaces
-       de Google Drive, aquí podremos
-       convertirlos automáticamente.
-    */
-
-    if(url.includes("drive.google.com")){
+    if(
+        url.includes(
+            "drive.google.com"
+        )
+    ){
 
         const match =
             url.match(
                 /\/d\/([a-zA-Z0-9_-]+)/
             );
 
+
         if(match){
 
-            return `https://drive.google.com/thumbnail?id=${match[1]}&sz=w300`;
+            return (
+                "https://drive.google.com/thumbnail?id=" +
+                match[1] +
+                "&sz=w300"
+            );
 
         }
 
     }
+
 
     return url;
 
@@ -1279,15 +1588,19 @@ function normalizarFoto(url){
 function crearAvatarSVG(nombre){
 
     const inicial =
-        String(nombre || "?")
-            .trim()
-            .charAt(0)
-            .toUpperCase();
+        String(
+            nombre || "?"
+        )
+        .trim()
+        .charAt(0)
+        .toUpperCase();
+
 
     const svg = `
-        <svg xmlns="http://www.w3.org/2000/svg"
-             width="150"
-             height="150">
+        <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="150"
+            height="150">
 
             <rect
                 width="150"
@@ -1310,13 +1623,16 @@ function crearAvatarSVG(nombre){
         </svg>
     `;
 
-    return encodeURIComponent(svg);
+
+    return encodeURIComponent(
+        svg
+    );
 
 }
 
 
 /* =====================================================
-   INICIO
+   ARRANQUE
 ===================================================== */
 
 cargarDatos();
