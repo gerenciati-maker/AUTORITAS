@@ -1,61 +1,2745 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
+
 <meta charset="UTF-8">
-<title>Prueba conexión</title>
+
+<meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+>
+
+<title>
+    Estado de Fuerza | Autoritas
+</title>
+
+
+<style>
+
+/* =====================================================
+   CONFIGURACIÓN GENERAL
+===================================================== */
+
+*{
+    box-sizing:border-box;
+    margin:0;
+    padding:0;
+}
+
+
+body{
+
+    font-family:
+        Arial,
+        Helvetica,
+        sans-serif;
+
+    background:
+        #f3f6fa;
+
+    color:
+        #1f2937;
+
+}
+
+
+/* =====================================================
+   HEADER
+===================================================== */
+
+.header{
+
+    background:
+        linear-gradient(
+            135deg,
+            #063b73,
+            #0876bd
+        );
+
+    color:white;
+
+    padding:
+        20px 30px;
+
+    display:flex;
+
+    align-items:center;
+
+    justify-content:space-between;
+
+    box-shadow:
+        0 4px 15px
+        rgba(0,0,0,.15);
+
+}
+
+
+.header-left{
+
+    display:flex;
+
+    align-items:center;
+
+    gap:18px;
+
+}
+
+
+.logo{
+
+    width:62px;
+
+    height:62px;
+
+    border-radius:13px;
+
+    background:white;
+
+    display:flex;
+
+    align-items:center;
+
+    justify-content:center;
+
+    color:#063b73;
+
+    font-weight:bold;
+
+    font-size:11px;
+
+    text-align:center;
+
+}
+
+
+.header h1{
+
+    font-size:27px;
+
+    font-weight:700;
+
+}
+
+
+.header p{
+
+    margin-top:5px;
+
+    opacity:.85;
+
+    font-size:14px;
+
+}
+
+
+.connection{
+
+    display:flex;
+
+    align-items:center;
+
+    gap:9px;
+
+    background:
+        rgba(255,255,255,.15);
+
+    padding:
+        10px 15px;
+
+    border-radius:25px;
+
+    font-size:13px;
+
+}
+
+
+.connection-dot{
+
+    width:10px;
+
+    height:10px;
+
+    border-radius:50%;
+
+    background:#f44336;
+
+}
+
+
+/* =====================================================
+   CONTENEDOR
+===================================================== */
+
+.container{
+
+    max-width:
+        1450px;
+
+    margin:
+        25px auto;
+
+    padding:
+        0 20px;
+
+}
+
+
+/* =====================================================
+   ERROR
+===================================================== */
+
+.error{
+
+    background:#fff0f0;
+
+    border:
+        1px solid #f0caca;
+
+    color:#b42318;
+
+    padding:18px;
+
+    border-radius:12px;
+
+    margin-bottom:20px;
+
+}
+
+
+/* =====================================================
+   DASHBOARD
+===================================================== */
+
+.dashboard{
+
+    display:grid;
+
+    grid-template-columns:
+        repeat(4,1fr);
+
+    gap:16px;
+
+    margin-bottom:22px;
+
+}
+
+
+.card{
+
+    background:white;
+
+    border-radius:15px;
+
+    padding:20px;
+
+    border:
+        1px solid #e5eaf0;
+
+    box-shadow:
+        0 4px 14px
+        rgba(0,0,0,.06);
+
+}
+
+
+.card-title{
+
+    color:#6b7280;
+
+    font-size:12px;
+
+    font-weight:bold;
+
+    letter-spacing:.3px;
+
+}
+
+
+.card-value{
+
+    color:#063b73;
+
+    font-size:31px;
+
+    font-weight:bold;
+
+    margin-top:7px;
+
+}
+
+
+.card-description{
+
+    color:#9ca3af;
+
+    font-size:12px;
+
+    margin-top:4px;
+
+}
+
+
+/* =====================================================
+   BARRA DE CONTROLES
+===================================================== */
+
+.controls{
+
+    background:white;
+
+    padding:17px;
+
+    border-radius:15px;
+
+    margin-bottom:25px;
+
+    display:flex;
+
+    align-items:center;
+
+    gap:12px;
+
+    flex-wrap:wrap;
+
+    box-shadow:
+        0 4px 14px
+        rgba(0,0,0,.06);
+
+}
+
+
+.search{
+
+    flex:1;
+
+    min-width:280px;
+
+}
+
+
+input,
+select{
+
+    width:100%;
+
+    border:
+        1px solid #d5dce5;
+
+    border-radius:9px;
+
+    padding:
+        12px 14px;
+
+    background:white;
+
+    font-size:14px;
+
+    outline:none;
+
+}
+
+
+input:focus,
+select:focus{
+
+    border-color:
+        #0876bd;
+
+    box-shadow:
+        0 0 0 3px
+        rgba(8,118,189,.10);
+
+}
+
+
+.filter{
+
+    min-width:220px;
+
+}
+
+
+.refresh{
+
+    border:none;
+
+    background:
+        #0876bd;
+
+    color:white;
+
+    padding:
+        12px 18px;
+
+    border-radius:9px;
+
+    font-weight:bold;
+
+    cursor:pointer;
+
+    transition:.2s;
+
+}
+
+
+.refresh:hover{
+
+    background:
+        #063b73;
+
+    transform:
+        translateY(-1px);
+
+}
+
+
+/* =====================================================
+   SECCIONES
+===================================================== */
+
+.section{
+
+    margin-bottom:30px;
+
+}
+
+
+.section-header{
+
+    display:flex;
+
+    align-items:center;
+
+    justify-content:space-between;
+
+    margin-bottom:14px;
+
+}
+
+
+.section-title{
+
+    color:#063b73;
+
+    font-size:21px;
+
+    font-weight:bold;
+
+}
+
+
+.section-count{
+
+    color:#0876bd;
+
+    background:#e7f2fb;
+
+    padding:
+        6px 12px;
+
+    border-radius:20px;
+
+    font-size:12px;
+
+    font-weight:bold;
+
+}
+
+
+/* =====================================================
+   SERVICIOS
+===================================================== */
+
+.services{
+
+    display:grid;
+
+    grid-template-columns:
+        repeat(
+            auto-fill,
+            minmax(270px,1fr)
+        );
+
+    gap:15px;
+
+}
+
+
+.service-card{
+
+    background:white;
+
+    border:
+        1px solid #e4e9ef;
+
+    border-radius:14px;
+
+    padding:18px;
+
+    box-shadow:
+        0 3px 11px
+        rgba(0,0,0,.05);
+
+    transition:.2s;
+
+}
+
+
+.service-card:hover{
+
+    transform:
+        translateY(-2px);
+
+    box-shadow:
+        0 7px 18px
+        rgba(0,0,0,.08);
+
+}
+
+
+.service-name{
+
+    color:#063b73;
+
+    font-weight:bold;
+
+    font-size:16px;
+
+}
+
+
+.service-id{
+
+    color:#8a94a0;
+
+    font-size:11px;
+
+    margin-top:5px;
+
+    min-height:16px;
+
+}
+
+
+.service-code{
+
+    color:#0876bd;
+
+    font-size:12px;
+
+    margin-top:4px;
+
+}
+
+
+.service-numbers{
+
+    display:grid;
+
+    grid-template-columns:
+        1fr 1fr;
+
+    gap:10px;
+
+    margin-top:15px;
+
+}
+
+
+.number{
+
+    background:#f5f8fb;
+
+    border-radius:9px;
+
+    padding:10px;
+
+    text-align:center;
+
+}
+
+
+.number-label{
+
+    color:#7a8490;
+
+    font-size:10px;
+
+    font-weight:bold;
+
+}
+
+
+.number-value{
+
+    color:#063b73;
+
+    font-size:21px;
+
+    font-weight:bold;
+
+    margin-top:3px;
+
+}
+
+
+/* =====================================================
+   PERSONAL
+===================================================== */
+
+.people{
+
+    display:grid;
+
+    grid-template-columns:
+        repeat(
+            auto-fill,
+            minmax(320px,1fr)
+        );
+
+    gap:16px;
+
+}
+
+
+.person{
+
+    background:white;
+
+    border:
+        1px solid #e4e9ef;
+
+    border-radius:14px;
+
+    padding:17px;
+
+    display:flex;
+
+    gap:15px;
+
+    align-items:center;
+
+    box-shadow:
+        0 3px 11px
+        rgba(0,0,0,.05);
+
+    transition:.2s;
+
+}
+
+
+.person:hover{
+
+    transform:
+        translateY(-2px);
+
+    box-shadow:
+        0 7px 18px
+        rgba(0,0,0,.08);
+
+}
+
+
+.photo{
+
+    width:76px;
+
+    height:76px;
+
+    border-radius:13px;
+
+    object-fit:cover;
+
+    background:#e7edf4;
+
+    flex-shrink:0;
+
+}
+
+
+.person-info{
+
+    min-width:0;
+
+    flex:1;
+
+}
+
+
+.person-name{
+
+    color:#1f2937;
+
+    font-weight:bold;
+
+    font-size:15px;
+
+    line-height:1.25;
+
+}
+
+
+.person-number{
+
+    color:#6b7280;
+
+    font-size:12px;
+
+    margin-top:5px;
+
+}
+
+
+.person-service{
+
+    color:#0876bd;
+
+    font-size:12px;
+
+    font-weight:bold;
+
+    margin-top:5px;
+
+}
+
+
+.person-area{
+
+    color:#7b8490;
+
+    font-size:12px;
+
+    margin-top:3px;
+
+}
+
+
+.badge{
+
+    display:inline-block;
+
+    padding:
+        4px 9px;
+
+    border-radius:20px;
+
+    margin-top:8px;
+
+    font-size:10px;
+
+    font-weight:bold;
+
+}
+
+
+.badge-active{
+
+    background:#e5f8eb;
+
+    color:#16833b;
+
+}
+
+
+.badge-baja{
+
+    background:#fde8e8;
+
+    color:#b42318;
+
+}
+
+
+.baja-date{
+
+    color:#9a5555;
+
+    font-size:11px;
+
+    margin-top:5px;
+
+}
+
+
+/* =====================================================
+   BAJAS
+===================================================== */
+
+.bajas-box{
+
+    background:#fffafa;
+
+    border:
+        1px solid #efd6d6;
+
+    border-radius:15px;
+
+    padding:20px;
+
+}
+
+
+.bajas-title{
+
+    color:#8f2d2d;
+
+    font-size:13px;
+
+    margin-bottom:16px;
+
+}
+
+
+/* =====================================================
+   LOADING / VACÍO
+===================================================== */
+
+.loading{
+
+    background:white;
+
+    border-radius:13px;
+
+    padding:40px;
+
+    text-align:center;
+
+    color:#7b8490;
+
+}
+
+
+.empty{
+
+    background:white;
+
+    border-radius:13px;
+
+    padding:35px;
+
+    text-align:center;
+
+    color:#7b8490;
+
+}
+
+
+/* =====================================================
+   FOOTER
+===================================================== */
+
+.footer{
+
+    text-align:center;
+
+    padding:
+        25px 20px 35px;
+
+    color:#8a94a0;
+
+    font-size:12px;
+
+}
+
+
+/* =====================================================
+   RESPONSIVE
+===================================================== */
+
+@media(max-width:950px){
+
+    .dashboard{
+
+        grid-template-columns:
+            repeat(2,1fr);
+
+    }
+
+}
+
+
+@media(max-width:650px){
+
+    .header{
+
+        padding:
+            18px;
+
+    }
+
+
+    .header h1{
+
+        font-size:21px;
+
+    }
+
+
+    .connection{
+
+        display:none;
+
+    }
+
+
+    .container{
+
+        padding:
+            0 12px;
+
+    }
+
+
+    .dashboard{
+
+        grid-template-columns:
+            1fr 1fr;
+
+        gap:10px;
+
+    }
+
+
+    .people,
+    .services{
+
+        grid-template-columns:
+            1fr;
+
+    }
+
+
+    .search{
+
+        min-width:100%;
+
+    }
+
+
+    .filter{
+
+        flex:1;
+
+    }
+
+}
+
+</style>
+
 </head>
+
 
 <body>
 
-<h1>PRUEBA ESTADO DE FUERZA</h1>
 
-<div id="resultado">
-    Conectando...
-</div>
+<!-- =====================================================
+     HEADER
+===================================================== -->
+
+<header class="header">
+
+    <div class="header-left">
+
+        <div class="logo">
+            AUTORITAS
+        </div>
+
+        <div>
+
+            <h1>
+                Estado de Fuerza
+            </h1>
+
+            <p>
+                Directorio Digital de Personal
+            </p>
+
+        </div>
+
+    </div>
+
+
+    <div class="connection">
+
+        <span
+            id="connectionDot"
+            class="connection-dot">
+        </span>
+
+        <span id="connectionText">
+            Conectando...
+        </span>
+
+    </div>
+
+</header>
+
+
+
+<main class="container">
+
+
+<!-- =====================================================
+     ERROR
+===================================================== -->
+
+<div id="errorContainer"></div>
+
+
+
+<!-- =====================================================
+     DASHBOARD
+===================================================== -->
+
+<section class="dashboard">
+
+
+    <div class="card">
+
+        <div class="card-title">
+            PERSONAL ACTIVO
+        </div>
+
+        <div
+            id="totalActivo"
+            class="card-value">
+            0
+        </div>
+
+        <div class="card-description">
+            Elementos actualmente activos
+        </div>
+
+    </div>
+
+
+
+    <div class="card">
+
+        <div class="card-title">
+            PERSONAL DE BAJA
+        </div>
+
+        <div
+            id="totalBajas"
+            class="card-value">
+            0
+        </div>
+
+        <div class="card-description">
+            Registros históricos
+        </div>
+
+    </div>
+
+
+
+    <div class="card">
+
+        <div class="card-title">
+            SERVICIOS
+        </div>
+
+        <div
+            id="totalServicios"
+            class="card-value">
+            0
+        </div>
+
+        <div class="card-description">
+            Servicios registrados
+        </div>
+
+    </div>
+
+
+
+    <div class="card">
+
+        <div class="card-title">
+            ACTUALIZACIÓN
+        </div>
+
+        <div
+            id="lastUpdate"
+            class="card-value">
+            --
+        </div>
+
+        <div class="card-description">
+            Última consulta
+        </div>
+
+    </div>
+
+
+</section>
+
+
+
+<!-- =====================================================
+     FILTROS
+===================================================== -->
+
+<section class="controls">
+
+
+    <div class="search">
+
+        <input
+            id="search"
+            type="text"
+            placeholder="🔎 Buscar nombre, empleado, servicio o área..."
+        >
+
+    </div>
+
+
+
+    <div class="filter">
+
+        <select id="serviceFilter">
+
+            <option value="">
+                Todos los servicios
+            </option>
+
+        </select>
+
+    </div>
+
+
+
+    <div class="filter">
+
+        <select id="statusFilter">
+
+            <option value="ACTIVO">
+                Personal activo
+            </option>
+
+            <option value="BAJA">
+                Personal de baja
+            </option>
+
+            <option value="TODOS">
+                Todo el personal
+            </option>
+
+        </select>
+
+    </div>
+
+
+
+    <button
+        class="refresh"
+        onclick="cargarDatos()">
+
+        ↻ Actualizar
+
+    </button>
+
+
+</section>
+
+
+
+<!-- =====================================================
+     SERVICIOS
+===================================================== -->
+
+<section class="section">
+
+
+    <div class="section-header">
+
+        <div class="section-title">
+            Servicios
+        </div>
+
+        <div
+            id="serviceCount"
+            class="section-count">
+            0 servicios
+        </div>
+
+    </div>
+
+
+    <div
+        id="servicesContainer"
+        class="services">
+
+        <div class="loading">
+            Cargando servicios...
+        </div>
+
+    </div>
+
+
+</section>
+
+
+
+<!-- =====================================================
+     PERSONAL ACTIVO
+===================================================== -->
+
+<section class="section">
+
+
+    <div class="section-header">
+
+        <div class="section-title">
+            Directorio de Personal
+        </div>
+
+        <div
+            id="peopleCount"
+            class="section-count">
+            0 elementos
+        </div>
+
+    </div>
+
+
+    <div
+        id="peopleContainer"
+        class="people">
+
+        <div class="loading">
+            Cargando personal...
+        </div>
+
+    </div>
+
+
+</section>
+
+
+
+<!-- =====================================================
+     BAJAS
+===================================================== -->
+
+<section class="section">
+
+
+    <div class="section-header">
+
+        <div class="section-title">
+            Apartado de Bajas
+        </div>
+
+        <div
+            id="bajaCount"
+            class="section-count">
+            0 bajas
+        </div>
+
+    </div>
+
+
+    <div class="bajas-box">
+
+
+        <div class="bajas-title">
+
+            Personal que permanece en la base
+            histórica pero tiene estatus BAJA.
+
+        </div>
+
+
+        <div
+            id="bajasContainer"
+            class="people">
+
+            <div class="empty">
+                No hay personal de baja.
+            </div>
+
+        </div>
+
+
+    </div>
+
+
+</section>
+
+
+</main>
+
+
+
+<footer class="footer">
+
+    Estado de Fuerza · Directorio Digital de Personal · Autoritas
+
+</footer>
+
+
 
 <script>
+
+/* =====================================================
+   URL APPS SCRIPT
+===================================================== */
 
 const API_URL =
 "https://script.google.com/macros/s/AKfycbxP3-4RBiMMVSmWAyamj9-HC4pR5Z2rx0KzDlyIsWWJ2iHILoFCxzGosRmWcz8rTq4/exec";
 
 
-const callbackName =
-"prueba_" + Date.now();
+/* =====================================================
+   VARIABLES
+===================================================== */
+
+let servicios = [];
+
+let personal = [];
+
+let scriptActual = null;
 
 
-window[callbackName] = function(data){
+/* =====================================================
+   CARGAR DATOS
+===================================================== */
 
-    console.log("RESPUESTA:", data);
-
-    document.getElementById("resultado").innerHTML =
-        "<pre>" +
-        JSON.stringify(data, null, 2) +
-        "</pre>";
-
-};
+function cargarDatos(){
 
 
-const script =
-document.createElement("script");
+    limpiarError();
 
 
-script.src =
-API_URL +
-"?callback=" +
-callbackName;
+    cambiarEstado(
+        "Conectando...",
+        "#f44336"
+    );
 
 
-script.onerror = function(){
+    if(scriptActual){
 
-    document.getElementById("resultado").innerHTML =
-        "<h2>❌ FALLÓ LA CONEXIÓN</h2>";
+        scriptActual.remove();
 
-};
+    }
 
 
-document.body.appendChild(script);
+    const callbackName =
+        "estadoFuerza_" +
+        Date.now();
+
+
+    const script =
+        document.createElement(
+            "script"
+        );
+
+
+    scriptActual =
+        script;
+
+
+    /* ================================================
+       CALLBACK JSONP
+    ================================================= */
+
+    window[callbackName] =
+        function(data){
+
+
+            try{
+
+
+                console.log(
+                    "Respuesta Apps Script:",
+                    data
+                );
+
+
+                if(!data){
+
+                    throw new Error(
+                        "No se recibió información."
+                    );
+
+                }
+
+
+                if(!data.ok){
+
+                    throw new Error(
+                        data.error ||
+                        "Apps Script devolvió un error."
+                    );
+
+                }
+
+
+                servicios =
+                    Array.isArray(
+                        data.servicios
+                    )
+                    ?
+                    data.servicios
+                    :
+                    [];
+
+
+                personal =
+                    Array.isArray(
+                        data.personal
+                    )
+                    ?
+                    data.personal
+                    :
+                    [];
+
+
+                /* ====================================
+                   CONEXIÓN CORRECTA
+                ==================================== */
+
+                cambiarEstado(
+                    "Conectado",
+                    "#38d66b"
+                );
+
+
+                /* ====================================
+                   ACTUALIZAR PANTALLA
+                ==================================== */
+
+                actualizarResumen();
+
+                cargarFiltroServicios();
+
+                mostrarServicios();
+
+                mostrarPersonal();
+
+                mostrarBajas();
+
+
+            }
+            catch(error){
+
+                mostrarError(
+                    error
+                );
+
+            }
+
+
+            delete window[
+                callbackName
+            ];
+
+
+            script.remove();
+
+
+        };
+
+
+    /* =================================================
+       URL JSONP
+    ================================================= */
+
+    script.src =
+        API_URL +
+        "?callback=" +
+        encodeURIComponent(
+            callbackName
+        );
+
+
+    /* =================================================
+       ERROR DE SCRIPT
+    ================================================= */
+
+    script.onerror =
+        function(){
+
+
+            mostrarError(
+
+                new Error(
+                    "No fue posible conectar con Apps Script."
+                )
+
+            );
+
+
+            delete window[
+                callbackName
+            ];
+
+
+            script.remove();
+
+        };
+
+
+    document.body.appendChild(
+        script
+    );
+
+}
+
+
+/* =====================================================
+   ESTADO DE CONEXIÓN
+===================================================== */
+
+function cambiarEstado(
+    texto,
+    color
+){
+
+    document.getElementById(
+        "connectionText"
+    ).textContent =
+        texto;
+
+
+    document.getElementById(
+        "connectionDot"
+    ).style.background =
+        color;
+
+}
+
+
+/* =====================================================
+   ERROR
+===================================================== */
+
+function mostrarError(error){
+
+
+    console.error(
+        error
+    );
+
+
+    cambiarEstado(
+        "Error de conexión",
+        "#f44336"
+    );
+
+
+    document.getElementById(
+        "errorContainer"
+    ).innerHTML = `
+
+        <div class="error">
+
+            <strong>
+                ❌ Error de conexión
+            </strong>
+
+            <br><br>
+
+            ${escapeHTML(
+                error.message
+            )}
+
+        </div>
+
+    `;
+
+}
+
+
+/* =====================================================
+   LIMPIAR ERROR
+===================================================== */
+
+function limpiarError(){
+
+    document.getElementById(
+        "errorContainer"
+    ).innerHTML =
+        "";
+
+}
+
+
+/* =====================================================
+   RESUMEN
+===================================================== */
+
+function actualizarResumen(){
+
+
+    const activos =
+        personal.filter(
+            persona =>
+
+                normalizar(
+                    persona["ESTATUS"]
+                )
+                ===
+                "ACTIVO"
+
+        );
+
+
+    const bajas =
+        personal.filter(
+            persona =>
+
+                normalizar(
+                    persona["ESTATUS"]
+                )
+                ===
+                "BAJA"
+
+        );
+
+
+    document.getElementById(
+        "totalActivo"
+    ).textContent =
+        activos.length;
+
+
+    document.getElementById(
+        "totalBajas"
+    ).textContent =
+        bajas.length;
+
+
+    document.getElementById(
+        "totalServicios"
+    ).textContent =
+        servicios.length;
+
+
+    document.getElementById(
+        "lastUpdate"
+    ).textContent =
+
+        new Date().toLocaleTimeString(
+            "es-MX",
+            {
+                hour:
+                    "2-digit",
+
+                minute:
+                    "2-digit"
+            }
+        );
+
+}
+
+
+/* =====================================================
+   FILTRO DE SERVICIOS
+===================================================== */
+
+function cargarFiltroServicios(){
+
+
+    const select =
+        document.getElementById(
+            "serviceFilter"
+        );
+
+
+    select.innerHTML = `
+
+        <option value="">
+            Todos los servicios
+        </option>
+
+    `;
+
+
+    /*
+     * Tomamos el valor de:
+     * CODIFICACIÓN DE UN FORMULARIO Y SERVICIO
+     */
+
+    const serviciosUnicos =
+
+        [
+            ...
+            new Set(
+
+                servicios
+
+                    .map(
+                        servicio =>
+                            servicio[
+                                "CODIFICACIÓN DE UN FORMULARIO Y SERVICIO"
+                            ]
+                    )
+
+                    .filter(
+                        valor =>
+                            valor &&
+                            String(
+                                valor
+                            ).trim() !== ""
+                    )
+
+            )
+
+        ];
+
+
+    serviciosUnicos.forEach(
+        nombre => {
+
+
+            const option =
+                document.createElement(
+                    "option"
+                );
+
+
+            option.value =
+                nombre;
+
+
+            option.textContent =
+                nombre;
+
+
+            select.appendChild(
+                option
+            );
+
+        }
+    );
+
+}
+
+
+/* =====================================================
+   MOSTRAR SERVICIOS
+===================================================== */
+
+function mostrarServicios(){
+
+
+    const container =
+        document.getElementById(
+            "servicesContainer"
+        );
+
+
+    if(!servicios.length){
+
+        container.innerHTML = `
+
+            <div class="empty">
+
+                No hay servicios registrados.
+
+            </div>
+
+        `;
+
+        return;
+
+    }
+
+
+    container.innerHTML =
+        "";
+
+
+    servicios.forEach(
+        servicio => {
+
+
+            const nombre =
+                servicio[
+                    "SERVICIO"
+                ]
+                ||
+                "Sin servicio";
+
+
+            const id =
+                servicio[
+                    "ID SERVICIO"
+                ]
+                ||
+                "";
+
+
+            const codigo =
+                servicio[
+                    "CODIFICACIÓN DE UN FORMULARIO Y SERVICIO"
+                ]
+                ||
+                "";
+
+
+            const debe =
+                servicio[
+                    "DEBE"
+                ]
+                ??
+                0;
+
+
+            const es =
+                servicio[
+                    "ES"
+                ]
+                ??
+                0;
+
+
+            const card =
+                document.createElement(
+                    "div"
+                );
+
+
+            card.className =
+                "service-card";
+
+
+            card.innerHTML = `
+
+                <div class="service-name">
+
+                    ${escapeHTML(
+                        nombre
+                    )}
+
+                </div>
+
+
+                <div class="service-id">
+
+                    ${escapeHTML(
+                        id
+                    )}
+
+                </div>
+
+
+                <div class="service-code">
+
+                    ${escapeHTML(
+                        codigo
+                    )}
+
+                </div>
+
+
+                <div class="service-numbers">
+
+
+                    <div class="number">
+
+                        <div class="number-label">
+                            DEBE
+                        </div>
+
+                        <div class="number-value">
+                            ${escapeHTML(
+                                debe
+                            )}
+                        </div>
+
+                    </div>
+
+
+                    <div class="number">
+
+                        <div class="number-label">
+                            ES
+                        </div>
+
+                        <div class="number-value">
+                            ${escapeHTML(
+                                es
+                            )}
+                        </div>
+
+                    </div>
+
+
+                </div>
+
+            `;
+
+
+            container.appendChild(
+                card
+            );
+
+        }
+    );
+
+
+    document.getElementById(
+        "serviceCount"
+    ).textContent =
+
+        servicios.length +
+        (
+            servicios.length === 1
+            ?
+            " servicio"
+            :
+            " servicios"
+        );
+
+}
+
+
+/* =====================================================
+   MOSTRAR PERSONAL
+===================================================== */
+
+function mostrarPersonal(){
+
+
+    const container =
+        document.getElementById(
+            "peopleContainer"
+        );
+
+
+    const search =
+        normalizar(
+            document.getElementById(
+                "search"
+            ).value
+        );
+
+
+    const service =
+        document.getElementById(
+            "serviceFilter"
+        ).value;
+
+
+    const status =
+        document.getElementById(
+            "statusFilter"
+        ).value;
+
+
+    const filtrados =
+
+        personal.filter(
+            persona => {
+
+
+                const nombre =
+                    normalizar(
+                        persona[
+                            "Nombre"
+                        ]
+                    );
+
+
+                const empleado =
+                    normalizar(
+                        persona[
+                            "No Empleado"
+                        ]
+                    );
+
+
+                const servicio =
+                    normalizar(
+                        persona[
+                            "Servicio"
+                        ]
+                    );
+
+
+                const area =
+                    normalizar(
+                        persona[
+                            "Area"
+                        ]
+                    );
+
+
+                const estatus =
+                    normalizar(
+                        persona[
+                            "ESTATUS"
+                        ]
+                    );
+
+
+                /* =============================
+                   BÚSQUEDA
+                ============================= */
+
+                const coincideBusqueda =
+
+                    !search ||
+
+                    nombre.includes(
+                        search
+                    ) ||
+
+                    empleado.includes(
+                        search
+                    ) ||
+
+                    servicio.includes(
+                        search
+                    ) ||
+
+                    area.includes(
+                        search
+                    );
+
+
+                /* =============================
+                   SERVICIO
+                ============================= */
+
+                const coincideServicio =
+
+                    !service ||
+
+                    persona[
+                        "Servicio"
+                    ] ===
+                    service;
+
+
+                /* =============================
+                   ESTATUS
+                ============================= */
+
+                const coincideStatus =
+
+                    status === "TODOS" ||
+
+                    estatus ===
+                    status;
+
+
+                return (
+
+                    coincideBusqueda &&
+
+                    coincideServicio &&
+
+                    coincideStatus
+
+                );
+
+            }
+        );
+
+
+    document.getElementById(
+        "peopleCount"
+    ).textContent =
+
+        filtrados.length +
+
+        (
+            filtrados.length === 1
+            ?
+            " elemento"
+            :
+            " elementos"
+        );
+
+
+    if(!filtrados.length){
+
+        container.innerHTML = `
+
+            <div class="empty">
+
+                No se encontraron registros.
+
+            </div>
+
+        `;
+
+        return;
+
+    }
+
+
+    container.innerHTML =
+        "";
+
+
+    filtrados.forEach(
+        persona => {
+
+            container.appendChild(
+
+                crearTarjetaPersona(
+                    persona
+                )
+
+            );
+
+        }
+    );
+
+}
+
+
+/* =====================================================
+   MOSTRAR BAJAS
+===================================================== */
+
+function mostrarBajas(){
+
+
+    const container =
+        document.getElementById(
+            "bajasContainer"
+        );
+
+
+    const bajas =
+
+        personal.filter(
+            persona =>
+
+                normalizar(
+                    persona[
+                        "ESTATUS"
+                    ]
+                )
+                ===
+                "BAJA"
+
+        );
+
+
+    document.getElementById(
+        "bajaCount"
+    ).textContent =
+
+        bajas.length +
+
+        (
+            bajas.length === 1
+            ?
+            " baja"
+            :
+            " bajas"
+        );
+
+
+    if(!bajas.length){
+
+        container.innerHTML = `
+
+            <div class="empty">
+
+                No hay personal registrado
+                como baja.
+
+            </div>
+
+        `;
+
+        return;
+
+    }
+
+
+    container.innerHTML =
+        "";
+
+
+    bajas.forEach(
+        persona => {
+
+            container.appendChild(
+
+                crearTarjetaPersona(
+                    persona,
+                    true
+                )
+
+            );
+
+        }
+    );
+
+}
+
+
+/* =====================================================
+   TARJETA PERSONA
+===================================================== */
+
+function crearTarjetaPersona(
+    persona,
+    esBaja = false
+){
+
+
+    const card =
+        document.createElement(
+            "div"
+        );
+
+
+    card.className =
+        "person";
+
+
+    const nombre =
+        persona[
+            "Nombre"
+        ]
+        ||
+        "Sin nombre";
+
+
+    const empleado =
+        persona[
+            "No Empleado"
+        ]
+        ||
+        "Sin número";
+
+
+    const servicio =
+        persona[
+            "Servicio"
+        ]
+        ||
+        "Sin servicio";
+
+
+    const area =
+        persona[
+            "Area"
+        ]
+        ||
+        "Sin área";
+
+
+    const estatus =
+        persona[
+            "ESTATUS"
+        ]
+        ||
+        "";
+
+
+    const fechaBaja =
+        persona[
+            "FECHA BAJA"
+        ]
+        ||
+        "";
+
+
+    const foto =
+        normalizarFoto(
+            persona[
+                "FOTO"
+            ]
+        );
+
+
+    const imagen =
+
+        foto
+
+        ?
+
+        escapeAttribute(
+            foto
+        )
+
+        :
+
+        "data:image/svg+xml;charset=UTF-8," +
+        crearAvatarSVG(
+            nombre
+        );
+
+
+    card.innerHTML = `
+
+        <img
+
+            class="photo"
+
+            src="${imagen}"
+
+            alt="Foto de ${escapeAttribute(nombre)}"
+
+            onerror="
+                this.src='data:image/svg+xml;charset=UTF-8,${crearAvatarSVG(nombre)}'
+            "
+
+        >
+
+
+        <div class="person-info">
+
+
+            <div class="person-name">
+
+                ${escapeHTML(
+                    nombre
+                )}
+
+            </div>
+
+
+            <div class="person-number">
+
+                No. empleado:
+                ${escapeHTML(
+                    empleado
+                )}
+
+            </div>
+
+
+            <div class="person-service">
+
+                ${escapeHTML(
+                    servicio
+                )}
+
+            </div>
+
+
+            <div class="person-area">
+
+                Área:
+                ${escapeHTML(
+                    area
+                )}
+
+            </div>
+
+
+            <span class="badge ${
+                esBaja
+                ?
+                "badge-baja"
+                :
+                "badge-active"
+            }">
+
+                ${escapeHTML(
+                    estatus
+                )}
+
+            </span>
+
+
+            ${
+                esBaja && fechaBaja
+
+                ?
+
+                `
+
+                <div class="baja-date">
+
+                    Fecha de baja:
+                    ${escapeHTML(
+                        formatearFecha(
+                            fechaBaja
+                        )
+                    )}
+
+                </div>
+
+                `
+
+                :
+
+                ""
+
+            }
+
+
+        </div>
+
+    `;
+
+
+    return card;
+
+}
+
+
+/* =====================================================
+   EVENTOS
+===================================================== */
+
+document.getElementById(
+    "search"
+).addEventListener(
+    "input",
+    mostrarPersonal
+);
+
+
+document.getElementById(
+    "serviceFilter"
+).addEventListener(
+    "change",
+    mostrarPersonal
+);
+
+
+document.getElementById(
+    "statusFilter"
+).addEventListener(
+    "change",
+    mostrarPersonal
+);
+
+
+/* =====================================================
+   NORMALIZAR TEXTO
+===================================================== */
+
+function normalizar(
+    valor
+){
+
+    return String(
+        valor ??
+        ""
+    )
+
+    .normalize(
+        "NFD"
+    )
+
+    .replace(
+        /[\u0300-\u036f]/g,
+        ""
+    )
+
+    .toUpperCase()
+
+    .trim();
+
+}
+
+
+/* =====================================================
+   ESCAPAR HTML
+===================================================== */
+
+function escapeHTML(
+    valor
+){
+
+    return String(
+        valor ??
+        ""
+    )
+
+    .replace(
+        /&/g,
+        "&amp;"
+    )
+
+    .replace(
+        /</g,
+        "&lt;"
+    )
+
+    .replace(
+        />/g,
+        "&gt;"
+    )
+
+    .replace(
+        /"/g,
+        "&quot;"
+    )
+
+    .replace(
+        /'/g,
+        "&#039;"
+    );
+
+}
+
+
+/* =====================================================
+   ESCAPAR ATRIBUTO
+===================================================== */
+
+function escapeAttribute(
+    valor
+){
+
+    return String(
+        valor ??
+        ""
+    )
+
+    .replace(
+        /"/g,
+        "&quot;"
+    )
+
+    .replace(
+        /'/g,
+        "&#039;"
+    );
+
+}
+
+
+/* =====================================================
+   FECHA
+===================================================== */
+
+function formatearFecha(
+    valor
+){
+
+    if(!valor){
+
+        return "";
+
+    }
+
+
+    const texto =
+        String(
+            valor
+        );
+
+
+    /*
+     * Si Apps Script ya entrega:
+     * DD/MM/YYYY
+     * no intentamos convertirla.
+     */
+
+    if(
+        /^\d{2}\/\d{2}\/\d{4}$/
+        .test(
+            texto
+        )
+    ){
+
+        return texto;
+
+    }
+
+
+    const fecha =
+        new Date(
+            valor
+        );
+
+
+    if(
+        isNaN(
+            fecha
+        )
+    ){
+
+        return texto;
+
+    }
+
+
+    return fecha.toLocaleDateString(
+        "es-MX"
+    );
+
+}
+
+
+/* =====================================================
+   FOTO GOOGLE DRIVE
+===================================================== */
+
+function normalizarFoto(
+    url
+){
+
+    if(!url){
+
+        return "";
+
+    }
+
+
+    url =
+        String(
+            url
+        ).trim();
+
+
+    /*
+     * Drive:
+     * https://drive.google.com/file/d/ID/view
+     */
+
+    const match =
+        url.match(
+            /\/d\/([a-zA-Z0-9_-]+)/
+        );
+
+
+    if(match){
+
+        return (
+
+            "https://drive.google.com/thumbnail" +
+
+            "?id=" +
+
+            match[1] +
+
+            "&sz=w300"
+
+        );
+
+    }
+
+
+    /*
+     * Drive abierto directamente:
+     * ?id=ID
+     */
+
+    if(
+        url.includes(
+            "drive.google.com"
+        )
+        &&
+        url.includes(
+            "id="
+        )
+    ){
+
+        const id =
+            url.split(
+                "id="
+            )[1]
+            .split(
+                "&"
+            )[0];
+
+
+        if(id){
+
+            return (
+
+                "https://drive.google.com/thumbnail" +
+
+                "?id=" +
+
+                id +
+
+                "&sz=w300"
+
+            );
+
+        }
+
+    }
+
+
+    return url;
+
+}
+
+
+/* =====================================================
+   AVATAR AUTOMÁTICO
+===================================================== */
+
+function crearAvatarSVG(
+    nombre
+){
+
+    const inicial =
+
+        String(
+            nombre ||
+            "?"
+        )
+
+        .trim()
+
+        .charAt(
+            0
+        )
+
+        .toUpperCase();
+
+
+    const svg = `
+
+        <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="150"
+            height="150"
+        >
+
+            <rect
+                width="150"
+                height="150"
+                fill="#e7edf4"
+            />
+
+            <text
+                x="50%"
+                y="54%"
+                dominant-baseline="middle"
+                text-anchor="middle"
+                font-family="Arial"
+                font-size="60"
+                fill="#063b73"
+            >
+
+                ${inicial}
+
+            </text>
+
+        </svg>
+
+    `;
+
+
+    return encodeURIComponent(
+        svg
+    );
+
+}
+
+
+/* =====================================================
+   ARRANQUE
+===================================================== */
+
+cargarDatos();
 
 </script>
 
+
 </body>
+
 </html>
