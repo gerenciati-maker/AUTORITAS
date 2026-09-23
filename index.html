@@ -1,4 +1,3 @@
-```html
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -864,4 +863,465 @@ function mostrarServicios(){
             document.createElement("div");
 
         card.className =
-```
+            "service-card";
+
+        card.innerHTML = `
+
+            <div class="service-name">
+                ${escapeHTML(nombre)}
+            </div>
+
+            <div class="service-id">
+                ${escapeHTML(codigo || id)}
+            </div>
+
+            <div class="service-numbers">
+
+                <div class="number-box">
+
+                    <div class="number-label">
+                        DEBE
+                    </div>
+
+                    <div class="number-value">
+                        ${debe}
+                    </div>
+
+                </div>
+
+                <div class="number-box">
+
+                    <div class="number-label">
+                        ES
+                    </div>
+
+                    <div class="number-value">
+                        ${es}
+                    </div>
+
+                </div>
+
+            </div>
+
+        `;
+
+        container.appendChild(card);
+
+    });
+
+    document.getElementById("serviceCount").textContent =
+        `${servicios.length} servicios`;
+
+}
+
+
+/* =====================================================
+   MOSTRAR PERSONAL
+===================================================== */
+
+function mostrarPersonal(){
+
+    const container =
+        document.getElementById("peopleContainer");
+
+    const search =
+        normalizar(
+            document.getElementById("search").value
+        );
+
+    const service =
+        document.getElementById("serviceFilter").value;
+
+    const status =
+        document.getElementById("statusFilter").value;
+
+
+    let filtrados =
+        personal.filter(persona => {
+
+            const nombre =
+                normalizar(persona["Nombre"]);
+
+            const empleado =
+                normalizar(persona["No Empleado"]);
+
+            const servicio =
+                normalizar(persona["Servicio"]);
+
+            const area =
+                normalizar(persona["Area"]);
+
+            const estatus =
+                normalizar(persona["ESTATUS"]);
+
+
+            const coincideBusqueda =
+                !search ||
+                nombre.includes(search) ||
+                empleado.includes(search) ||
+                servicio.includes(search) ||
+                area.includes(search);
+
+
+            const coincideServicio =
+                !service ||
+                persona["Servicio"] === service;
+
+
+            const coincideStatus =
+                status === "TODOS" ||
+                estatus === status;
+
+
+            return (
+                coincideBusqueda &&
+                coincideServicio &&
+                coincideStatus
+            );
+
+        });
+
+
+    document.getElementById("peopleCount").textContent =
+        `${filtrados.length} elementos`;
+
+
+    if(!filtrados.length){
+
+        container.innerHTML = `
+            <div class="empty">
+                No se encontraron registros.
+            </div>
+        `;
+
+        return;
+
+    }
+
+
+    container.innerHTML = "";
+
+    filtrados.forEach(persona => {
+
+        container.appendChild(
+            crearTarjetaPersona(persona)
+        );
+
+    });
+
+}
+
+
+/* =====================================================
+   BAJAS
+===================================================== */
+
+function mostrarBajas(){
+
+    const container =
+        document.getElementById("bajasContainer");
+
+    const bajas =
+        personal.filter(
+            p => normalizar(p["ESTATUS"]) === "BAJA"
+        );
+
+
+    document.getElementById("bajaCount").textContent =
+        `${bajas.length} bajas`;
+
+
+    if(!bajas.length){
+
+        container.innerHTML = `
+            <div class="empty">
+                No hay personal registrado como baja.
+            </div>
+        `;
+
+        return;
+
+    }
+
+
+    container.innerHTML = "";
+
+    bajas.forEach(persona => {
+
+        container.appendChild(
+            crearTarjetaPersona(persona, true)
+        );
+
+    });
+
+}
+
+
+/* =====================================================
+   TARJETA PERSONA
+===================================================== */
+
+function crearTarjetaPersona(
+    persona,
+    esBaja = false
+){
+
+    const card =
+        document.createElement("div");
+
+    card.className =
+        "person";
+
+
+    const nombre =
+        persona["Nombre"] || "Sin nombre";
+
+    const empleado =
+        persona["No Empleado"] || "Sin número";
+
+    const servicio =
+        persona["Servicio"] || "Sin servicio";
+
+    const area =
+        persona["Area"] || "Sin área";
+
+    const estatus =
+        persona["ESTATUS"] || "";
+
+    const fechaIngreso =
+        persona["FECHA INGRESO"] || "";
+
+    const fechaBaja =
+        persona["FECHA BAJA"] || "";
+
+    const foto =
+        normalizarFoto(
+            persona["FOTO"]
+        );
+
+
+    card.innerHTML = `
+
+        <img
+            class="photo"
+            src="${escapeAttribute(foto)}"
+            alt="Foto"
+            onerror="this.src='data:image/svg+xml;charset=UTF-8,${crearAvatarSVG(nombre)}'"
+        >
+
+        <div class="person-info">
+
+            <div class="person-name">
+                ${escapeHTML(nombre)}
+            </div>
+
+            <div class="person-number">
+                No. empleado: ${escapeHTML(empleado)}
+            </div>
+
+            <div class="person-service">
+                ${escapeHTML(servicio)}
+            </div>
+
+            <div class="person-area">
+                Área: ${escapeHTML(area)}
+            </div>
+
+            <span class="badge ${
+                esBaja
+                ? "badge-baja"
+                : "badge-active"
+            }">
+
+                ${escapeHTML(estatus)}
+
+            </span>
+
+            ${
+                esBaja && fechaBaja
+                ?
+                `<div class="person-area">
+                    Fecha de baja: ${escapeHTML(formatearFecha(fechaBaja))}
+                </div>`
+                :
+                ""
+            }
+
+        </div>
+
+    `;
+
+
+    return card;
+
+}
+
+
+/* =====================================================
+   EVENTOS
+===================================================== */
+
+document
+    .getElementById("search")
+    .addEventListener(
+        "input",
+        mostrarPersonal
+    );
+
+
+document
+    .getElementById("serviceFilter")
+    .addEventListener(
+        "change",
+        mostrarPersonal
+    );
+
+
+document
+    .getElementById("statusFilter")
+    .addEventListener(
+        "change",
+        mostrarPersonal
+    );
+
+
+/* =====================================================
+   UTILIDADES
+===================================================== */
+
+function normalizar(valor){
+
+    return String(valor ?? "")
+        .normalize("NFD")
+        .replace(/[\u0300-\u036f]/g,"")
+        .toUpperCase()
+        .trim();
+
+}
+
+
+function escapeHTML(valor){
+
+    return String(valor ?? "")
+        .replace(/&/g,"&amp;")
+        .replace(/</g,"&lt;")
+        .replace(/>/g,"&gt;")
+        .replace(/"/g,"&quot;")
+        .replace(/'/g,"&#039;");
+
+}
+
+
+function escapeAttribute(valor){
+
+    return String(valor ?? "")
+        .replace(/"/g,"&quot;");
+
+}
+
+
+function formatearFecha(valor){
+
+    if(!valor){
+        return "";
+    }
+
+    const fecha =
+        new Date(valor);
+
+    if(isNaN(fecha)){
+        return valor;
+    }
+
+    return fecha.toLocaleDateString(
+        "es-MX"
+    );
+
+}
+
+
+function normalizarFoto(url){
+
+    if(!url){
+        return "";
+    }
+
+    url =
+        String(url).trim();
+
+
+    /*
+       Si posteriormente usamos enlaces
+       de Google Drive, aquí podremos
+       convertirlos automáticamente.
+    */
+
+    if(url.includes("drive.google.com")){
+
+        const match =
+            url.match(
+                /\/d\/([a-zA-Z0-9_-]+)/
+            );
+
+        if(match){
+
+            return `https://drive.google.com/thumbnail?id=${match[1]}&sz=w300`;
+
+        }
+
+    }
+
+    return url;
+
+}
+
+
+function crearAvatarSVG(nombre){
+
+    const inicial =
+        String(nombre || "?")
+            .trim()
+            .charAt(0)
+            .toUpperCase();
+
+    const svg = `
+        <svg xmlns="http://www.w3.org/2000/svg"
+             width="150"
+             height="150">
+
+            <rect
+                width="150"
+                height="150"
+                fill="#e7edf4"/>
+
+            <text
+                x="50%"
+                y="54%"
+                dominant-baseline="middle"
+                text-anchor="middle"
+                font-family="Arial"
+                font-size="60"
+                fill="#063b73">
+
+                ${inicial}
+
+            </text>
+
+        </svg>
+    `;
+
+    return encodeURIComponent(svg);
+
+}
+
+
+/* =====================================================
+   INICIO
+===================================================== */
+
+cargarDatos();
+
+</script>
+
+</body>
+</html>
