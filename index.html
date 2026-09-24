@@ -2497,7 +2497,18 @@ function consultarAsistencias(){
     try{
       if(!data||data.ok!==true)throw new Error(data?.error||"No fue posible consultar las asistencias.");
       datosAsistencias=data;
-      renderizarAsistencias(data);
+
+const resultado = data.asistencias || data;
+
+if(resultado.ok === false){
+  throw new Error(
+    resultado.error ||
+    "No fue posible consultar las asistencias."
+  );
+}
+
+renderizarAsistencias(resultado);
+      
     }catch(error){
       console.error("Error asistencias:",error);
       document.getElementById("matrizAsistencias").innerHTML=`<div class="empty">Error al consultar las asistencias.<br><br>${escapeHtml(error.message)}</div>`;
