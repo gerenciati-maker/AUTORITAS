@@ -1,10 +1,11 @@
+```html
 <!DOCTYPE html>
 <html lang="es">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Estado de Fuerza | Directorio Digital</title>
+<title>AUTORITAS | Portal Administrativo</title>
 
 <style>
 
@@ -33,14 +34,14 @@ body{
   color:#172b4d;
 }
 
-/* =========================
+/* =====================================================
    ENCABEZADO
-========================= */
+===================================================== */
 
 .header{
   background:linear-gradient(135deg,var(--azul-oscuro),var(--azul));
   color:white;
-  padding:22px 30px;
+  padding:18px 30px 0;
   box-shadow:0 4px 15px rgba(0,0,0,.15);
 }
 
@@ -51,6 +52,7 @@ body{
   align-items:center;
   justify-content:space-between;
   gap:20px;
+  padding-bottom:18px;
 }
 
 .brand{
@@ -97,9 +99,57 @@ body{
   background:rgba(255,255,255,.2);
 }
 
-/* =========================
+/* =====================================================
+   NAVEGACIÓN
+===================================================== */
+
+.nav-modulos{
+  max-width:1450px;
+  margin:auto;
+  display:flex;
+  gap:5px;
+  overflow-x:auto;
+}
+
+.nav-modulo{
+  border:0;
+  background:transparent;
+  color:rgba(255,255,255,.78);
+  padding:13px 20px;
+  cursor:pointer;
+  font-size:12px;
+  font-weight:800;
+  letter-spacing:.3px;
+  border-radius:9px 9px 0 0;
+  white-space:nowrap;
+  transition:.2s;
+}
+
+.nav-modulo:hover{
+  background:rgba(255,255,255,.10);
+  color:white;
+}
+
+.nav-modulo.active{
+  background:white;
+  color:var(--azul);
+}
+
+/* =====================================================
+   CONTENEDORES DE MÓDULOS
+===================================================== */
+
+.modulo{
+  display:none;
+}
+
+.modulo.activo{
+  display:block;
+}
+
+/* =====================================================
    CONTENEDOR
-========================= */
+===================================================== */
 
 .container{
   max-width:1450px;
@@ -107,9 +157,9 @@ body{
   padding:25px;
 }
 
-/* =========================
+/* =====================================================
    TARJETAS PRINCIPALES
-========================= */
+===================================================== */
 
 .metrics{
   display:grid;
@@ -159,9 +209,9 @@ body{
   color:#8a96a3;
 }
 
-/* =========================
+/* =====================================================
    FILTROS
-========================= */
+===================================================== */
 
 .filters{
   background:white;
@@ -211,9 +261,24 @@ body{
   background:#e2e8ef;
 }
 
-/* =========================
+.btn-primary{
+  height:42px;
+  border:0;
+  border-radius:9px;
+  padding:0 20px;
+  background:var(--azul);
+  color:white;
+  cursor:pointer;
+  font-weight:bold;
+}
+
+.btn-primary:hover{
+  background:var(--azul-oscuro);
+}
+
+/* =====================================================
    ESTRUCTURA
-========================= */
+===================================================== */
 
 .section-title{
   display:flex;
@@ -255,9 +320,9 @@ body{
   border-radius:50%;
 }
 
-/* =========================
+/* =====================================================
    PROYECTOS
-========================= */
+===================================================== */
 
 .project{
   background:white;
@@ -334,9 +399,9 @@ body{
   display:block;
 }
 
-/* =========================
+/* =====================================================
    SERVICIOS
-========================= */
+===================================================== */
 
 .service{
   margin-top:14px;
@@ -404,9 +469,9 @@ body{
   display:block;
 }
 
-/* =========================
+/* =====================================================
    POSICIONES
-========================= */
+===================================================== */
 
 .position{
   margin-bottom:13px;
@@ -424,9 +489,9 @@ body{
   margin:0 0 8px 3px;
 }
 
-/* =========================
+/* =====================================================
    PERSONAS
-========================= */
+===================================================== */
 
 .people{
   display:grid;
@@ -486,9 +551,9 @@ body{
   font-weight:bold;
 }
 
-/* =========================
+/* =====================================================
    BAJAS
-========================= */
+===================================================== */
 
 .bajas-section{
   margin-top:30px;
@@ -537,9 +602,9 @@ body{
   border-bottom:0;
 }
 
-/* =========================
+/* =====================================================
    ESTADOS
-========================= */
+===================================================== */
 
 .empty{
   background:white;
@@ -558,9 +623,279 @@ body{
   color:#667085;
 }
 
-/* =========================
+/* =====================================================
+   TABLAS DINÁMICAS
+===================================================== */
+
+.tabla-box{
+  background:white;
+  border:1px solid var(--gris-borde);
+  border-radius:16px;
+  padding:18px;
+  box-shadow:var(--sombra);
+}
+
+.tabla-wrap{
+  width:100%;
+  overflow:auto;
+  border:1px solid #e1e7ee;
+  border-radius:12px;
+}
+
+.tabla-dinamica{
+  width:100%;
+  border-collapse:collapse;
+  min-width:700px;
+}
+
+.tabla-dinamica th,
+.tabla-dinamica td{
+  padding:11px 13px;
+  border-bottom:1px solid #edf1f5;
+  border-right:1px solid #edf1f5;
+  text-align:left;
+  font-size:12px;
+  white-space:nowrap;
+}
+
+.tabla-dinamica th{
+  background:#f4f7fa;
+  color:#475467;
+  font-size:10px;
+  text-transform:uppercase;
+  font-weight:800;
+  position:sticky;
+  top:0;
+  z-index:2;
+}
+
+.tabla-dinamica tbody tr:hover{
+  background:#f8fbff;
+}
+
+.tabla-dinamica td{
+  color:#344054;
+}
+
+/* =====================================================
+   ASISTENCIAS
+===================================================== */
+
+.asistencias-section{
+  padding:25px;
+  max-width:1450px;
+  margin:auto;
+}
+
+.asistencias-box{
+  background:white;
+  border:1px solid var(--gris-borde);
+  border-radius:16px;
+  padding:20px;
+  box-shadow:var(--sombra);
+}
+
+.asistencias-filtros{
+  display:grid;
+  grid-template-columns:2fr 1fr 1fr auto;
+  gap:12px;
+  margin-bottom:20px;
+}
+
+.asistencias-info{
+  background:#f8fbff;
+  border:1px solid #dcecff;
+  border-radius:12px;
+  padding:15px;
+  margin-bottom:20px;
+}
+
+.asistencias-info-grid{
+  display:grid;
+  grid-template-columns:2fr 1fr 1fr;
+  gap:15px;
+}
+
+.asistencia-info-label{
+  font-size:10px;
+  color:#667085;
+  font-weight:bold;
+  text-transform:uppercase;
+}
+
+.asistencia-info-value{
+  margin-top:4px;
+  font-size:14px;
+  font-weight:800;
+  color:#17365d;
+}
+
+.faltas-box{
+  margin-bottom:20px;
+  border:1px solid #f1d3d0;
+  border-radius:12px;
+  overflow:hidden;
+}
+
+.faltas-header{
+  padding:13px 16px;
+  background:#fff8f7;
+  color:#9f2017;
+  font-weight:800;
+}
+
+.faltas-table{
+  width:100%;
+  border-collapse:collapse;
+}
+
+.faltas-table th,
+.faltas-table td{
+  padding:9px 12px;
+  border-bottom:1px solid #edf1f5;
+  text-align:left;
+  font-size:12px;
+}
+
+.faltas-table th{
+  background:#fafafa;
+  color:#667085;
+  font-size:10px;
+  text-transform:uppercase;
+}
+
+.faltas-numero{
+  font-weight:800;
+  color:#d92d20;
+}
+
+.asistencia-table-wrap{
+  width:100%;
+  overflow:auto;
+  border:1px solid #e1e7ee;
+  border-radius:12px;
+}
+
+.asistencia-table{
+  width:100%;
+  border-collapse:collapse;
+  min-width:850px;
+}
+
+.asistencia-table th,
+.asistencia-table td{
+  border-right:1px solid #e5eaf0;
+  border-bottom:1px solid #e5eaf0;
+  padding:8px;
+  text-align:center;
+  font-size:11px;
+  white-space:nowrap;
+}
+
+.asistencia-table th{
+  background:#f4f7fa;
+  color:#475467;
+  font-weight:800;
+  position:sticky;
+  top:0;
+  z-index:2;
+}
+
+.asistencia-table th:first-child,
+.asistencia-table td:first-child{
+  position:sticky;
+  left:0;
+  background:white;
+  z-index:3;
+  text-align:left;
+}
+
+.asistencia-table th:first-child{
+  background:#f4f7fa;
+  z-index:4;
+}
+
+.asistencia-nombre{
+  font-weight:800;
+  color:#243b53;
+}
+
+.asistencia-numero{
+  font-size:10px;
+  color:#667085;
+  margin-top:2px;
+}
+
+.codigo-asistencia{
+  display:inline-flex;
+  min-width:28px;
+  height:28px;
+  padding:0 6px;
+  align-items:center;
+  justify-content:center;
+  border-radius:7px;
+  font-weight:800;
+  background:#f2f4f7;
+  color:#667085;
+}
+
+.codigo-A{
+  background:#e8f7ef;
+  color:#159957;
+}
+
+.codigo-F{
+  background:#fdecea;
+  color:#d92d20;
+}
+
+.codigo-AP{
+  background:#eaf4ff;
+  color:#0057a8;
+}
+
+.codigo-D{
+  background:#f2f4f7;
+  color:#667085;
+}
+
+.codigo-R{
+  background:#fff4d6;
+  color:#9a6700;
+}
+
+.codigo-FR{
+  background:#fff0e6;
+  color:#c2410c;
+}
+
+.codigo-V,
+.codigo-AB,
+.codigo-VAC,
+.codigo-INC,
+.codigo-NC{
+  background:#f1eaff;
+  color:#6941c6;
+}
+
+.asistencias-leyenda{
+  display:flex;
+  flex-wrap:wrap;
+  gap:8px;
+  margin-top:15px;
+}
+
+.leyenda-item{
+  display:flex;
+  align-items:center;
+  gap:5px;
+  font-size:11px;
+  color:#667085;
+}
+
+/* =====================================================
    RESPONSIVE
-========================= */
+===================================================== */
 
 @media(max-width:1000px){
 
@@ -574,10 +909,22 @@ body{
 
 }
 
+@media(max-width:900px){
+
+  .asistencias-filtros{
+    grid-template-columns:1fr 1fr;
+  }
+
+  .asistencias-info-grid{
+    grid-template-columns:1fr;
+  }
+
+}
+
 @media(max-width:650px){
 
   .header{
-    padding:18px;
+    padding:18px 18px 0;
   }
 
   .header-inner{
@@ -613,45 +960,29 @@ body{
     grid-template-columns:1fr;
   }
 
+  .asistencias-section{
+    padding:15px;
+  }
+
+  .asistencias-filtros{
+    grid-template-columns:1fr;
+  }
+
+  .nav-modulo{
+    padding:12px 13px;
+    font-size:10px;
+  }
+
 }
-
-
-/* =====================================================
-   ASISTENCIAS
-===================================================== */
-.asistencias-section{margin-top:30px}
-.asistencias-box{background:white;border:1px solid var(--gris-borde);border-radius:16px;padding:20px;box-shadow:var(--sombra)}
-.asistencias-filtros{display:grid;grid-template-columns:2fr 1fr 1fr auto;gap:12px;margin-bottom:20px}
-.asistencias-info{background:#f8fbff;border:1px solid #dcecff;border-radius:12px;padding:15px;margin-bottom:20px}
-.asistencias-info-grid{display:grid;grid-template-columns:2fr 1fr 1fr;gap:15px}
-.asistencia-info-label{font-size:10px;color:#667085;font-weight:bold;text-transform:uppercase}
-.asistencia-info-value{margin-top:4px;font-size:14px;font-weight:800;color:#17365d}
-.faltas-box{margin-bottom:20px;border:1px solid #f1d3d0;border-radius:12px;overflow:hidden}
-.faltas-header{padding:13px 16px;background:#fff8f7;color:#9f2017;font-weight:800}
-.faltas-table{width:100%;border-collapse:collapse}
-.faltas-table th,.faltas-table td{padding:9px 12px;border-bottom:1px solid #edf1f5;text-align:left;font-size:12px}
-.faltas-table th{background:#fafafa;color:#667085;font-size:10px;text-transform:uppercase}
-.faltas-numero{font-weight:800;color:#d92d20}
-.asistencia-table-wrap{width:100%;overflow:auto;border:1px solid #e1e7ee;border-radius:12px}
-.asistencia-table{width:100%;border-collapse:collapse;min-width:850px}
-.asistencia-table th,.asistencia-table td{border-right:1px solid #e5eaf0;border-bottom:1px solid #e5eaf0;padding:8px;text-align:center;font-size:11px;white-space:nowrap}
-.asistencia-table th{background:#f4f7fa;color:#475467;font-weight:800;position:sticky;top:0;z-index:2}
-.asistencia-table th:first-child,.asistencia-table td:first-child{position:sticky;left:0;background:white;z-index:3;text-align:left}
-.asistencia-table th:first-child{background:#f4f7fa;z-index:4}
-.asistencia-nombre{font-weight:800;color:#243b53}
-.asistencia-numero{font-size:10px;color:#667085;margin-top:2px}
-.codigo-asistencia{display:inline-flex;min-width:28px;height:28px;padding:0 6px;align-items:center;justify-content:center;border-radius:7px;font-weight:800;background:#f2f4f7;color:#667085}
-.codigo-A{background:#e8f7ef;color:#159957}.codigo-F{background:#fdecea;color:#d92d20}.codigo-AP{background:#eaf4ff;color:#0057a8}.codigo-D{background:#f2f4f7;color:#667085}.codigo-R{background:#fff4d6;color:#9a6700}.codigo-FR{background:#fff0e6;color:#c2410c}
-.codigo-V,.codigo-AB,.codigo-VAC,.codigo-INC,.codigo-NC{background:#f1eaff;color:#6941c6}
-.asistencias-leyenda{display:flex;flex-wrap:wrap;gap:8px;margin-top:15px}
-.leyenda-item{display:flex;align-items:center;gap:5px;font-size:11px;color:#667085}
-@media(max-width:900px){.asistencias-filtros{grid-template-columns:1fr 1fr}.asistencias-info-grid{grid-template-columns:1fr}}
-@media(max-width:600px){.asistencias-filtros{grid-template-columns:1fr}}
 
 </style>
 </head>
 
 <body>
+
+<!-- =====================================================
+     ENCABEZADO
+===================================================== -->
 
 <header class="header">
 
@@ -664,8 +995,8 @@ body{
       </div>
 
       <div>
-        <h1>Estado de Fuerza</h1>
-        <p>Directorio Digital de Personal</p>
+        <h1>AUTORITAS</h1>
+        <p>Portal Administrativo</p>
       </div>
 
     </div>
@@ -678,1952 +1009,240 @@ body{
 
   </div>
 
+  <!-- ===================================================
+       NAVEGACIÓN PRINCIPAL
+  ==================================================== -->
+
+  <nav class="nav-modulos">
+
+    <button
+      class="nav-modulo active"
+      data-modulo="moduloEstadoFuerza"
+      onclick="mostrarModulo('moduloEstadoFuerza',this)">
+      ESTADO DE FUERZA
+    </button>
+
+    <button
+      class="nav-modulo"
+      data-modulo="moduloDirectorio"
+      onclick="mostrarModulo('moduloDirectorio',this)">
+      DIRECTORIO DE SERVICIOS
+    </button>
+
+    <button
+      class="nav-modulo"
+      data-modulo="moduloUnidades"
+      onclick="mostrarModulo('moduloUnidades',this)">
+      UNIDADES
+    </button>
+
+    <button
+      class="nav-modulo"
+      data-modulo="moduloAsistencias"
+      onclick="mostrarModulo('moduloAsistencias',this)">
+      ASISTENCIAS
+    </button>
+
+  </nav>
+
 </header>
 
 
-<main class="container">
-
-  <!-- =========================
-       MÉTRICAS
-  ========================== -->
-
-  <section class="metrics">
-
-    <div class="metric">
-      <div class="metric-label">
-        Proyectos
-      </div>
-
-      <div
-        class="metric-value"
-        id="metricProyectos">
-        0
-      </div>
-
-      <div class="metric-detail">
-        Proyectos activos
-      </div>
-    </div>
-
-
-    <div class="metric">
-      <div class="metric-label">
-        Personal
-      </div>
-
-      <div
-        class="metric-value"
-        id="metricPersonal">
-        0
-      </div>
-
-      <div class="metric-detail">
-        Personal activo
-      </div>
-    </div>
-
-
-    <div class="metric">
-      <div class="metric-label">
-        Servicios
-      </div>
-
-      <div
-        class="metric-value"
-        id="metricServicios">
-        0
-      </div>
-
-      <div class="metric-detail">
-        Servicios con personal
-      </div>
-    </div>
-
-
-    <div class="metric">
-      <div class="metric-label">
-        Bajas
-      </div>
-
-      <div
-        class="metric-value"
-        id="metricBajas">
-        0
-      </div>
-
-      <div class="metric-detail">
-        Personal dado de baja
-      </div>
-    </div>
-
-  </section>
-
-
-  <!-- =========================
-       FILTROS
-  ========================== -->
-
-  <section class="filters">
-
-    <div class="filters-grid">
-
-      <input
-        id="search"
-        class="input"
-        type="text"
-        autocomplete="off"
-        placeholder="Buscar por nombre, empleado, servicio o posición..."
-      >
-
-
-      <select
-        id="areaFilter"
-        class="select">
-
-        <option value="">
-          Todas las áreas
-        </option>
-
-      </select>
-
-
-      <select
-        id="projectFilter"
-        class="select">
-
-        <option value="">
-          Todos los proyectos
-        </option>
-
-      </select>
-
-
-      <button
-        class="btn-clear"
-        onclick="limpiarFiltros()">
-
-        Limpiar
-
-      </button>
-
-    </div>
-
-  </section>
-
-
-  <!-- =========================
-       DIRECTORIO
-  ========================== -->
-
-  <section>
-
-    <div class="section-title">
-
-      <h2>
-        Estructura de personal
-      </h2>
-
-      <span id="resultInfo">
-        Cargando...
-      </span>
-
-    </div>
-
-
-    <div
-      id="organigrama"
-      class="loading">
-
-      Cargando información...
-
-    </div>
-
-  </section>
-
-
-  <!-- =========================
-       BAJAS
-  ========================== -->
-
-  <section class="bajas-section">
-
-    <div class="section-title">
-
-      <h2>
-        Personal dado de baja
-      </h2>
-
-      <span id="bajasInfo">
-        0 registros
-      </span>
-
-    </div>
-
-
-    <div
-      id="bajasBox"
-      class="bajas-box">
-
-      <div
-        class="bajas-header"
-        onclick="toggleBajas()">
-
-        <div class="bajas-title">
-          🔴 Personal dado de baja
-        </div>
-
-        <div id="bajasArrow">
-          ▼
-        </div>
-
-      </div>
-
-
-      <div
-        id="bajasBody"
-        class="bajas-body">
-
-      </div>
-
-    </div>
-
-  </section>
-
-</main>
-
-
 <!-- =====================================================
-     ASISTENCIAS
+     MÓDULO 1
+     ESTADO DE FUERZA
 ===================================================== -->
-<section class="asistencias-section">
-  <div class="section-title">
-    <h2>Asistencias</h2>
-    <span id="asistenciasInfo">Selecciona un servicio y periodo</span>
-  </div>
-  <div class="asistencias-box">
-    <div class="asistencias-filtros">
-      <select id="asistenciaServicio" class="select">
-        <option value="">Seleccionar servicio / inmueble</option>
-      </select>
-      <input id="asistenciaFechaInicio" class="input" type="date">
-      <input id="asistenciaFechaFin" class="input" type="date">
-      <button class="btn-clear" onclick="consultarAsistencias()">Consultar</button>
-    </div>
 
-    <div id="asistenciaInfoServicio" class="asistencias-info" style="display:none;">
-      <div class="asistencias-info-grid">
-        <div><div class="asistencia-info-label">Servicio / Inmueble</div><div id="asistenciaServicioTexto" class="asistencia-info-value"></div></div>
-        <div><div class="asistencia-info-label">Fecha inicial</div><div id="asistenciaFechaInicioTexto" class="asistencia-info-value"></div></div>
-        <div><div class="asistencia-info-label">Fecha final</div><div id="asistenciaFechaFinTexto" class="asistencia-info-value"></div></div>
+<section
+  id="moduloEstadoFuerza"
+  class="modulo activo">
+
+  <main class="container">
+
+    <!-- MÉTRICAS -->
+
+    <section class="metrics">
+
+      <div class="metric">
+
+        <div class="metric-label">
+          Proyectos
+        </div>
+
+        <div
+          class="metric-value"
+          id="metricProyectos">
+          0
+        </div>
+
+        <div class="metric-detail">
+          Proyectos activos
+        </div>
+
       </div>
-    </div>
 
-    <div id="seguimientoFaltas" class="faltas-box" style="display:none;">
-      <div class="faltas-header">⚠️ SEGUIMIENTO DE FALTAS</div>
-      <div id="faltasContenido"></div>
-    </div>
 
-    <div id="matrizAsistencias" class="empty">
-      Selecciona un servicio y un periodo para consultar las asistencias.
-    </div>
+      <div class="metric">
 
-    <div class="asistencias-leyenda">
-      <div class="leyenda-item"><span class="codigo-asistencia codigo-A">A</span> Asistencia</div>
-      <div class="leyenda-item"><span class="codigo-asistencia codigo-D">D</span> Descanso</div>
-      <div class="leyenda-item"><span class="codigo-asistencia codigo-F">F</span> Falta</div>
-      <div class="leyenda-item"><span class="codigo-asistencia codigo-AP">AP</span> Apoyo</div>
-      <div class="leyenda-item"><span class="codigo-asistencia codigo-R">R</span> Retardo</div>
-      <div class="leyenda-item"><span class="codigo-asistencia codigo-FR">FR</span> Falta de registro</div>
-    </div>
-  </div>
-</section>
-
-
-<script>
-
-/* =====================================================
-   CONFIGURACIÓN
-===================================================== */
-
-const API_URL =
-  "https://script.google.com/macros/s/AKfycbxP3-4RBiMMVSmWAyamj9-HC4pR5Z2rx0KzDlyIsWWJ2iHILoFCxzGosRmWcz8rTq4/exec";
-
-
-/* =====================================================
-   VARIABLES
-===================================================== */
-
-let servicios = [];
-
-let personal = [];
-
-let cargando = false;
-
-
-/* =====================================================
-   NORMALIZAR TEXTO
-===================================================== */
-
-function normalizarTexto(valor){
-
-  return String(valor ?? "")
-    .normalize("NFD")
-    .replace(/[\u0300-\u036f]/g,"")
-    .replace(/\s+/g," ")
-    .trim()
-    .toUpperCase();
-
-}
-
-
-/* =====================================================
-   BUSCAR CAMPO SIN IMPORTAR MAYÚSCULAS / ACENTOS
-===================================================== */
-
-function obtenerCampo(objeto, posibles){
-
-  if(!objeto){
-    return "";
-  }
-
-  const claves =
-    Object.keys(objeto);
-
-  const buscadas =
-    posibles.map(normalizarTexto);
-
-  const clave =
-    claves.find(
-      clave =>
-        buscadas.includes(
-          normalizarTexto(clave)
-        )
-    );
-
-  if(!clave){
-    return "";
-  }
-
-  return objeto[clave];
-
-}
-
-
-/* =====================================================
-   CAMPOS PERSONAL
-===================================================== */
-
-function nombrePersona(persona){
-
-  return obtenerCampo(
-    persona,
-    [
-      "Nombre",
-      "NOMBRE",
-      "NOMBRE COMPLETO"
-    ]
-  );
-
-}
-
-
-function numeroEmpleado(persona){
-
-  return obtenerCampo(
-    persona,
-    [
-      "No Empleado",
-      "NO EMPLEADO",
-      "NUMERO EMPLEADO",
-      "NÚMERO EMPLEADO",
-      "NUM EMPLEADO"
-    ]
-  );
-
-}
-
-
-function servicioPersona(persona){
-
-  return obtenerCampo(
-    persona,
-    [
-      "Servicio",
-      "SERVICIO"
-    ]
-  );
-
-}
-
-
-function areaPersona(persona){
-
-  return obtenerCampo(
-    persona,
-    [
-      "AREA",
-      "ÁREA"
-    ]
-  );
-
-}
-
-
-function proyectoPersona(persona){
-
-  return obtenerCampo(
-    persona,
-    [
-      "PROYECTO"
-    ]
-  );
-
-}
-
-
-function posicionPersona(persona){
-
-  return obtenerCampo(
-    persona,
-    [
-      "POSICION",
-      "POSICIÓN",
-      "PUESTO"
-    ]
-  );
-
-}
-
-
-function estatusPersona(persona){
-
-  return obtenerCampo(
-    persona,
-    [
-      "ESTATUS",
-      "STATUS"
-    ]
-  );
-
-}
-
-
-function fechaBaja(persona){
-
-  return obtenerCampo(
-    persona,
-    [
-      "FECHA BAJA",
-      "FECHA DE BAJA"
-    ]
-  );
-
-}
-
-
-/* =====================================================
-   FOTO
-===================================================== */
-
-function obtenerFoto(persona){
-
-  return obtenerCampo(
-    persona,
-    [
-      "FOTO",
-      "URL FOTO",
-      "FOTO URL",
-      "FOTOGRAFIA",
-      "FOTOGRAFÍA",
-      "IMAGEN",
-      "IMAGEN URL"
-    ]
-  );
-
-}
-
-
-/* =====================================================
-   ESTATUS
-===================================================== */
-
-function esActivo(persona){
-
-  return (
-    normalizarTexto(
-      estatusPersona(persona)
-    ) === "ACTIVO"
-  );
-
-}
-
-
-function esBaja(persona){
-
-  return (
-    normalizarTexto(
-      estatusPersona(persona)
-    ) === "BAJA"
-  );
-
-}
-
-
-/* =====================================================
-   FOTO DRIVE
-===================================================== */
-
-function normalizarFoto(url){
-
-  if(!url){
-    return "";
-  }
-
-  url =
-    String(url).trim();
-
-  if(!url){
-    return "";
-  }
-
-
-  /* Ya es thumbnail */
-
-  if(
-    url.includes(
-      "drive.google.com/thumbnail"
-    )
-  ){
-
-    return url;
-
-  }
-
-
-  /* /file/d/ID/view */
-
-  let match =
-    url.match(
-      /\/file\/d\/([^/]+)/
-    );
-
-  if(match){
-
-    return (
-      "https://drive.google.com/thumbnail?id=" +
-      match[1] +
-      "&sz=w400"
-    );
-
-  }
-
-
-  /* ?id=ID */
-
-  match =
-    url.match(
-      /[?&]id=([^&]+)/
-    );
-
-  if(match){
-
-    return (
-      "https://drive.google.com/thumbnail?id=" +
-      match[1] +
-      "&sz=w400"
-    );
-
-  }
-
-
-  return url;
-
-}
-
-
-/* =====================================================
-   AVATAR
-===================================================== */
-
-function avatarFallback(nombre){
-
-  const iniciales =
-    String(nombre || "P")
-      .split(" ")
-      .filter(Boolean)
-      .slice(0,2)
-      .map(
-        palabra =>
-          palabra.charAt(0)
-      )
-      .join("")
-      .toUpperCase();
-
-  return (
-    "data:image/svg+xml;charset=UTF-8," +
-    encodeURIComponent(`
-      <svg xmlns="http://www.w3.org/2000/svg"
-           width="120"
-           height="140"
-           viewBox="0 0 120 140">
-
-        <rect width="120" height="140"
-              rx="12"
-              fill="#eaf4ff"/>
-
-        <circle cx="60"
-                cy="48"
-                r="25"
-                fill="#7aa9d6"/>
-
-        <path d="M20 125
-                 C22 91 42 78 60 78
-                 C78 78 98 91 100 125"
-              fill="#7aa9d6"/>
-
-        <text x="60"
-              y="133"
-              text-anchor="middle"
-              font-family="Arial"
-              font-size="13"
-              font-weight="bold"
-              fill="#0057a8">
-          ${iniciales}
-        </text>
-
-      </svg>
-    `)
-  );
-
-}
-
-
-/* =====================================================
-   CARGAR DATOS
-===================================================== */
-
-function cargarDatos(){
-
-  if(cargando){
-    return;
-  }
-
-  cargando = true;
-
-  document
-    .getElementById("organigrama")
-    .innerHTML =
-      `<div class="loading">
-        Cargando información...
-      </div>`;
-
-
-  const callback =
-    "callback_" +
-    Date.now();
-
-
-  window[callback] =
-    function(data){
-
-      try{
-
-        if(
-          !data ||
-          data.ok !== true
-        ){
-
-          throw new Error(
-            data?.error ||
-            "Respuesta inválida"
-          );
-
-        }
-
-
-        servicios =
-          Array.isArray(
-            data.servicios
-          )
-            ? data.servicios
-            : [];
-
-
-        personal =
-          Array.isArray(
-            data.personal
-          )
-            ? data.personal
-            : [];
-
-
-        console.log(
-          "PERSONAL recibido:",
-          personal
-        );
-
-
-        console.log(
-          "SERVICIOS recibido:",
-          servicios
-        );
-
-
-        construirFiltros();
-
-        construirServiciosAsistencias();
-
-        actualizarTodo();
-
-
-      }catch(error){
-
-        console.error(error);
-
-        document
-          .getElementById("organigrama")
-          .innerHTML =
-            `<div class="empty">
-              Error al procesar la información.
-              <br><br>
-              ${escapeHtml(error.message)}
-            </div>`;
-
-      }
-
-
-      cargando = false;
-
-      try{
-        delete window[callback];
-      }catch(e){}
-
-    };
-
-
-  const script =
-    document.createElement("script");
-
-
-  script.src =
-    API_URL +
-    "?callback=" +
-    callback +
-    "&t=" +
-    Date.now();
-
-
-  script.onerror =
-    function(){
-
-      cargando = false;
-
-      document
-        .getElementById("organigrama")
-        .innerHTML =
-          `<div class="empty">
-            No fue posible conectar con la base de datos.
-          </div>`;
-
-      try{
-        delete window[callback];
-      }catch(e){}
-
-    };
-
-
-  document
-    .body
-    .appendChild(script);
-
-}
-
-
-/* =====================================================
-   ESCAPE HTML
-===================================================== */
-
-function escapeHtml(valor){
-
-  return String(valor ?? "")
-    .replace(/&/g,"&amp;")
-    .replace(/</g,"&lt;")
-    .replace(/>/g,"&gt;")
-    .replace(/"/g,"&quot;")
-    .replace(/'/g,"&#039;");
-
-}
-
-
-/* =====================================================
-   FILTROS
-===================================================== */
-
-function valoresUnicos(lista){
-
-  return [
-    ...new Set(
-      lista
-        .map(
-          valor =>
-            String(valor ?? "").trim()
-        )
-        .filter(Boolean)
-    )
-  ].sort(
-    (a,b) =>
-      normalizarTexto(a)
-        .localeCompare(
-          normalizarTexto(b),
-          "es"
-        )
-  );
-
-}
-
-
-function construirFiltros(){
-
-  const activos =
-    personal.filter(esActivo);
-
-
-  const areas =
-    valoresUnicos(
-      activos.map(areaPersona)
-    );
-
-
-  const proyectos =
-    valoresUnicos(
-      activos.map(proyectoPersona)
-    );
-
-
-  const areaSelect =
-    document.getElementById(
-      "areaFilter"
-    );
-
-
-  const projectSelect =
-    document.getElementById(
-      "projectFilter"
-    );
-
-
-  areaSelect.innerHTML =
-    `<option value="">
-      Todas las áreas
-    </option>`;
-
-
-  areas.forEach(area => {
-
-    areaSelect.innerHTML +=
-      `<option value="${escapeHtml(area)}">
-        ${escapeHtml(area)}
-      </option>`;
-
-  });
-
-
-  projectSelect.innerHTML =
-    `<option value="">
-      Todos los proyectos
-    </option>`;
-
-
-  proyectos.forEach(proyecto => {
-
-    projectSelect.innerHTML +=
-      `<option value="${escapeHtml(proyecto)}">
-        ${escapeHtml(proyecto)}
-      </option>`;
-
-  });
-
-}
-
-
-/* =====================================================
-   PERSONAL FILTRADO
-===================================================== */
-
-function obtenerPersonalFiltrado(){
-
-  const texto =
-    normalizarTexto(
-      document.getElementById("search").value
-    );
-
-
-  const area =
-    normalizarTexto(
-      document.getElementById("areaFilter").value
-    );
-
-
-  const proyecto =
-    normalizarTexto(
-      document.getElementById("projectFilter").value
-    );
-
-
-  return personal.filter(persona => {
-
-    if(!esActivo(persona)){
-      return false;
-    }
-
-
-    if(area){
-
-      if(
-        normalizarTexto(
-          areaPersona(persona)
-        ) !== area
-      ){
-
-        return false;
-
-      }
-
-    }
-
-
-    if(proyecto){
-
-      if(
-        normalizarTexto(
-          proyectoPersona(persona)
-        ) !== proyecto
-      ){
-
-        return false;
-
-      }
-
-    }
-
-
-    if(texto){
-
-      const contenido =
-        [
-          nombrePersona(persona),
-          numeroEmpleado(persona),
-          servicioPersona(persona),
-          areaPersona(persona),
-          proyectoPersona(persona),
-          posicionPersona(persona)
-        ]
-        .join(" ");
-
-
-      if(
-        !normalizarTexto(
-          contenido
-        ).includes(texto)
-      ){
-
-        return false;
-
-      }
-
-    }
-
-
-    return true;
-
-  });
-
-}
-
-
-/* =====================================================
-   MÉTRICAS
-===================================================== */
-
-function actualizarMetricas(){
-
-  const activos =
-    personal.filter(esActivo);
-
-
-  const bajas =
-    personal.filter(esBaja);
-
-
-  const proyectos =
-    new Set(
-      activos
-        .map(proyectoPersona)
-        .map(normalizarTexto)
-        .filter(Boolean)
-    );
-
-
-  const serviciosPersonal =
-    new Set(
-      activos
-        .map(servicioPersona)
-        .map(normalizarTexto)
-        .filter(Boolean)
-    );
-
-
-  document.getElementById(
-    "metricProyectos"
-  ).textContent =
-    proyectos.size;
-
-
-  document.getElementById(
-    "metricPersonal"
-  ).textContent =
-    activos.length;
-
-
-  document.getElementById(
-    "metricServicios"
-  ).textContent =
-    serviciosPersonal.size;
-
-
-  document.getElementById(
-    "metricBajas"
-  ).textContent =
-    bajas.length;
-
-
-  document.getElementById(
-    "bajasInfo"
-  ).textContent =
-    bajas.length +
-    (
-      bajas.length === 1
-        ? " registro"
-        : " registros"
-    );
-
-}
-
-
-/* =====================================================
-   BUSCAR INFO DE SERVICIO
-===================================================== */
-
-function obtenerInfoServicio(nombre){
-
-  const buscado =
-    normalizarTexto(nombre);
-
-
-  if(!buscado){
-    return null;
-  }
-
-
-  return servicios.find(servicio => {
-
-    const codigo =
-      normalizarTexto(
-        obtenerCampo(
-          servicio,
-          [
-            "CODIFICACIÓN DE UN FORMULARIO Y SERVICIO",
-            "CODIFICACION DE UN FORMULARIO Y SERVICIO"
-          ]
-        )
-      );
-
-
-    const nombreServicio =
-      normalizarTexto(
-        obtenerCampo(
-          servicio,
-          [
-            "SERVICIO"
-          ]
-        )
-      );
-
-
-    return (
-      codigo === buscado ||
-      nombreServicio === buscado
-    );
-
-  }) || null;
-
-}
-
-
-/* =====================================================
-   RENDERIZAR DIRECTORIO
-===================================================== */
-
-function renderizarOrganigrama(){
-
-  const contenedor =
-    document.getElementById(
-      "organigrama"
-    );
-
-
-  const activos =
-    obtenerPersonalFiltrado();
-
-
-  document.getElementById(
-    "resultInfo"
-  ).textContent =
-    activos.length +
-    (
-      activos.length === 1
-        ? " persona activa"
-        : " personas activas"
-    );
-
-
-  if(!activos.length){
-
-    contenedor.innerHTML =
-      `<div class="empty">
-        No se encontraron personas con los filtros actuales.
-      </div>`;
-
-    return;
-
-  }
-
-
-  /* =================================================
-     AREA → PROYECTO → SERVICIO → POSICIÓN
-  ================================================= */
-
-  const estructura =
-    new Map();
-
-
-  activos.forEach(persona => {
-
-    const area =
-      areaPersona(persona) ||
-      "SIN ÁREA";
-
-
-    const proyecto =
-      proyectoPersona(persona) ||
-      "SIN PROYECTO";
-
-
-    const servicio =
-      servicioPersona(persona) ||
-      "SIN SERVICIO";
-
-
-    const posicion =
-      posicionPersona(persona) ||
-      "SIN POSICIÓN";
-
-
-    if(!estructura.has(area)){
-
-      estructura.set(
-        area,
-        new Map()
-      );
-
-    }
-
-
-    const proyectos =
-      estructura.get(area);
-
-
-    if(!proyectos.has(proyecto)){
-
-      proyectos.set(
-        proyecto,
-        new Map()
-      );
-
-    }
-
-
-    const serviciosMap =
-      proyectos.get(proyecto);
-
-
-    if(!serviciosMap.has(servicio)){
-
-      serviciosMap.set(
-        servicio,
-        new Map()
-      );
-
-    }
-
-
-    const posiciones =
-      serviciosMap.get(servicio);
-
-
-    if(!posiciones.has(posicion)){
-
-      posiciones.set(
-        posicion,
-        []
-      );
-
-    }
-
-
-    posiciones
-      .get(posicion)
-      .push(persona);
-
-  });
-
-
-  let html = "";
-
-  let numeroProyecto = 0;
-
-
-  estructura.forEach(
-    (proyectos, area) => {
-
-      html +=
-        `<div class="area">
-
-          <div class="area-title">
-            ${escapeHtml(area)}
-          </div>`;
-
-
-      proyectos.forEach(
-        (serviciosMap, proyecto) => {
-
-          numeroProyecto++;
-
-
-          let totalPersonas = 0;
-
-          serviciosMap.forEach(
-            posiciones => {
-
-              posiciones.forEach(
-                personas => {
-
-                  totalPersonas +=
-                    personas.length;
-
-                }
-              );
-
-            }
-          );
-
-
-          const abierto =
-            numeroProyecto === 1
-              ? "open"
-              : "";
-
-
-          html +=
-            `<article
-              class="project ${abierto}">
-
-              <button
-                class="project-header"
-                onclick="toggleProject(this)">
-
-                <div class="project-left">
-
-                  <div class="project-icon">
-                    ${numeroProyecto}
-                  </div>
-
-                  <div>
-
-                    <div class="project-name">
-                      ${escapeHtml(proyecto)}
-                    </div>
-
-                    <div class="project-count">
-                      ${totalPersonas}
-                      ${
-                        totalPersonas === 1
-                          ? "persona"
-                          : "personas"
-                      }
-                    </div>
-
-                  </div>
-
-                </div>
-
-                <div class="arrow">
-                  ▼
-                </div>
-
-              </button>
-
-
-              <div class="project-body">`;
-
-
-          serviciosMap.forEach(
-            (posiciones, servicio) => {
-
-              let cantidadServicio = 0;
-
-
-              posiciones.forEach(
-                personas => {
-
-                  cantidadServicio +=
-                    personas.length;
-
-                }
-              );
-
-
-              const infoServicio =
-                obtenerInfoServicio(
-                  servicio
-                );
-
-
-              let meta = "";
-
-
-              if(infoServicio){
-
-                const debe =
-                  obtenerCampo(
-                    infoServicio,
-                    ["DEBE"]
-                  );
-
-
-                const es =
-                  obtenerCampo(
-                    infoServicio,
-                    ["ES"]
-                  );
-
-
-                if(
-                  debe !== "" ||
-                  es !== ""
-                ){
-
-                  meta =
-                    `<span class="badge">
-                      ${
-                        debe !== ""
-                          ? "DEBE " + escapeHtml(debe)
-                          : ""
-                      }
-                      ${
-                        es !== ""
-                          ? " · ES " + escapeHtml(es)
-                          : ""
-                      }
-                    </span>`;
-
-                }
-
-              }
-
-
-              html +=
-                `<div class="service">
-
-                  <button
-                    class="service-header"
-                    onclick="toggleService(this)">
-
-                    <div class="service-info">
-
-                      <span class="service-dot"></span>
-
-                      <span class="service-name">
-                        ${escapeHtml(servicio)}
-                      </span>
-
-                    </div>
-
-                    <div class="service-meta">
-
-                      ${meta}
-
-                      <span class="badge">
-                        ${cantidadServicio}
-                      </span>
-
-                    </div>
-
-                  </button>
-
-
-                  <div class="service-body">`;
-
-
-              posiciones.forEach(
-                (personas, posicion) => {
-
-                  html +=
-                    `<div class="position">
-
-                      <div class="position-title">
-                        ${escapeHtml(posicion)}
-                      </div>
-
-                      <div class="people">`;
-
-
-                  personas.forEach(
-                    persona => {
-
-                      html +=
-                        crearPersona(
-                          persona
-                        );
-
-                    }
-                  );
-
-
-                  html +=
-                      `</div>
-                    </div>`;
-
-                }
-              );
-
-
-              html +=
-                  `</div>
-                </div>`;
-
-            }
-          );
-
-
-          html +=
-              `</div>
-            </article>`;
-
-        }
-      );
-
-
-      html +=
-        `</div>`;
-
-    }
-  );
-
-
-  contenedor.innerHTML =
-    html;
-
-
-  /* Abrir automáticamente
-     el primer servicio */
-
-  const primerProyecto =
-    contenedor.querySelector(
-      ".project.open"
-    );
-
-
-  if(primerProyecto){
-
-    const primerServicio =
-      primerProyecto.querySelector(
-        ".service"
-      );
-
-
-    if(primerServicio){
-
-      primerServicio.classList.add(
-        "open"
-      );
-
-    }
-
-  }
-
-}
-
-
-/* =====================================================
-   TARJETA DE PERSONA
-===================================================== */
-
-function crearPersona(persona){
-
-  const nombre =
-    nombrePersona(persona) ||
-    "SIN NOMBRE";
-
-
-  const numero =
-    numeroEmpleado(persona) ||
-    "SIN NÚMERO";
-
-
-  const fotoOriginal =
-    obtenerFoto(persona);
-
-
-  const foto =
-    normalizarFoto(
-      fotoOriginal
-    );
-
-
-  const imagen =
-    foto ||
-    avatarFallback(nombre);
-
-
-  return `
-    <div class="person">
-
-      <img
-        class="person-photo"
-        src="${escapeHtml(imagen)}"
-        alt="${escapeHtml(nombre)}"
-        onerror="this.onerror=null;this.src='${avatarFallback(nombre)}';"
-      >
-
-      <div class="person-info">
-
-        <div class="person-name">
-          ${escapeHtml(nombre)}
+        <div class="metric-label">
+          Personal
         </div>
 
-        <div class="person-number">
-          No. empleado:
-          ${escapeHtml(numero)}
+        <div
+          class="metric-value"
+          id="metricPersonal">
+          0
         </div>
 
-        <span class="person-status">
-          ACTIVO
+        <div class="metric-detail">
+          Personal activo
+        </div>
+
+      </div>
+
+
+      <div class="metric">
+
+        <div class="metric-label">
+          Servicios
+        </div>
+
+        <div
+          class="metric-value"
+          id="metricServicios">
+          0
+        </div>
+
+        <div class="metric-detail">
+          Servicios con personal
+        </div>
+
+      </div>
+
+
+      <div class="metric">
+
+        <div class="metric-label">
+          Bajas
+        </div>
+
+        <div
+          class="metric-value"
+          id="metricBajas">
+          0
+        </div>
+
+        <div class="metric-detail">
+          Personal dado de baja
+        </div>
+
+      </div>
+
+    </section>
+
+
+    <!-- FILTROS -->
+
+    <section class="filters">
+
+      <div class="filters-grid">
+
+        <input
+          id="search"
+          class="input"
+          type="text"
+          autocomplete="off"
+          placeholder="Buscar por nombre, empleado, servicio o posición..."
+        >
+
+
+        <select
+          id="areaFilter"
+          class="select">
+
+          <option value="">
+            Todas las áreas
+          </option>
+
+        </select>
+
+
+        <select
+          id="projectFilter"
+          class="select">
+
+          <option value="">
+            Todos los proyectos
+          </option>
+
+        </select>
+
+
+        <button
+          class="btn-clear"
+          onclick="limpiarFiltros()">
+
+          Limpiar
+
+        </button>
+
+      </div>
+
+    </section>
+
+
+    <!-- DIRECTORIO ACTUAL DE PERSONAL -->
+
+    <section>
+
+      <div class="section-title">
+
+        <h2>
+          Estructura de personal
+        </h2>
+
+        <span id="resultInfo">
+          Cargando...
         </span>
 
       </div>
 
-    </div>
-  `;
 
-}
+      <div
+        id="organigrama"
+        class="loading">
 
+        Cargando información...
 
-/* =====================================================
-   BAJAS
-===================================================== */
+      </div>
 
-function renderizarBajas(){
+    </section>
 
-  const bajas =
-    personal.filter(esBaja);
 
+    <!-- BAJAS -->
 
-  const contenedor =
-    document.getElementById(
-      "bajasBody"
-    );
+    <section class="bajas-section">
 
+      <div class="section-title">
 
-  if(!bajas.length){
+        <h2>
+          Personal dado de baja
+        </h2>
 
-    contenedor.innerHTML =
-      `<div class="empty">
-        No hay personal dado de baja.
-      </div>`;
+        <span id="bajasInfo">
+          0 registros
+        </span>
 
-    return;
+      </div>
 
-  }
 
+      <div
+        id="bajasBox"
+        class="bajas-box">
 
-  contenedor.innerHTML =
-    bajas
-      .map(persona => {
+        <div
+          class="bajas-header"
+          onclick="toggleBajas()">
 
-        const nombre =
-          nombrePersona(persona) ||
-          "SIN NOMBRE";
-
-
-        const numero =
-          numeroEmpleado(persona) ||
-          "SIN NÚMERO";
-
-
-        const servicio =
-          servicioPersona(persona) ||
-          "";
-
-
-        const fecha =
-          fechaBaja(persona) ||
-          "";
-
-
-        const foto =
-          normalizarFoto(
-            obtenerFoto(persona)
-          ) ||
-          avatarFallback(nombre);
-
-
-        return `
-          <div class="baja-person">
-
-            <img
-              class="person-photo"
-              src="${escapeHtml(foto)}"
-              alt="${escapeHtml(nombre)}"
-              onerror="this.onerror=null;this.src='${avatarFallback(nombre)}';"
-            >
-
-            <div class="person-info">
-
-              <div class="person-name">
-                ${escapeHtml(nombre)}
-              </div>
-
-              <div class="person-number">
-                No. empleado:
-                ${escapeHtml(numero)}
-              </div>
-
-              <div class="person-number">
-                ${escapeHtml(servicio)}
-              </div>
-
-              ${
-                fecha
-                  ? `
-                    <div class="person-number">
-                      Fecha baja:
-                      ${escapeHtml(fecha)}
-                    </div>
-                  `
-                  : ""
-              }
-
-            </div>
-
-          </div>
-        `;
-
-      })
-      .join("");
-
-}
-
-
-/* =====================================================
-   ACTUALIZAR TODO
-===================================================== */
-
-function actualizarTodo(){
-
-  actualizarMetricas();
-
-  renderizarOrganigrama();
-
-  renderizarBajas();
-
-}
-
-
-/* =====================================================
-   TOGGLES
-===================================================== */
-
-function toggleProject(button){
-
-  const project =
-    button.closest(".project");
-
-
-  project.classList.toggle(
-    "open"
-  );
-
-}
-
-
-function toggleService(button){
-
-  const service =
-    button.closest(".service");
-
-
-  service.classList.toggle(
-    "open"
-  );
-
-}
-
-
-function toggleBajas(){
-
-  const box =
-    document.getElementById(
-      "bajasBox"
-    );
-
-
-  box.classList.toggle(
-    "open"
-  );
-
-
-  document.getElementById(
-    "bajasArrow"
-  ).textContent =
-    box.classList.contains("open")
-      ? "▲"
-      : "▼";
-
-}
-
-
-/* =====================================================
-   LIMPIAR FILTROS
-===================================================== */
-
-function limpiarFiltros(){
-
-  document.getElementById(
-    "search"
-  ).value = "";
-
-
-  document.getElementById(
-    "areaFilter"
-  ).value = "";
-
-
-  document.getElementById(
-    "projectFilter"
-  ).value = "";
-
-
-  renderizarOrganigrama();
-
-}
-
-
-/* =====================================================
-   EVENTOS
-===================================================== */
-
-document
-  .getElementById("search")
-  .addEventListener(
-    "input",
-    renderizarOrganigrama
-  );
-
-
-document
-  .getElementById("areaFilter")
-  .addEventListener(
-    "change",
-    renderizarOrganigrama
-  );
-
-
-document
-  .getElementById("projectFilter")
-  .addEventListener(
-    "change",
-    renderizarOrganigrama
-  );
-
-
-
-/* =====================================================
-   ASISTENCIAS
-===================================================== */
-let datosAsistencias = null;
-
-function construirServiciosAsistencias(){
-  const select=document.getElementById("asistenciaServicio");
-  if(!select)return;
-  select.innerHTML='<option value="">Seleccionar servicio / inmueble</option>';
-  const nombres=[];
-  servicios.forEach(servicio=>{
-    const codigo=obtenerCampo(servicio,["CODIFICACIÓN DE UN FORMULARIO Y SERVICIO","CODIFICACION DE UN FORMULARIO Y SERVICIO"]);
-    const nombre=obtenerCampo(servicio,["SERVICIO"]);
-    const valor=String(codigo||nombre||"").trim();
-    if(valor)nombres.push(valor);
-  });
-  [...new Set(nombres)].sort((a,b)=>normalizarTexto(a).localeCompare(normalizarTexto(b),"es")).forEach(nombre=>{
-    select.innerHTML+=`<option value="${escapeHtml(nombre)}">${escapeHtml(nombre)}</option>`;
-  });
-}
-
-function consultarAsistencias(){
-  const servicio=document.getElementById("asistenciaServicio").value;
-  const fechaInicio=document.getElementById("asistenciaFechaInicio").value;
-  const fechaFin=document.getElementById("asistenciaFechaFin").value;
-
-  if(!servicio){alert("Selecciona un servicio / inmueble.");return;}
-  if(!fechaInicio||!fechaFin){alert("Selecciona la fecha inicial y la fecha final.");return;}
-  if(fechaInicio>fechaFin){alert("La fecha inicial no puede ser mayor que la fecha final.");return;}
-
-  document.getElementById("matrizAsistencias").innerHTML='<div class="loading">Consultando historial...</div>';
-  document.getElementById("seguimientoFaltas").style.display="none";
-
-  const callback="callback_asistencias_"+Date.now();
-
-  window[callback]=function(data){
-    try{
-      if(!data||data.ok!==true)throw new Error(data?.error||"No fue posible consultar las asistencias.");
-      datosAsistencias=data;
-
-const resultado = data.asistencias || data;
-
-if(resultado.ok === false){
-  throw new Error(
-    resultado.error ||
-    "No fue posible consultar las asistencias."
-  );
-}
-
-renderizarAsistencias(resultado);
-      
-    }catch(error){
-      console.error("Error asistencias:",error);
-      document.getElementById("matrizAsistencias").innerHTML=`<div class="empty">Error al consultar las asistencias.<br><br>${escapeHtml(error.message)}</div>`;
-    }
-    try{delete window[callback];}catch(e){}
-  };
-
-  const script=document.createElement("script");
-  script.src=API_URL+
-    "?callback="+encodeURIComponent(callback)+
-    "&modulo=asistencias"+
-    "&servicio="+encodeURIComponent(servicio)+
-    "&fechaInicio="+encodeURIComponent(fechaInicio)+
-    "&fechaFin="+encodeURIComponent(fechaFin)+
-    "&t="+Date.now();
-
-  script.onerror=function(){
-    document.getElementById("matrizAsistencias").innerHTML='<div class="empty">No fue posible conectar con el historial de asistencias.</div>';
-    try{delete window[callback];}catch(e){}
-  };
-  document.body.appendChild(script);
-}
-
-function renderizarAsistencias(data){
-  const fechas=Array.isArray(data.fechas)?data.fechas:[];
-  const empleados=Array.isArray(data.empleados)?data.empleados:[];
-  const faltas=Array.isArray(data.seguimientoFaltas)?data.seguimientoFaltas:[];
-
-  document.getElementById("asistenciasInfo").textContent=empleados.length+(empleados.length===1?" empleado":" empleados");
-  document.getElementById("asistenciaInfoServicio").style.display="block";
-  document.getElementById("asistenciaServicioTexto").textContent=data.servicio||"";
-  document.getElementById("asistenciaFechaInicioTexto").textContent=formatearFechaCorta(data.fechaInicio);
-  document.getElementById("asistenciaFechaFinTexto").textContent=formatearFechaCorta(data.fechaFin);
-
-  renderizarSeguimientoFaltas(faltas);
-  renderizarMatrizAsistencias(fechas,empleados);
-}
-
-function renderizarSeguimientoFaltas(faltas){
-  const contenedor=document.getElementById("seguimientoFaltas");
-  const contenido=document.getElementById("faltasContenido");
-
-  if(!faltas.length){
-    contenedor.style.display="block";
-    contenido.innerHTML='<div style="padding:14px;color:#667085;font-size:12px;">No se encontraron faltas confirmadas en el periodo.</div>';
-    return;
-  }
-
-  let html='<table class="faltas-table"><thead><tr><th>No. empleado</th><th>Nombre del guardia</th><th>Faltas confirmadas</th></tr></thead><tbody>';
-
-  faltas.forEach(falta=>{
-    html+=`<tr><td>${escapeHtml(falta.numeroEmpleado||"")}</td><td>${escapeHtml(falta.nombre||"")}</td><td class="faltas-numero">${escapeHtml(falta.faltas||0)}</td></tr>`;
-  });
-
-  html+='</tbody></table>';
-  contenido.innerHTML=html;
-  contenedor.style.display="block";
-}
-
-function renderizarMatrizAsistencias(fechas,empleados){
-  const contenedor=document.getElementById("matrizAsistencias");
-
-  if(!empleados.length){
-    contenedor.innerHTML='<div class="empty">No se encontraron registros para el servicio y periodo seleccionado.</div>';
-    return;
-  }
-
-  let html='<div class="asistencia-table-wrap"><table class="asistencia-table"><thead><tr><th>Nombre del empleado</th>';
-
-  fechas.forEach(fecha=>{
-    html+=`<th>${nombreDiaCorto(fecha)}<br>${formatearFechaCorta(fecha)}</th>`;
-  });
-
-  html+='</tr></thead><tbody>';
-
-  empleados.forEach(empleado=>{
-    html+=`<tr><td><div class="asistencia-nombre">${escapeHtml(empleado.nombre||"SIN NOMBRE")}</div><div class="asistencia-numero">No. empleado: ${escapeHtml(empleado.numeroEmpleado||"")}</div></td>`;
-
-    fechas.forEach(fecha=>{
-      const dia=empleado.dias&&empleado.dias[fecha]?empleado.dias[fecha]:null;
-      const codigo=dia&&dia.codigo?dia.codigo:"";
-      const clase=codigo?"codigo-"+codigo.replace(/[^A-Z]/g,""):"";
-      html+=`<td><span class="codigo-asistencia ${clase}" title="${escapeHtml(dia?.estatus||"Sin registro")}">${escapeHtml(codigo||"—")}</span></td>`;
-    });
-
-    html+='</tr>';
-  });
-
-  html+='</tbody></table></div>';
-  contenedor.innerHTML=html;
-}
-
-function formatearFechaCorta(fecha){
-  if(!fecha)return "";
-  const partes=String(fecha).split("-");
-  if(partes.length!==3)return fecha;
-  return partes[2]+"/"+partes[1]+"/"+partes[0];
-}
-
-function nombreDiaCorto(fecha){
-  const dias=["DOM","LUN","MAR","MIÉ","JUE","VIE","SÁB"];
-  const partes=String(fecha).split("-");
-  if(partes.length!==3)return "";
-  const fechaObj=new Date(Number(partes[0]),Number(partes[1])-1,Number(partes[2]));
-  return dias[fechaObj.getDay()];
-}
-
-
-/* =====================================================
-   INICIO
-===================================================== */
-
-cargarDatos();
-
-</script>
-
-</body>
-</html>
+          <div class="ba
+```
