@@ -1454,131 +1454,109 @@ function cargarDatos(){
         Cargando información...
       </div>`;
 
+  cargarModuloAPI("estado", function(data){
 
-  const callback =
-    "callback_" +
-    Date.now();
+    try{
 
-
-  window[callback] =
-    function(data){
-
-      try{
-
-        if(
-          !data ||
-          data.ok !== true
-        ){
-
-          throw new Error(
-            data?.error ||
-            "Respuesta inválida"
-          );
-
-        }
-
-
-        servicios =
-          Array.isArray(
-            data.servicios
-          )
-            ? data.servicios
-            : [];
-
-
-        personal =
-          Array.isArray(
-            data.personal
-          )
-            ? data.personal
-            : [];
-
-
-        directorioServicios =
-          Array.isArray(
-            data.directorioServicios
-          )
-            ? data.directorioServicios
-            : [];
-
-
-        unidades =
-          Array.isArray(
-            data.unidades
-          )
-            ? data.unidades
-            : [];
-
-
-        construirFiltros();
-
-        // Solo se dibuja el módulo visible al iniciar.
-        // Los demás módulos se construyen al entrar a ellos.
-        actualizarTodo();
-
-
-      }catch(error){
-
-        console.error(error);
-
-        document
-          .getElementById("organigrama")
-          .innerHTML =
-            `<div class="empty">
-              Error al procesar la información.
-              <br><br>
-              ${escapeHtml(error.message)}
-            </div>`;
-
+      if(!data || data.ok !== true){
+        throw new Error(data?.error || "Respuesta inválida");
       }
 
+      servicios = Array.isArray(data.servicios) ? data.servicios : [];
+      personal = Array.isArray(data.personal) ? data.personal : [];
 
-      cargando = false;
+      construirFiltros();
+      actualizarTodo();
 
-      try{
-        delete window[callback];
-      }catch(e){}
+    }catch(error){
 
-    };
-
-
-  const script =
-    document.createElement("script");
-
-
-  script.src =
-    API_URL +
-    "?callback=" +
-    callback +
-    "&t=" +
-    Date.now();
-
-
-  script.onerror =
-    function(){
-
-      cargando = false;
+      console.error(error);
 
       document
         .getElementById("organigrama")
         .innerHTML =
           `<div class="empty">
-            No fue posible conectar con la base de datos.
+            Error al procesar la información.
+            <br><br>
+            ${escapeHtml(error.message)}
           </div>`;
 
-      try{
-        delete window[callback];
-      }catch(e){}
+    }finally{
+      cargando = false;
+    }
 
-    };
-
-
-  document
-    .body
-    .appendChild(script);
+  });
 
 }
 
+/* =====================================================
+   CARGA LAZY POR MÓDULO
+===================================================== */
+
+const modulosCargados = {
+  estado: true,
+  directorio: false,
+  unidades: false,
+  asistencias: false
+};
+
+const modulosCargando = {};
+
+function cargarModuloAPI(modulo, alTerminar){
+
+  if(modulosCargando[modulo]) return;
+
+  modulosCargando[modulo] = true;
+
+  const callback = "callback_" + modulo + "_" + Date.now();
+  let terminado = false;
+
+  const finalizar = (ok, data) => {
+    if(terminado) return;
+    terminado = true;
+
+    modulosCargando[modulo] = false;
+
+    try{
+      delete window[callback];
+    }catch(e){}
+
+    if(ok) modulosCargados[modulo] = true;
+
+    if(typeof alTerminar === "function"){
+      alTerminar(ok ? data : null);
+    }
+  };
+
+  window[callback] = function(data){
+    if(!data || data.ok !== true){
+      finalizar(false, data);
+      return;
+    }
+    finalizar(true, data);
+  };
+
+  const script = document.createElement("script");
+
+  script.src =
+    API_URL +
+    "?modulo=" + encodeURIComponent(modulo) +
+    "&callback=" + encodeURIComponent(callback) +
+    "&t=" + Date.now();
+
+  script.onerror = function(){
+    finalizar(false, null);
+  };
+
+  document.body.appendChild(script);
+}
+
+function mostrarErrorModulo(contenedorId, mensaje){
+  const el = document.getElementById(contenedorId);
+  if(el){
+    el.innerHTML = `<div class="empty">${escapeHtml(mensaje || "No fue posible cargar la información.")}</div>`;
+  }
+}
 
 /* =====================================================
    ESCAPE HTML
@@ -2631,18 +2609,77 @@ function cambiarModulo(modulo, boton){
   if(vista) vista.classList.add('active');
   if(boton) boton.classList.add('active');
 
+  if(modulo === 'estado'){
+    if(modulosCargados.estado){
+      construirFiltros();
+      actualizarTodo();
+    }
+    return;
+  }
+
   if(modulo === 'directorio'){
-    construirFiltrosDirectorio();
-    renderizarDirectorio();
+    if(modulosCargados.directorio){
+      construirFiltrosDirectorio();
+      renderizarDirectorio();
+      return;
+    }
+
+    const body = document.getElementById('directorioBody');
+    if(body) body.innerHTML = '<div class="loading">Cargando directorio...</div>';
+
+    cargarModuloAPI('directorio', function(data){
+      if(!data){
+        mostrarErrorModulo('directorioBody','No fue posible cargar el directorio.');
+        return;
+      }
+      directorioServicios = Array.isArray(data.directorioServicios) ? data.directorioServicios : [];
+      construirFiltrosDirectorio();
+      renderizarDirectorio();
+    });
+    return;
   }
 
   if(modulo === 'unidades'){
-    construirFiltrosUnidades();
-    renderizarUnidades();
+    if(modulosCargados.unidades){
+      construirFiltrosUnidades();
+      renderizarUnidades();
+      return;
+    }
+
+    const body = document.getElementById('unidadesBody');
+    if(body) body.innerHTML = '<div class="loading">Cargando unidades...</div>';
+
+    cargarModuloAPI('unidades', function(data){
+      if(!data){
+        mostrarErrorModulo('unidadesBody','No fue posible cargar las unidades.');
+        return;
+      }
+      unidades = Array.isArray(data.unidades) ? data.unidades : [];
+      construirFiltrosUnidades();
+      renderizarUnidades();
+    });
+    return;
   }
 
   if(modulo === 'asistencias'){
-    construirServiciosAsistencias();
+    if(modulosCargados.asistencias){
+      construirServiciosAsistencias();
+      return;
+    }
+
+    const contenedor = document.getElementById('matrizAsistencias');
+    if(contenedor) contenedor.innerHTML = '<div class="loading">Cargando catálogo de servicios...</div>';
+
+    cargarModuloAPI('asistenciaCatalogo', function(data){
+      if(!data){
+        mostrarErrorModulo('matrizAsistencias','No fue posible cargar el catálogo de servicios.');
+        return;
+      }
+      servicios = Array.isArray(data.servicios) ? data.servicios : servicios;
+      modulosCargados.asistencias = true;
+      construirServiciosAsistencias();
+      if(contenedor) contenedor.innerHTML = 'Selecciona un servicio y un periodo para consultar las asistencias.';
+    });
   }
 }
 
