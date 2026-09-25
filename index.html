@@ -696,76 +696,1627 @@ body{
 /* =====================================================
    ASISTENCIAS
 ===================================================== */
-.asistencias-card{background:white;border:1px solid var(--gris-borde);border-radius:16px;padding:20px;box-shadow:var(--sombra)}
-.asistencias-filtros{display:grid;grid-template-columns:2fr 1fr 1fr auto;gap:12px;margin-bottom:20px}
-.asistencias-info{background:#f8fbff;border:1px solid #dcecff;border-radius:12px;padding:15px;margin-bottom:20px}
-.asistencias-info-grid{display:grid;grid-template-columns:2fr 1fr 1fr;gap:15px}
-.asistencia-info-label{font-size:10px;color:#667085;font-weight:bold;text-transform:uppercase}
-.asistencia-info-value{margin-top:4px;font-size:14px;font-weight:800;color:#17365d}
-.faltas-box{margin-bottom:20px;border:1px solid #f1d3d0;border-radius:12px;overflow:hidden}
-.faltas-header{padding:13px 16px;background:#fff8f7;color:#9f2017;font-weight:800}
-.faltas-table{width:100%;border-collapse:collapse}
-.faltas-table th,.faltas-table td{padding:9px 12px;border-bottom:1px solid #edf1f5;text-align:left;font-size:12px}
-.faltas-table th{background:#fafafa;color:#667085;font-size:10px;text-transform:uppercase}
-.faltas-numero{font-weight:800;color:#d92d20}
-.asistencia-table-wrap{width:100%;overflow:auto;border:1px solid #e1e7ee;border-radius:12px}
-.asistencia-table{width:100%;border-collapse:collapse;min-width:850px}
-.asistencia-table th,.asistencia-table td{border-right:1px solid #e5eaf0;border-bottom:1px solid #e5eaf0;padding:8px;text-align:center;font-size:11px;white-space:nowrap}
-.asistencia-table th{background:#f4f7fa;color:#475467;font-weight:800;position:sticky;top:0;z-index:2}
-.asistencia-table th:first-child,.asistencia-table td:first-child{position:sticky;left:0;background:white;z-index:3;text-align:left}
-.asistencia-table th:first-child{background:#f4f7fa;z-index:4}
-.asistencia-nombre{font-weight:800;color:#243b53}
-.asistencia-numero{font-size:10px;color:#667085;margin-top:2px}
-.codigo-asistencia{display:inline-flex;min-width:28px;height:28px;padding:0 6px;align-items:center;justify-content:center;border-radius:7px;font-weight:800;background:#f2f4f7;color:#667085}
-.codigo-A{background:#e8f7ef;color:#159957}.codigo-F{background:#fdecea;color:#d92d20}.codigo-FR{background:#fff0e6;color:#c2410c}.codigo-NC{background:#fff4d6;color:#9a6700}.codigo-R{background:#fff4d6;color:#9a6700}.codigo-V{background:#eaf4ff;color:#0057a8}.codigo-AB{background:#f1eaff;color:#6941c6}.codigo-VAC{background:#f1eaff;color:#6941c6}.codigo-AP{background:#eaf4ff;color:#0057a8}.codigo-INC{background:#f1eaff;color:#6941c6}
-.asistencias-leyenda{display:flex;flex-wrap:wrap;gap:8px;margin-top:15px}
-.leyenda-item{display:flex;align-items:center;gap:5px;font-size:11px;color:#667085}
-@media(max-width:900px){.asistencias-filtros{grid-template-columns:1fr 1fr}.asistencias-info-grid{grid-template-columns:1fr}}
-@media(max-width:600px){.asistencias-filtros{grid-template-columns:1fr}}
 
-</style>
-</head>
+let datosAsistencias = null;
 
-<body>
 
-<header class="header">
+/* =====================================================
+   CONSTRUIR SERVICIOS PARA ASISTENCIAS
+===================================================== */
 
-  <div class="header-inner">
+function construirServiciosAsistencias(){
 
-    <div class="brand">
+  const select =
+    document.getElementById("asistenciaServicio");
 
-      <div class="logo">
-        AF
+  if(!select) return;
+
+  const actual = select.value;
+
+  select.innerHTML =
+    '<option value="">Seleccionar servicio / inmueble</option>';
+
+  const nombres = [];
+
+  servicios.forEach(servicio => {
+
+    const codigo =
+      obtenerCampo(servicio,[
+        "CODIFICACIÓN DE UN FORMULARIO Y SERVICIO",
+        "CODIFICACION DE UN FORMULARIO Y SERVICIO"
+      ]);
+
+    const nombre =
+      obtenerCampo(servicio,[
+        "SERVICIO"
+      ]);
+
+    const inmueble =
+      obtenerCampo(servicio,[
+        "INMUEBLE",
+        "INMUEBLE SERVICIO"
+      ]);
+
+    const valor =
+      String(codigo || nombre || "").trim();
+
+    const texto =
+      inmueble
+        ? valor + " / " + inmueble
+        : valor;
+
+    if(valor){
+
+      nombres.push({
+        valor: valor,
+        texto: texto
+      });
+
+    }
+
+  });
+
+
+  const unicos = [];
+  const vistos = new Set();
+
+
+  nombres
+    .sort((a,b) =>
+      normalizarTexto(a.texto)
+        .localeCompare(
+          normalizarTexto(b.texto),
+          "es"
+        )
+    )
+    .forEach(item => {
+
+      const clave =
+        normalizarTexto(item.valor);
+
+      if(!vistos.has(clave)){
+
+        vistos.add(clave);
+
+        unicos.push(item);
+
+      }
+
+    });
+
+
+  unicos.forEach(item => {
+
+    const option =
+      document.createElement("option");
+
+    option.value =
+      item.valor;
+
+    option.textContent =
+      item.texto;
+
+    select.appendChild(option);
+
+  });
+
+
+  if(
+    actual &&
+    [...select.options]
+      .some(option => option.value === actual)
+  ){
+
+    select.value = actual;
+
+  }
+
+}
+
+
+
+/* =====================================================
+   CONSULTAR ASISTENCIAS
+===================================================== */
+
+function consultarAsistencias(){
+
+  const servicio =
+    document.getElementById(
+      "asistenciaServicio"
+    ).value;
+
+  const fechaInicio =
+    document.getElementById(
+      "asistenciaFechaInicio"
+    ).value;
+
+  const fechaFin =
+    document.getElementById(
+      "asistenciaFechaFin"
+    ).value;
+
+
+  if(!servicio){
+
+    alert(
+      "Selecciona un servicio / inmueble."
+    );
+
+    return;
+
+  }
+
+
+  if(!fechaInicio || !fechaFin){
+
+    alert(
+      "Selecciona la fecha inicial y la fecha final."
+    );
+
+    return;
+
+  }
+
+
+  if(fechaInicio > fechaFin){
+
+    alert(
+      "La fecha inicial no puede ser mayor que la fecha final."
+    );
+
+    return;
+
+  }
+
+
+  document.getElementById(
+    "matrizAsistencias"
+  ).innerHTML =
+    '<div class="loading">Consultando historial...</div>';
+
+
+  document.getElementById(
+    "seguimientoFaltas"
+  ).style.display =
+    "none";
+
+
+  document.getElementById(
+    "asistenciaInfoServicio"
+  ).style.display =
+    "none";
+
+
+  document.getElementById(
+    "asistenciasInfo"
+  ).textContent =
+    "Consultando...";
+
+
+  const callback =
+    "callback_asistencias_" +
+    Date.now();
+
+
+  window[callback] =
+    function(data){
+
+      try{
+
+        datosAsistencias =
+          data;
+
+
+        /*
+          El Apps Script puede entregar:
+
+          1. directamente:
+             {
+               ok:true,
+               fechas:[],
+               empleados:[]
+             }
+
+          2. dentro de:
+             {
+               ok:true,
+               asistencias:{
+                 fechas:[],
+                 empleados:[]
+               }
+             }
+        */
+
+        let resultado =
+          data &&
+          data.asistencias
+            ? data.asistencias
+            : data;
+
+
+        /*
+          También soportamos una respuesta
+          que venga dentro de data.data
+        */
+
+        if(
+          resultado &&
+          resultado.data &&
+          resultado.data.asistencias
+        ){
+
+          resultado =
+            resultado.data.asistencias;
+
+        }
+
+
+        if(
+          !resultado
+        ){
+
+          throw new Error(
+            "La API no devolvió información de asistencias."
+          );
+
+        }
+
+
+        if(
+          resultado.ok === false
+        ){
+
+          throw new Error(
+            resultado.error ||
+            "No fue posible consultar las asistencias."
+          );
+
+        }
+
+
+        /*
+          IMPORTANTE:
+
+          Si solamente regresó servicios,
+          significa que no llegó la respuesta
+          específica de asistencias.
+        */
+
+        const tieneEstructuraAsistencias =
+          Array.isArray(resultado.fechas) ||
+          Array.isArray(resultado.empleados) ||
+          Array.isArray(resultado.registros) ||
+          Array.isArray(resultado.seguimientoFaltas);
+
+
+        if(
+          !tieneEstructuraAsistencias
+        ){
+
+          throw new Error(
+            "La API respondió, pero no devolvió la estructura de ASISTENCIAS. Verifica el módulo de asistencias del Apps Script."
+          );
+
+        }
+
+
+        renderizarAsistencias(
+          resultado
+        );
+
+
+      }catch(error){
+
+        console.error(
+          "Error asistencias:",
+          error
+        );
+
+
+        document.getElementById(
+          "asistenciasInfo"
+        ).textContent =
+          "Error en la consulta";
+
+
+        document.getElementById(
+          "matrizAsistencias"
+        ).innerHTML =
+          `
+          <div class="empty">
+            Error al consultar las asistencias.
+            <br><br>
+            ${escapeHtml(error.message)}
+          </div>
+          `;
+
+      }
+
+
+      try{
+
+        delete window[callback];
+
+      }catch(e){}
+
+    };
+
+
+  const script =
+    document.createElement(
+      "script"
+    );
+
+
+  script.src =
+    API_URL +
+
+    "?callback=" +
+    encodeURIComponent(callback) +
+
+    "&modulo=asistencias" +
+
+    "&servicio=" +
+    encodeURIComponent(servicio) +
+
+    "&fechaInicio=" +
+    encodeURIComponent(fechaInicio) +
+
+    "&fechaFin=" +
+    encodeURIComponent(fechaFin) +
+
+    "&fechaInicial=" +
+    encodeURIComponent(fechaInicio) +
+
+    "&fechaFinal=" +
+    encodeURIComponent(fechaFin) +
+
+    "&t=" +
+    Date.now();
+
+
+  script.onerror =
+    function(){
+
+      document.getElementById(
+        "asistenciasInfo"
+      ).textContent =
+        "Error de conexión";
+
+
+      document.getElementById(
+        "matrizAsistencias"
+      ).innerHTML =
+        `
+        <div class="empty">
+          No fue posible conectar con el historial de asistencias.
+        </div>
+        `;
+
+
+      try{
+
+        delete window[callback];
+
+      }catch(e){}
+
+    };
+
+
+  document.body.appendChild(
+    script
+  );
+
+}
+
+
+
+/* =====================================================
+   RENDERIZAR ASISTENCIAS
+===================================================== */
+
+function renderizarAsistencias(data){
+
+  let fechas =
+    Array.isArray(data.fechas)
+      ? data.fechas
+      : [];
+
+
+  let empleados =
+    Array.isArray(data.empleados)
+      ? data.empleados
+      : [];
+
+
+  let faltas =
+    Array.isArray(data.seguimientoFaltas)
+      ? data.seguimientoFaltas
+      : [];
+
+
+  /*
+    Compatibilidad con estructuras alternativas
+  */
+
+  if(
+    !empleados.length &&
+    Array.isArray(data.personal)
+  ){
+
+    empleados =
+      data.personal;
+
+  }
+
+
+  if(
+    !empleados.length &&
+    Array.isArray(data.registros)
+  ){
+
+    empleados =
+      construirEmpleadosDesdeRegistros(
+        data.registros
+      );
+
+  }
+
+
+  /*
+    Si no vienen fechas, las construimos
+    a partir del periodo consultado.
+  */
+
+  if(
+    !fechas.length
+  ){
+
+    const inicio =
+      data.fechaInicio ||
+      data.fechaInicial;
+
+    const fin =
+      data.fechaFin ||
+      data.fechaFinal;
+
+
+    if(inicio && fin){
+
+      fechas =
+        generarFechasPeriodo(
+          inicio,
+          fin
+        );
+
+    }
+
+  }
+
+
+  document.getElementById(
+    "asistenciasInfo"
+  ).textContent =
+    empleados.length +
+    (
+      empleados.length === 1
+        ? " empleado"
+        : " empleados"
+    );
+
+
+  document.getElementById(
+    "asistenciaInfoServicio"
+  ).style.display =
+    "block";
+
+
+  document.getElementById(
+    "asistenciaServicioTexto"
+  ).textContent =
+    data.servicio ||
+    data.inmueble ||
+    "";
+
+
+  document.getElementById(
+    "asistenciaFechaInicioTexto"
+  ).textContent =
+    formatearFechaCorta(
+      data.fechaInicio ||
+      data.fechaInicial
+    );
+
+
+  document.getElementById(
+    "asistenciaFechaFinTexto"
+  ).textContent =
+    formatearFechaCorta(
+      data.fechaFin ||
+      data.fechaFinal
+    );
+
+
+  renderizarSeguimientoFaltas(
+    faltas
+  );
+
+
+  renderizarMatrizAsistencias(
+    fechas,
+    empleados
+  );
+
+}
+
+
+
+/* =====================================================
+   GENERAR FECHAS DEL PERIODO
+===================================================== */
+
+function generarFechasPeriodo(
+  inicio,
+  fin
+){
+
+  const fechas = [];
+
+  const partesInicio =
+    String(inicio).split("-");
+
+  const partesFin =
+    String(fin).split("-");
+
+
+  if(
+    partesInicio.length !== 3 ||
+    partesFin.length !== 3
+  ){
+
+    return fechas;
+
+  }
+
+
+  const actual =
+    new Date(
+      Number(partesInicio[0]),
+      Number(partesInicio[1]) - 1,
+      Number(partesInicio[2])
+    );
+
+
+  const limite =
+    new Date(
+      Number(partesFin[0]),
+      Number(partesFin[1]) - 1,
+      Number(partesFin[2])
+    );
+
+
+  while(
+    actual <= limite
+  ){
+
+    const yyyy =
+      actual.getFullYear();
+
+
+    const mm =
+      String(
+        actual.getMonth() + 1
+      ).padStart(
+        2,
+        "0"
+      );
+
+
+    const dd =
+      String(
+        actual.getDate()
+      ).padStart(
+        2,
+        "0"
+      );
+
+
+    fechas.push(
+      yyyy +
+      "-" +
+      mm +
+      "-" +
+      dd
+    );
+
+
+    actual.setDate(
+      actual.getDate() + 1
+    );
+
+  }
+
+
+  return fechas;
+
+}
+
+
+
+/* =====================================================
+   CONSTRUIR EMPLEADOS DESDE REGISTROS
+===================================================== */
+
+function construirEmpleadosDesdeRegistros(
+  registros
+){
+
+  const mapa =
+    new Map();
+
+
+  registros.forEach(
+    registro => {
+
+      const numero =
+        registro.numeroEmpleado ||
+        registro.numero ||
+        registro.noEmpleado ||
+        registro["No. empleado"] ||
+        "";
+
+
+      const nombre =
+        registro.nombre ||
+        registro.NOMBRE ||
+        registro.nombreEmpleado ||
+        "";
+
+
+      const clave =
+        String(
+          numero ||
+          nombre
+        ).trim();
+
+
+      if(!clave) return;
+
+
+      if(
+        !mapa.has(clave)
+      ){
+
+        mapa.set(
+          clave,
+          {
+            nombre:
+              nombre ||
+              "SIN NOMBRE",
+
+            numeroEmpleado:
+              numero,
+
+            dias:{}
+
+          }
+        );
+
+      }
+
+
+      const empleado =
+        mapa.get(clave);
+
+
+      const fecha =
+        registro.fecha ||
+        registro.FECHA ||
+        registro.fechaAsistencia ||
+        "";
+
+
+      if(fecha){
+
+        const fechaNormalizada =
+          normalizarFechaAsistencia(
+            fecha
+          );
+
+
+        if(fechaNormalizada){
+
+          empleado.dias[
+            fechaNormalizada
+          ] =
+            registro;
+
+        }
+
+      }
+
+    }
+  );
+
+
+  return [...mapa.values()];
+
+}
+
+
+
+/* =====================================================
+   RENDERIZAR SEGUIMIENTO DE FALTAS
+===================================================== */
+
+function renderizarSeguimientoFaltas(
+  faltas
+){
+
+  const contenedor =
+    document.getElementById(
+      "seguimientoFaltas"
+    );
+
+
+  const contenido =
+    document.getElementById(
+      "faltasContenido"
+    );
+
+
+  if(
+    !faltas ||
+    !faltas.length
+  ){
+
+    contenedor.style.display =
+      "none";
+
+    contenido.innerHTML =
+      "";
+
+    return;
+
+  }
+
+
+  let html =
+    `
+    <table class="faltas-table">
+
+      <thead>
+
+        <tr>
+
+          <th>No. empleado</th>
+
+          <th>Nombre del guardia</th>
+
+          <th>Faltas confirmadas</th>
+
+        </tr>
+
+      </thead>
+
+      <tbody>
+    `;
+
+
+  faltas.forEach(
+    falta => {
+
+      const numero =
+        falta.numeroEmpleado ||
+        falta.numero ||
+        falta.noEmpleado ||
+        "";
+
+
+      const nombre =
+        falta.nombre ||
+        falta.NOMBRE ||
+        falta.nombreEmpleado ||
+        "SIN NOMBRE";
+
+
+      const cantidad =
+        falta.faltas ||
+        falta.faltasConfirmadas ||
+        0;
+
+
+      html +=
+        `
+        <tr>
+
+          <td>
+            ${escapeHtml(
+              String(numero)
+            )}
+          </td>
+
+          <td>
+            ${escapeHtml(
+              String(nombre)
+            )}
+          </td>
+
+          <td class="faltas-numero">
+            ${escapeHtml(
+              String(cantidad)
+            )}
+          </td>
+
+        </tr>
+        `;
+
+    }
+  );
+
+
+  html +=
+    `
+      </tbody>
+    </table>
+    `;
+
+
+  contenido.innerHTML =
+    html;
+
+
+  contenedor.style.display =
+    "block";
+
+}
+
+
+
+/* =====================================================
+   RENDERIZAR MATRIZ
+===================================================== */
+
+function renderizarMatrizAsistencias(
+  fechas,
+  empleados
+){
+
+  const contenedor =
+    document.getElementById(
+      "matrizAsistencias"
+    );
+
+
+  if(
+    !empleados ||
+    !empleados.length
+  ){
+
+    contenedor.innerHTML =
+      `
+      <div class="empty">
+        No se encontraron registros para el servicio y periodo seleccionado.
       </div>
+      `;
 
-      <div>
-        <h1>AUTORITAS</h1>
-        <p>Portal Administrativo</p>
+    return;
+
+  }
+
+
+  if(
+    !fechas ||
+    !fechas.length
+  ){
+
+    contenedor.innerHTML =
+      `
+      <div class="empty">
+        No se encontraron fechas para el periodo seleccionado.
       </div>
+      `;
+
+    return;
+
+  }
+
+
+  let html =
+    `
+    <div class="asistencia-table-wrap">
+
+      <table class="asistencia-table">
+
+        <thead>
+
+          <tr>
+
+            <th>
+              Nombre del empleado
+            </th>
+    `;
+
+
+  fechas.forEach(
+    fecha => {
+
+      html +=
+        `
+        <th>
+          ${nombreDiaCorto(fecha)}
+          <br>
+          ${formatearFechaCorta(fecha)}
+        </th>
+        `;
+
+    }
+  );
+
+
+  html +=
+    `
+          </tr>
+
+        </thead>
+
+        <tbody>
+    `;
+
+
+  empleados.forEach(
+    empleado => {
+
+      const nombre =
+        empleado.nombre ||
+        empleado.NOMBRE ||
+        empleado.nombreEmpleado ||
+        "SIN NOMBRE";
+
+
+      const numero =
+        empleado.numeroEmpleado ||
+        empleado.numero ||
+        empleado.noEmpleado ||
+        "";
+
+
+      html +=
+        `
+        <tr>
+
+          <td>
+
+            <div class="asistencia-nombre">
+              ${escapeHtml(
+                String(nombre)
+              )}
+            </div>
+
+            <div class="asistencia-numero">
+              No. empleado:
+              ${escapeHtml(
+                String(numero)
+              )}
+            </div>
+
+          </td>
+        `;
+
+
+      fechas.forEach(
+        fecha => {
+
+          const dia =
+            obtenerDiaEmpleado(
+              empleado,
+              fecha
+            );
+
+
+          /*
+            IMPORTANTE:
+
+            Si no existe registro,
+            NO se interpreta como falta.
+
+            Se muestra —
+          */
+
+          const codigo =
+            obtenerCodigoAsistencia(
+              dia
+            );
+
+
+          const clase =
+            codigo
+              ? "codigo-" +
+                String(codigo)
+                  .toUpperCase()
+                  .replace(
+                    /[^A-Z]/g,
+                    ""
+                  )
+              : "";
+
+
+          const titulo =
+            obtenerTextoEstatus(
+              dia,
+              codigo
+            );
+
+
+          html +=
+            `
+            <td>
+
+              <span
+                class="codigo-asistencia ${clase}"
+                title="${escapeHtml(titulo)}"
+              >
+                ${escapeHtml(
+                  codigo || "—"
+                )}
+              </span>
+
+            </td>
+            `;
+
+        }
+      );
+
+
+      html +=
+        `
+        </tr>
+        `;
+
+    }
+  );
+
+
+  html +=
+    `
+        </tbody>
+
+      </table>
 
     </div>
-
-    <button
-      class="btn-refresh"
-      onclick="cargarDatos()">
-      ↻ Actualizar
-    </button>
-
-  </div>
-
-</header>
+    `;
 
 
-<nav class="module-nav" aria-label="Módulos">
-  <button class="module-btn active" data-module="estado" onclick="cambiarModulo('estado',this)">ESTADO DE FUERZA</button>
-  <button class="module-btn" data-module="directorio" onclick="cambiarModulo('directorio',this)">DIRECTORIO DE SERVICIOS</button>
-  <button class="module-btn" data-module="unidades" onclick="cambiarModulo('unidades',this)">UNIDADES</button>
-  <button class="module-btn" data-module="asistencias" onclick="cambiarModulo('asistencias',this)">ASISTENCIAS</button>
-</nav>
+  contenedor.innerHTML =
+    html;
 
-<main class="container">
+}
 
-<div id="estadoView" class="module-view active">
+
+
+/* =====================================================
+   OBTENER DÍA DEL EMPLEADO
+===================================================== */
+
+function obtenerDiaEmpleado(
+  empleado,
+  fecha
+){
+
+  if(!empleado){
+
+    return null;
+
+  }
+
+
+  const fechaNormalizada =
+    normalizarFechaAsistencia(
+      fecha
+    );
+
+
+  /*
+    Estructura principal
+  */
+
+  const fuentes = [
+
+    empleado.dias,
+
+    empleado.asistencias,
+
+    empleado.asistencia,
+
+    empleado.registros
+
+  ];
+
+
+  for(
+    const fuente of fuentes
+  ){
+
+    if(!fuente) continue;
+
+
+    /*
+      Si es objeto:
+      dias["2026-09-01"]
+    */
+
+    if(
+      !Array.isArray(fuente) &&
+      typeof fuente === "object"
+    ){
+
+      if(
+        fuente[fechaNormalizada]
+      ){
+
+        return fuente[
+          fechaNormalizada
+        ];
+
+      }
+
+
+      /*
+        Intentar fecha con
+        formato distinto
+      */
+
+      const encontrada =
+        Object.keys(fuente)
+          .find(
+            clave =>
+              normalizarFechaAsistencia(
+                clave
+              ) ===
+              fechaNormalizada
+          );
+
+
+      if(encontrada){
+
+        return fuente[
+          encontrada
+        ];
+
+      }
+
+    }
+
+
+    /*
+      Si es arreglo:
+      buscar registro por fecha
+    */
+
+    if(
+      Array.isArray(fuente)
+    ){
+
+      const encontrado =
+        fuente.find(
+          registro => {
+
+            const fechaRegistro =
+              registro.fecha ||
+              registro.FECHA ||
+              registro.fechaAsistencia ||
+              registro.date ||
+              registro.fechaRegistro ||
+              "";
+
+
+            return (
+              normalizarFechaAsistencia(
+                fechaRegistro
+              ) ===
+              fechaNormalizada
+            );
+
+          }
+        );
+
+
+      if(encontrado){
+
+        return encontrado;
+
+      }
+
+    }
+
+  }
+
+
+  return null;
+
+}
+
+
+
+/* =====================================================
+   OBTENER CÓDIGO DE ASISTENCIA
+===================================================== */
+
+function obtenerCodigoAsistencia(
+  dia
+){
+
+  if(!dia){
+
+    /*
+      SIN REGISTRO =
+      SIN CÓDIGO.
+
+      NO ES FALTA.
+    */
+
+    return "";
+
+  }
+
+
+  let codigo =
+    dia.codigo ||
+    dia.CODIGO ||
+    dia.estatus ||
+    dia.ESTATUS ||
+    dia.estado ||
+    dia.ESTADO ||
+    dia.status ||
+    dia.STATUS ||
+    dia.codigoEstatus ||
+    dia.codigoAsistencia ||
+    "";
+
+
+  codigo =
+    String(codigo)
+      .trim()
+      .toUpperCase();
+
+
+  /*
+    Si el objeto tiene un estatus
+    dentro de otro campo
+  */
+
+  if(!codigo){
+
+    codigo =
+      dia.valor ||
+      dia.VALOR ||
+      dia.tipo ||
+      dia.TIPO ||
+      "";
+
+    codigo =
+      String(codigo)
+        .trim()
+        .toUpperCase();
+
+  }
+
+
+  /*
+    Solamente permitimos
+    los códigos definidos
+    para el portal.
+  */
+
+  const permitidos = [
+
+    "A",
+    "F",
+    "FR",
+    "NC",
+    "R",
+    "V",
+    "AB",
+    "VAC",
+    "AP",
+    "INC"
+
+  ];
+
+
+  if(
+    permitidos.includes(codigo)
+  ){
+
+    return codigo;
+
+  }
+
+
+  /*
+    Si el Apps Script devuelve
+    un texto que contiene el código,
+    intentamos identificarlo.
+  */
+
+  for(
+    const permitido of permitidos
+  ){
+
+    if(
+      codigo === permitido ||
+      codigo.startsWith(
+        permitido + " "
+      ) ||
+      codigo.startsWith(
+        permitido + "-"
+      )
+    ){
+
+      return permitido;
+
+    }
+
+  }
+
+
+  /*
+    Si existe un registro pero
+    no tiene código reconocido,
+    dejamos vacío.
+
+    No inventamos un estatus.
+  */
+
+  return "";
+
+}
+
+
+
+/* =====================================================
+   TEXTO DEL ESTATUS
+===================================================== */
+
+function obtenerTextoEstatus(
+  dia,
+  codigo
+){
+
+  if(!dia){
+
+    return "Sin registro";
+
+  }
+
+
+  const texto =
+    dia.estatusTexto ||
+    dia.descripcion ||
+    dia.DESCRIPCION ||
+    dia.estatus ||
+    dia.ESTATUS ||
+    dia.estado ||
+    dia.ESTADO ||
+    "";
+
+
+  if(texto){
+
+    return String(texto);
+
+  }
+
+
+  if(codigo){
+
+    return "Estatus: " + codigo;
+
+  }
+
+
+  return "Registro sin estatus";
+
+}
+
+
+
+/* =====================================================
+   NORMALIZAR FECHA
+===================================================== */
+
+function normalizarFechaAsistencia(
+  fecha
+){
+
+  if(!fecha){
+
+    return "";
+
+  }
+
+
+  /*
+    Ya viene como:
+    2026-09-24
+  */
+
+  const texto =
+    String(fecha)
+      .trim();
+
+
+  if(
+    /^\d{4}-\d{2}-\d{2}$/.test(
+      texto
+    )
+  ){
+
+    return texto;
+
+  }
+
+
+  /*
+    Formato:
+    24/09/2026
+  */
+
+  const partes =
+    texto.split("/");
+
+
+  if(
+    partes.length === 3 &&
+    partes[2].length === 4
+  ){
+
+    return (
+      partes[2] +
+      "-" +
+      String(partes[1]).padStart(2,"0") +
+      "-" +
+      String(partes[0]).padStart(2,"0")
+    );
+
+  }
+
+
+  /*
+    Intentar fecha JavaScript
+  */
+
+  const fechaObj =
+    new Date(fecha);
+
+
+  if(
+    !isNaN(
+      fechaObj.getTime()
+    )
+  ){
+
+    return (
+      fechaObj.getFullYear() +
+      "-" +
+      String(
+        fechaObj.getMonth()+1
+      ).padStart(2,"0") +
+      "-" +
+      String(
+        fechaObj.getDate()
+      ).padStart(2,"0")
+    );
+
+  }
+
+
+  return texto;
+
+}
+
+
+
+/* =====================================================
+   FORMATO FECHA
+===================================================== */
+
+function formatearFechaCorta(
+  fecha
+){
+
+  if(!fecha){
+
+    return "";
+
+  }
+
+
+  const normalizada =
+    normalizarFechaAsistencia(
+      fecha
+    );
+
+
+  const partes =
+    normalizada.split("-");
+
+
+  if(
+    partes.length !== 3
+  ){
+
+    return String(fecha);
+
+  }
+
+
+  return (
+    partes[2] +
+    "/" +
+    partes[1] +
+    "/" +
+    partes[0]
+  );
+
+}
+
+
+
+/* =====================================================
+   NOMBRE DEL DÍA
+===================================================== */
+
+function nombreDiaCorto(
+  fecha
+){
+
+  const dias = [
+
+    "DOM",
+    "LUN",
+    "MAR",
+    "MIÉ",
+    "JUE",
+    "VIE",
+    "SÁB"
+
+  ];
+
+
+  const normalizada =
+    normalizarFechaAsistencia(
+      fecha
+    );
+
+
+  const partes =
+    normalizada.split("-");
+
+
+  if(
+    partes.length !== 3
+  ){
+
+    return "";
+
+  }
+
+
+  const fechaObj =
+    new Date(
+      Number(partes[0]),
+      Number(partes[1]) - 1,
+      Number(partes[2])
+    );
+
+
+  return dias[
+    fechaObj.getDay()
+  ];
+
+}
 
   <!-- =========================
        MÉTRICAS
