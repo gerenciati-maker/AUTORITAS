@@ -628,9 +628,9 @@ body{
   flex-wrap:wrap;
 }
 .module-btn{
-  border:1px solid rgba(255,255,255,.25);
-  background:rgba(255,255,255,.10);
-  color:white;
+  border:1px solid #d7e2ee;
+  background:white;
+  color:var(--azul);
   padding:10px 16px;
   border-radius:10px;
   cursor:pointer;
@@ -2939,12 +2939,61 @@ function renderizarSeguimientoFaltas(faltas){
   contenedor.style.display = "block";
 }
 
+function obtenerRegistroDia(empleado, fecha){
+  const fuentes = [empleado?.dias, empleado?.asistencias, empleado?.asistencia, empleado?.registros];
+
+  for(const fuente of fuentes){
+    if(!fuente) continue;
+
+    if(Array.isArray(fuente)){
+      const encontrado = fuente.find(r => {
+        const f = r?.fecha || r?.FECHA || r?.dia || r?.DIA || r?.date;
+        return normalizarFechaAsistencia(f) === normalizarFechaAsistencia(fecha);
+      });
+      if(encontrado) return encontrado;
+    }else if(typeof fuente === 'object'){
+      if(fuente[fecha] !== undefined) return fuente[fecha];
+
+      const clave = Object.keys(fuente).find(k =>
+        normalizarFechaAsistencia(k) === normalizarFechaAsistencia(fecha)
+      );
+      if(clave) return fuente[clave];
+    }
+  }
+
+  return null;
+}
+
+function normalizarFechaAsistencia(fecha){
+  if(!fecha) return "";
+  const s = String(fecha).trim();
+  const m = s.match(/^(\d{4})[-\/](\d{1,2})[-\/](\d{1,2})/);
+  if(m) return `${m[1]}-${String(m[2]).padStart(2,"0")}-${String(m[3]).padStart(2,"0")}`;
+  return s.slice(0,10);
+}
+
+function obtenerCodigoAsistencia(registro){
+  if(registro == null || registro === "") return "";
+  if(typeof registro === "string" || typeof registro === "number") return String(registro).trim().toUpperCase();
+
+  return String(
+    registro.codigo ??
+    registro.codigoEstatus ??
+    registro.estatusCodigo ??
+    registro.estadoCodigo ??
+    registro.estatus ??
+    registro.estado ??
+    registro.status ??
+    registro.valor ??
+    ""
+  ).trim().toUpperCase();
+}
+
 function renderizarMatrizAsistencias(fechas, empleados){
   const contenedor = document.getElementById("matrizAsistencias");
 
   if(!empleados.length){
-    contenedor.innerHTML =
-      '<div class="empty">No se encontraron registros para el servicio y periodo seleccionado.</div>';
+    contenedor.innerHTML = '<div class="empty">No se encontraron registros para el servicio y periodo seleccionado.</div>';
     return;
   }
 
@@ -2957,22 +3006,19 @@ function renderizarMatrizAsistencias(fechas, empleados){
   html += '</tr></thead><tbody>';
 
   empleados.forEach(empleado => {
-    const nombre = empleado.nombre || empleado.NOMBRE || empleado.nombreEmpleado || "SIN NOMBRE";
-    const numero = empleado.numeroEmpleado || empleado.numero || empleado.noEmpleado || "";
+    const nombre = empleado.nombre || empleado.NOMBRE || empleado.nombreEmpleado || empleado.nombreCompleto || "SIN NOMBRE";
+    const numero = empleado.numeroEmpleado || empleado.numero || empleado.noEmpleado || empleado.NO_EMPLEADO || "";
 
-    html += `<tr><td>
-      <div class="asistencia-nombre">${escapeHtml(nombre)}</div>
-      <div class="asistencia-numero">No. empleado: ${escapeHtml(numero)}</div>
-    </td>`;
+    html += `<tr><td><div class="asistencia-nombre">${escapeHtml(nombre)}</div><div class="asistencia-numero">No. empleado: ${escapeHtml(numero)}</div></td>`;
 
     fechas.forEach(fecha => {
-      const dias = empleado.dias || empleado.asistencias || empleado.asistencia || {};
-      const dia = dias && typeof dias === "object" ? dias[fecha] : null;
-      const codigo = typeof dia === "string" ? dia : (dia && (dia.codigo || dia.estatusCodigo || dia.estado)) || "";
-      const clase = codigo ? "codigo-" + String(codigo).toUpperCase().replace(/[^A-Z]/g, "") : "";
-      const titulo = typeof dia === "object" && dia ? (dia.estatus || dia.estado || codigo) : (codigo || "Sin registro");
+      const registro = obtenerRegistroDia(empleado, fecha);
+      const codigo = obtenerCodigoAsistencia(registro);
+      const claseCodigo = codigo.replace(/[^A-Z]/g, "");
+      const clase = claseCodigo ? "codigo-" + claseCodigo : "";
+      const titulo = codigo || "Sin registro";
 
-      html += `<td><span class="codigo-asistencia ${clase}" title="${escapeHtml(titulo || "Sin registro")}">${escapeHtml(codigo || "—")}</span></td>`;
+      html += `<td><span class="codigo-asistencia ${clase}" title="${escapeHtml(titulo)}">${escapeHtml(codigo || "—")}</span></td>`;
     });
 
     html += '</tr>';
