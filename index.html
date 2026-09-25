@@ -1441,122 +1441,110 @@ function avatarFallback(nombre){
 
 function cargarDatos(){
 
-  if(cargando){
-    return;
-  }
+  // La carga inicial SOLO trae ESTADO DE FUERZA + SERVICIOS.
+  // Directorio y Unidades se consultan cuando el usuario entra a cada módulo.
+  solicitarModulo('estado', function(data){
 
-  cargando = true;
+    servicios = Array.isArray(data.servicios) ? data.servicios : [];
+    personal = Array.isArray(data.personal) ? data.personal : [];
 
-  document
-    .getElementById("organigrama")
-    .innerHTML =
-      `<div class="loading">
-        Cargando información...
-      </div>`;
-
-  cargarModuloAPI("estado", function(data){
-
-    try{
-
-      if(!data || data.ok !== true){
-        throw new Error(data?.error || "Respuesta inválida");
-      }
-
-      servicios = Array.isArray(data.servicios) ? data.servicios : [];
-      personal = Array.isArray(data.personal) ? data.personal : [];
-
-      construirFiltros();
-      actualizarTodo();
-
-    }catch(error){
-
-      console.error(error);
-
-      document
-        .getElementById("organigrama")
-        .innerHTML =
-          `<div class="empty">
-            Error al procesar la información.
-            <br><br>
-            ${escapeHtml(error.message)}
-          </div>`;
-
-    }finally{
-      cargando = false;
-    }
+    construirFiltros();
+    actualizarTodo();
 
   });
 
 }
 
+
 /* =====================================================
-   CARGA LAZY POR MÓDULO
+   CONSULTA POR MÓDULO
 ===================================================== */
 
-const modulosCargados = {
-  estado: true,
-  directorio: false,
-  unidades: false,
-  asistencias: false
-};
+function solicitarModulo(modulo, onSuccess){
 
-const modulosCargando = {};
-
-function cargarModuloAPI(modulo, alTerminar){
-
-  if(modulosCargando[modulo]) return;
-
-  modulosCargando[modulo] = true;
-
-  const callback = "callback_" + modulo + "_" + Date.now();
+  const callback = 'callback_' + modulo + '_' + Date.now();
+  const inicio = performance.now();
   let terminado = false;
 
-  const finalizar = (ok, data) => {
+  window[callback] = function(data){
+
     if(terminado) return;
     terminado = true;
 
-    modulosCargando[modulo] = false;
-
     try{
-      delete window[callback];
-    }catch(e){}
+      if(!data || data.ok !== true){
+        throw new Error(data?.error || 'Respuesta inválida');
+      }
 
-    if(ok) modulosCargados[modulo] = true;
+      if(typeof onSuccess === 'function'){
+        onSuccess(data);
+      }
 
-    if(typeof alTerminar === "function"){
-      alTerminar(ok ? data : null);
+      console.log(
+        'AUTORITAS / ' + modulo + ':',
+        ((performance.now() - inicio) / 1000).toFixed(2) + ' s'
+      );
+
+    }catch(error){
+      console.error('Error módulo ' + modulo + ':', error);
+
+      const mensaje =
+        modulo === 'directorio'
+          ? 'No fue posible cargar el directorio.'
+          : modulo === 'unidades'
+            ? 'No fue posible cargar las unidades.'
+            : 'No fue posible cargar la información.';
+
+      const destino =
+        modulo === 'directorio'
+          ? document.getElementById('directorioBody')
+          : modulo === 'unidades'
+            ? document.getElementById('unidadesBody')
+            : document.getElementById('organigrama');
+
+      if(destino){
+        destino.innerHTML =
+          `<div class="empty">${mensaje}<br><br>${escapeHtml(error.message)}</div>`;
+      }
+
+    }finally{
+      try{ delete window[callback]; }catch(e){}
+      try{ script.remove(); }catch(e){}
     }
+
   };
 
-  window[callback] = function(data){
-    if(!data || data.ok !== true){
-      finalizar(false, data);
-      return;
-    }
-    finalizar(true, data);
-  };
-
-  const script = document.createElement("script");
+  const script = document.createElement('script');
 
   script.src =
     API_URL +
-    "?modulo=" + encodeURIComponent(modulo) +
-    "&callback=" + encodeURIComponent(callback) +
-    "&t=" + Date.now();
+    '?callback=' + encodeURIComponent(callback) +
+    '&modulo=' + encodeURIComponent(modulo) +
+    '&t=' + Date.now();
 
   script.onerror = function(){
-    finalizar(false, null);
+    if(terminado) return;
+    terminado = true;
+
+    const destino =
+      modulo === 'directorio'
+        ? document.getElementById('directorioBody')
+        : modulo === 'unidades'
+          ? document.getElementById('unidadesBody')
+          : document.getElementById('organigrama');
+
+    if(destino){
+      destino.innerHTML =
+        '<div class="empty">No fue posible conectar con la base de datos.</div>';
+    }
+
+    try{ delete window[callback]; }catch(e){}
+    try{ script.remove(); }catch(e){}
   };
 
   document.body.appendChild(script);
 }
 
-function mostrarErrorModulo(contenedorId, mensaje){
-  const el = document.getElementById(contenedorId);
-  if(el){
-    el.innerHTML = `<div class="empty">${escapeHtml(mensaje || "No fue posible cargar la información.")}</div>`;
-  }
-}
 
 /* =====================================================
    ESCAPE HTML
@@ -2609,79 +2597,45 @@ function cambiarModulo(modulo, boton){
   if(vista) vista.classList.add('active');
   if(boton) boton.classList.add('active');
 
-  if(modulo === 'estado'){
-    if(modulosCargados.estado){
-      construirFiltros();
-      actualizarTodo();
-    }
-    return;
-  }
-
   if(modulo === 'directorio'){
-    if(modulosCargados.directorio){
+    if(!directorioServicios.length){
+      const body = document.getElementById('directorioBody');
+      if(body) body.innerHTML = '<div class="loading">Cargando directorio...</div>';
+
+      solicitarModulo('directorio', function(data){
+        directorioServicios = Array.isArray(data.directorioServicios) ? data.directorioServicios : [];
+        construirFiltrosDirectorio();
+        renderizarDirectorio();
+      });
+    }else{
       construirFiltrosDirectorio();
       renderizarDirectorio();
-      return;
     }
-
-    const body = document.getElementById('directorioBody');
-    if(body) body.innerHTML = '<div class="loading">Cargando directorio...</div>';
-
-    cargarModuloAPI('directorio', function(data){
-      if(!data){
-        mostrarErrorModulo('directorioBody','No fue posible cargar el directorio.');
-        return;
-      }
-      directorioServicios = Array.isArray(data.directorioServicios) ? data.directorioServicios : [];
-      construirFiltrosDirectorio();
-      renderizarDirectorio();
-    });
-    return;
   }
 
   if(modulo === 'unidades'){
-    if(modulosCargados.unidades){
+    if(!unidades.length){
+      const body = document.getElementById('unidadesBody');
+      if(body) body.innerHTML = '<div class="loading">Cargando unidades...</div>';
+
+      solicitarModulo('unidades', function(data){
+        unidades = Array.isArray(data.unidades) ? data.unidades : [];
+        construirFiltrosUnidades();
+        renderizarUnidades();
+      });
+    }else{
       construirFiltrosUnidades();
       renderizarUnidades();
-      return;
     }
-
-    const body = document.getElementById('unidadesBody');
-    if(body) body.innerHTML = '<div class="loading">Cargando unidades...</div>';
-
-    cargarModuloAPI('unidades', function(data){
-      if(!data){
-        mostrarErrorModulo('unidadesBody','No fue posible cargar las unidades.');
-        return;
-      }
-      unidades = Array.isArray(data.unidades) ? data.unidades : [];
-      construirFiltrosUnidades();
-      renderizarUnidades();
-    });
-    return;
   }
 
   if(modulo === 'asistencias'){
-    if(modulosCargados.asistencias){
-      construirServiciosAsistencias();
-      return;
-    }
-
-    const contenedor = document.getElementById('matrizAsistencias');
-    if(contenedor) contenedor.innerHTML = '<div class="loading">Cargando catálogo de servicios...</div>';
-
-    cargarModuloAPI('asistenciaCatalogo', function(data){
-      if(!data){
-        mostrarErrorModulo('matrizAsistencias','No fue posible cargar el catálogo de servicios.');
-        return;
-      }
-      servicios = Array.isArray(data.servicios) ? data.servicios : servicios;
-      modulosCargados.asistencias = true;
-      construirServiciosAsistencias();
-      if(contenedor) contenedor.innerHTML = 'Selecciona un servicio y un periodo para consultar las asistencias.';
-    });
+    // El catálogo de servicios ya viene con ESTADO DE FUERZA.
+    // La consulta de historial se hace únicamente al presionar CONSULTAR.
+    construirServiciosAsistencias();
   }
 }
+
 
 function campoDirectorio(registro, nombres){
   return obtenerCampo(registro,nombres);
