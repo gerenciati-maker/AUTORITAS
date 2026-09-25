@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Estado de Fuerza | Directorio Digital</title>
+<title>AUTORITAS | Portal Administrativo</title>
 
 <style>
 
@@ -692,6 +692,37 @@ body{
 @media(max-width:1000px){.data-filters{grid-template-columns:1fr 1fr;}}
 @media(max-width:650px){.module-nav{padding:0 15px}.data-filters{grid-template-columns:1fr}.unit-grid{grid-template-columns:1fr}.unit-details{grid-template-columns:1fr 1fr}}
 
+
+/* =====================================================
+   ASISTENCIAS
+===================================================== */
+.asistencias-card{background:white;border:1px solid var(--gris-borde);border-radius:16px;padding:20px;box-shadow:var(--sombra)}
+.asistencias-filtros{display:grid;grid-template-columns:2fr 1fr 1fr auto;gap:12px;margin-bottom:20px}
+.asistencias-info{background:#f8fbff;border:1px solid #dcecff;border-radius:12px;padding:15px;margin-bottom:20px}
+.asistencias-info-grid{display:grid;grid-template-columns:2fr 1fr 1fr;gap:15px}
+.asistencia-info-label{font-size:10px;color:#667085;font-weight:bold;text-transform:uppercase}
+.asistencia-info-value{margin-top:4px;font-size:14px;font-weight:800;color:#17365d}
+.faltas-box{margin-bottom:20px;border:1px solid #f1d3d0;border-radius:12px;overflow:hidden}
+.faltas-header{padding:13px 16px;background:#fff8f7;color:#9f2017;font-weight:800}
+.faltas-table{width:100%;border-collapse:collapse}
+.faltas-table th,.faltas-table td{padding:9px 12px;border-bottom:1px solid #edf1f5;text-align:left;font-size:12px}
+.faltas-table th{background:#fafafa;color:#667085;font-size:10px;text-transform:uppercase}
+.faltas-numero{font-weight:800;color:#d92d20}
+.asistencia-table-wrap{width:100%;overflow:auto;border:1px solid #e1e7ee;border-radius:12px}
+.asistencia-table{width:100%;border-collapse:collapse;min-width:850px}
+.asistencia-table th,.asistencia-table td{border-right:1px solid #e5eaf0;border-bottom:1px solid #e5eaf0;padding:8px;text-align:center;font-size:11px;white-space:nowrap}
+.asistencia-table th{background:#f4f7fa;color:#475467;font-weight:800;position:sticky;top:0;z-index:2}
+.asistencia-table th:first-child,.asistencia-table td:first-child{position:sticky;left:0;background:white;z-index:3;text-align:left}
+.asistencia-table th:first-child{background:#f4f7fa;z-index:4}
+.asistencia-nombre{font-weight:800;color:#243b53}
+.asistencia-numero{font-size:10px;color:#667085;margin-top:2px}
+.codigo-asistencia{display:inline-flex;min-width:28px;height:28px;padding:0 6px;align-items:center;justify-content:center;border-radius:7px;font-weight:800;background:#f2f4f7;color:#667085}
+.codigo-A{background:#e8f7ef;color:#159957}.codigo-F{background:#fdecea;color:#d92d20}.codigo-FR{background:#fff0e6;color:#c2410c}.codigo-NC{background:#fff4d6;color:#9a6700}.codigo-R{background:#fff4d6;color:#9a6700}.codigo-V{background:#eaf4ff;color:#0057a8}.codigo-AB{background:#f1eaff;color:#6941c6}.codigo-VAC{background:#f1eaff;color:#6941c6}.codigo-AP{background:#eaf4ff;color:#0057a8}.codigo-INC{background:#f1eaff;color:#6941c6}
+.asistencias-leyenda{display:flex;flex-wrap:wrap;gap:8px;margin-top:15px}
+.leyenda-item{display:flex;align-items:center;gap:5px;font-size:11px;color:#667085}
+@media(max-width:900px){.asistencias-filtros{grid-template-columns:1fr 1fr}.asistencias-info-grid{grid-template-columns:1fr}}
+@media(max-width:600px){.asistencias-filtros{grid-template-columns:1fr}}
+
 </style>
 </head>
 
@@ -708,8 +739,8 @@ body{
       </div>
 
       <div>
-        <h1>Estado de Fuerza</h1>
-        <p>Directorio Digital de Personal</p>
+        <h1>AUTORITAS</h1>
+        <p>Portal Administrativo</p>
       </div>
 
     </div>
@@ -729,6 +760,7 @@ body{
   <button class="module-btn active" data-module="estado" onclick="cambiarModulo('estado',this)">ESTADO DE FUERZA</button>
   <button class="module-btn" data-module="directorio" onclick="cambiarModulo('directorio',this)">DIRECTORIO DE SERVICIOS</button>
   <button class="module-btn" data-module="unidades" onclick="cambiarModulo('unidades',this)">UNIDADES</button>
+  <button class="module-btn" data-module="asistencias" onclick="cambiarModulo('asistencias',this)">ASISTENCIAS</button>
 </nav>
 
 <main class="container">
@@ -986,6 +1018,58 @@ body{
   </div>
 </section>
 
+
+<section id="asistenciasView" class="module-view">
+  <div class="data-card">
+    <div class="data-head">
+      <div>
+        <h2>Asistencias</h2>
+        <p>Consulta de asistencia por servicio / inmueble y periodo.</p>
+      </div>
+      <div id="asistenciasInfo" class="data-count">Selecciona un servicio y periodo</div>
+    </div>
+
+    <div class="asistencias-filtros">
+      <select id="asistenciaServicio" class="select">
+        <option value="">Seleccionar servicio / inmueble</option>
+      </select>
+      <input id="asistenciaFechaInicio" class="input" type="date">
+      <input id="asistenciaFechaFin" class="input" type="date">
+      <button class="btn-clear" onclick="consultarAsistencias()">CONSULTAR</button>
+    </div>
+
+    <div id="asistenciaInfoServicio" class="asistencias-info" style="display:none;">
+      <div class="asistencias-info-grid">
+        <div><div class="asistencia-info-label">Servicio / Inmueble</div><div id="asistenciaServicioTexto" class="asistencia-info-value"></div></div>
+        <div><div class="asistencia-info-label">Fecha inicial</div><div id="asistenciaFechaInicioTexto" class="asistencia-info-value"></div></div>
+        <div><div class="asistencia-info-label">Fecha final</div><div id="asistenciaFechaFinTexto" class="asistencia-info-value"></div></div>
+      </div>
+    </div>
+
+    <div id="seguimientoFaltas" class="faltas-box" style="display:none;">
+      <div class="faltas-header">⚠️ SEGUIMIENTO DE FALTAS</div>
+      <div id="faltasContenido"></div>
+    </div>
+
+    <div id="matrizAsistencias" class="empty">
+      Selecciona un servicio y un periodo para consultar las asistencias.
+    </div>
+
+    <div class="asistencias-leyenda">
+      <div class="leyenda-item"><span class="codigo-asistencia codigo-A">A</span> Asistencia</div>
+      <div class="leyenda-item"><span class="codigo-asistencia codigo-F">F</span> Falta</div>
+      <div class="leyenda-item"><span class="codigo-asistencia codigo-FR">FR</span> Falta de registro</div>
+      <div class="leyenda-item"><span class="codigo-asistencia codigo-NC">NC</span> No conforme</div>
+      <div class="leyenda-item"><span class="codigo-asistencia codigo-R">R</span> Retardo</div>
+      <div class="leyenda-item"><span class="codigo-asistencia codigo-V">V</span> Visita</div>
+      <div class="leyenda-item"><span class="codigo-asistencia codigo-AB">AB</span> Abandono</div>
+      <div class="leyenda-item"><span class="codigo-asistencia codigo-VAC">VAC</span> Vacaciones</div>
+      <div class="leyenda-item"><span class="codigo-asistencia codigo-AP">AP</span> Apoyo</div>
+      <div class="leyenda-item"><span class="codigo-asistencia codigo-INC">INC</span> Incapacidad</div>
+    </div>
+  </div>
+</section>
+
 </main>
 
 
@@ -1012,6 +1096,8 @@ let directorioServicios = [];
 let unidades = [];
 
 let cargando = false;
+
+let datosAsistencias = null;
 
 
 /* =====================================================
@@ -1446,6 +1532,8 @@ function cargarDatos(){
         construirFiltrosDirectorio();
 
         construirFiltrosUnidades();
+
+        construirServiciosAsistencias();
 
         renderizarDirectorio();
 
@@ -2551,12 +2639,20 @@ function cambiarModulo(modulo, boton){
   document.querySelectorAll('.module-view').forEach(v => v.classList.remove('active'));
   document.querySelectorAll('.module-btn').forEach(b => b.classList.remove('active'));
 
-  const vista = document.getElementById(modulo === 'estado' ? 'estadoView' : modulo === 'directorio' ? 'directorioView' : 'unidadesView');
+  const vistas = {
+    estado: 'estadoView',
+    directorio: 'directorioView',
+    unidades: 'unidadesView',
+    asistencias: 'asistenciasView'
+  };
+
+  const vista = document.getElementById(vistas[modulo]);
   if(vista) vista.classList.add('active');
   if(boton) boton.classList.add('active');
 
   if(modulo === 'directorio') renderizarDirectorio();
   if(modulo === 'unidades') renderizarUnidades();
+  if(modulo === 'asistencias') construirServiciosAsistencias();
 }
 
 function campoDirectorio(registro, nombres){
@@ -2668,6 +2764,242 @@ function limpiarUnidades(){
   document.getElementById('unidadesAsignacion').value='';
   renderizarUnidades();
 }
+
+/* =====================================================
+   ASISTENCIAS
+===================================================== */
+
+function construirServiciosAsistencias(){
+  const select = document.getElementById("asistenciaServicio");
+  if(!select) return;
+
+  const actual = select.value;
+  select.innerHTML = '<option value="">Seleccionar servicio / inmueble</option>';
+
+  const nombres = [];
+
+  servicios.forEach(servicio => {
+    const codigo = obtenerCampo(servicio,[
+      "CODIFICACIÓN DE UN FORMULARIO Y SERVICIO",
+      "CODIFICACION DE UN FORMULARIO Y SERVICIO"
+    ]);
+    const nombre = obtenerCampo(servicio,["SERVICIO"]);
+    const inmueble = obtenerCampo(servicio,["INMUEBLE","INMUEBLE SERVICIO"]);
+    const valor = String(codigo || nombre || "").trim();
+    const texto = inmueble ? valor + " / " + inmueble : valor;
+
+    if(valor){
+      nombres.push({valor, texto});
+    }
+  });
+
+  const unicos = [];
+  const vistos = new Set();
+  nombres
+    .sort((a,b)=>normalizarTexto(a.texto).localeCompare(normalizarTexto(b.texto),"es"))
+    .forEach(item => {
+      const clave = normalizarTexto(item.valor);
+      if(!vistos.has(clave)){
+        vistos.add(clave);
+        unicos.push(item);
+      }
+    });
+
+  unicos.forEach(item => {
+    const option = document.createElement("option");
+    option.value = item.valor;
+    option.textContent = item.texto;
+    select.appendChild(option);
+  });
+
+  if(actual && [...select.options].some(o => o.value === actual)){
+    select.value = actual;
+  }
+}
+
+function consultarAsistencias(){
+  const servicio = document.getElementById("asistenciaServicio").value;
+  const fechaInicio = document.getElementById("asistenciaFechaInicio").value;
+  const fechaFin = document.getElementById("asistenciaFechaFin").value;
+
+  if(!servicio){
+    alert("Selecciona un servicio / inmueble.");
+    return;
+  }
+
+  if(!fechaInicio || !fechaFin){
+    alert("Selecciona la fecha inicial y la fecha final.");
+    return;
+  }
+
+  if(fechaInicio > fechaFin){
+    alert("La fecha inicial no puede ser mayor que la fecha final.");
+    return;
+  }
+
+  document.getElementById("matrizAsistencias").innerHTML =
+    '<div class="loading">Consultando historial...</div>';
+  document.getElementById("seguimientoFaltas").style.display = "none";
+  document.getElementById("asistenciaInfoServicio").style.display = "none";
+  document.getElementById("asistenciasInfo").textContent = "Consultando...";
+
+  const callback = "callback_asistencias_" + Date.now();
+
+  window[callback] = function(data){
+    try{
+      datosAsistencias = data;
+
+      const resultado = data && data.asistencias ? data.asistencias : data;
+
+      if(!resultado || resultado.ok === false){
+        throw new Error(
+          resultado?.error ||
+          data?.error ||
+          "No fue posible consultar las asistencias."
+        );
+      }
+
+      renderizarAsistencias(resultado);
+
+    }catch(error){
+      console.error("Error asistencias:", error);
+      document.getElementById("asistenciasInfo").textContent = "Error en la consulta";
+      document.getElementById("matrizAsistencias").innerHTML =
+        `<div class="empty">Error al consultar las asistencias.<br><br>${escapeHtml(error.message)}</div>`;
+    }
+
+    try{ delete window[callback]; }catch(e){}
+  };
+
+  const script = document.createElement("script");
+
+  script.src = API_URL +
+    "?callback=" + encodeURIComponent(callback) +
+    "&modulo=asistencias" +
+    "&servicio=" + encodeURIComponent(servicio) +
+    "&fechaInicio=" + encodeURIComponent(fechaInicio) +
+    "&fechaFin=" + encodeURIComponent(fechaFin) +
+    "&fechaInicial=" + encodeURIComponent(fechaInicio) +
+    "&fechaFinal=" + encodeURIComponent(fechaFin) +
+    "&t=" + Date.now();
+
+  script.onerror = function(){
+    document.getElementById("asistenciasInfo").textContent = "Error de conexión";
+    document.getElementById("matrizAsistencias").innerHTML =
+      '<div class="empty">No fue posible conectar con el historial de asistencias.</div>';
+    try{ delete window[callback]; }catch(e){}
+  };
+
+  document.body.appendChild(script);
+}
+
+function renderizarAsistencias(data){
+  const fechas = Array.isArray(data.fechas) ? data.fechas : [];
+  const empleados = Array.isArray(data.empleados) ? data.empleados : [];
+  const faltas = Array.isArray(data.seguimientoFaltas) ? data.seguimientoFaltas : [];
+
+  document.getElementById("asistenciasInfo").textContent =
+    empleados.length + (empleados.length === 1 ? " empleado" : " empleados");
+
+  document.getElementById("asistenciaInfoServicio").style.display = "block";
+  document.getElementById("asistenciaServicioTexto").textContent =
+    data.servicio || data.inmueble || "";
+  document.getElementById("asistenciaFechaInicioTexto").textContent =
+    formatearFechaCorta(data.fechaInicio || data.fechaInicial);
+  document.getElementById("asistenciaFechaFinTexto").textContent =
+    formatearFechaCorta(data.fechaFin || data.fechaFinal);
+
+  renderizarSeguimientoFaltas(faltas);
+  renderizarMatrizAsistencias(fechas, empleados);
+}
+
+function renderizarSeguimientoFaltas(faltas){
+  const contenedor = document.getElementById("seguimientoFaltas");
+  const contenido = document.getElementById("faltasContenido");
+
+  if(!faltas.length){
+    contenedor.style.display = "block";
+    contenido.innerHTML =
+      '<div style="padding:14px;color:#667085;font-size:12px;">No se encontraron faltas confirmadas en el periodo.</div>';
+    return;
+  }
+
+  let html = '<table class="faltas-table"><thead><tr><th>No. empleado</th><th>Nombre del guardia</th><th>Faltas confirmadas</th></tr></thead><tbody>';
+
+  faltas.forEach(falta => {
+    html += `<tr>
+      <td>${escapeHtml(falta.numeroEmpleado || falta.numero || "")}</td>
+      <td>${escapeHtml(falta.nombre || falta.NOMBRE || "")}</td>
+      <td class="faltas-numero">${escapeHtml(falta.faltas || 0)}</td>
+    </tr>`;
+  });
+
+  html += '</tbody></table>';
+  contenido.innerHTML = html;
+  contenedor.style.display = "block";
+}
+
+function renderizarMatrizAsistencias(fechas, empleados){
+  const contenedor = document.getElementById("matrizAsistencias");
+
+  if(!empleados.length){
+    contenedor.innerHTML =
+      '<div class="empty">No se encontraron registros para el servicio y periodo seleccionado.</div>';
+    return;
+  }
+
+  let html = '<div class="asistencia-table-wrap"><table class="asistencia-table"><thead><tr><th>Nombre del empleado</th>';
+
+  fechas.forEach(fecha => {
+    html += `<th>${nombreDiaCorto(fecha)}<br>${formatearFechaCorta(fecha)}</th>`;
+  });
+
+  html += '</tr></thead><tbody>';
+
+  empleados.forEach(empleado => {
+    const nombre = empleado.nombre || empleado.NOMBRE || empleado.nombreEmpleado || "SIN NOMBRE";
+    const numero = empleado.numeroEmpleado || empleado.numero || empleado.noEmpleado || "";
+
+    html += `<tr><td>
+      <div class="asistencia-nombre">${escapeHtml(nombre)}</div>
+      <div class="asistencia-numero">No. empleado: ${escapeHtml(numero)}</div>
+    </td>`;
+
+    fechas.forEach(fecha => {
+      const dias = empleado.dias || empleado.asistencias || empleado.asistencia || {};
+      const dia = dias && typeof dias === "object" ? dias[fecha] : null;
+      const codigo = typeof dia === "string" ? dia : (dia && (dia.codigo || dia.estatusCodigo || dia.estado)) || "";
+      const clase = codigo ? "codigo-" + String(codigo).toUpperCase().replace(/[^A-Z]/g, "") : "";
+      const titulo = typeof dia === "object" && dia ? (dia.estatus || dia.estado || codigo) : (codigo || "Sin registro");
+
+      html += `<td><span class="codigo-asistencia ${clase}" title="${escapeHtml(titulo || "Sin registro")}">${escapeHtml(codigo || "—")}</span></td>`;
+    });
+
+    html += '</tr>';
+  });
+
+  html += '</tbody></table></div>';
+  contenedor.innerHTML = html;
+}
+
+function formatearFechaCorta(fecha){
+  if(!fecha) return "";
+  const texto = String(fecha);
+  const partes = texto.split("-");
+  if(partes.length === 3 && partes[0].length === 4){
+    return partes[2] + "/" + partes[1] + "/" + partes[0];
+  }
+  return texto;
+}
+
+function nombreDiaCorto(fecha){
+  const dias = ["DOM","LUN","MAR","MIÉ","JUE","VIE","SÁB"];
+  const partes = String(fecha).split("-");
+  if(partes.length !== 3) return "";
+  const fechaObj = new Date(Number(partes[0]),Number(partes[1])-1,Number(partes[2]));
+  return dias[fechaObj.getDay()];
+}
+
 
 /* =====================================================
    INICIO
