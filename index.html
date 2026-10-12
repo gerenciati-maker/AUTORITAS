@@ -2761,6 +2761,10 @@ function cambiarVehicularSubmodulo(clave, boton){
   };
   const botonesTarjeta = document.querySelectorAll('.vehicle-subnav button');
   if(botonesTarjeta[pares[clave]]) botonesTarjeta[pares[clave]].classList.add('active');
+  if(clave === 'combustible'){
+    renderizarPanelCombustible();
+    return;
+  }
   if(clave === 'unidadesAsignaciones'){
     panel.innerHTML = `<div class="data-card">
     <div class="data-head">
@@ -2801,6 +2805,134 @@ function cambiarVehicularSubmodulo(clave, boton){
     return;
   }
   panel.innerHTML = `<h3>${escapeHtml(info.titulo)}</h3><p>${escapeHtml(info.descripcion)}</p><div class="vehicle-note">${escapeHtml(info.nota)}</div>`;
+}
+
+let registrosCombustible = [];
+let combustibleCargado = false;
+let combustibleCargando = false;
+
+function renderizarPanelCombustible(){
+  const panel = document.getElementById('vehicularPanel');
+  if(!panel) return;
+  panel.innerHTML = `
+    <div class="data-card">
+      <div class="data-head">
+        <div><h2>Combustible y gastos</h2><p>Consulta de cargas registradas en el formulario original.</p></div>
+        <div id="combustibleCount" class="data-count">Preparando consulta…</div>
+      </div>
+      <div class="stats-grid" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin:16px 0">
+        <div class="data-card"><small>Gasto total filtrado</small><h2 id="combustibleTotalGasto">—</h2></div>
+        <div class="data-card"><small>Litros registrados</small><h2 id="combustibleTotalLitros">—</h2></div>
+        <div class="data-card"><small>Cargas registradas</small><h2 id="combustibleTotalCargas">—</h2></div>
+      </div>
+      <div class="data-filters" style="grid-template-columns:repeat(auto-fit,minmax(150px,1fr))">
+        <input id="combustibleSearch" class="input" type="search" placeholder="Buscar unidad, empleado u observación…">
+        <select id="combustibleUnidad" class="select"><option value="">Todas las unidades</option></select>
+        <select id="combustiblePago" class="select"><option value="">Todos los tipos de pago</option></select>
+        <label class="input" style="display:flex;align-items:center;gap:8px">Desde <input id="combustibleDesde" type="date" style="min-width:0;width:100%;border:0;background:transparent"></label>
+        <label class="input" style="display:flex;align-items:center;gap:8px">Hasta <input id="combustibleHasta" type="date" style="min-width:0;width:100%;border:0;background:transparent"></label>
+        <button class="btn-clear" onclick="limpiarFiltrosCombustible()">Limpiar filtros</button>
+      </div>
+      <div id="combustibleAviso" class="vehicle-note" style="margin-bottom:14px">Conectando con la fuente de combustible…</div>
+      <div id="combustibleTabla" class="data-table-wrap"><div class="loading">Cargando registros de combustible…</div></div>
+    </div>`;
+  ['combustibleSearch','combustibleUnidad','combustiblePago','combustibleDesde','combustibleHasta'].forEach(id=>{
+    const el=document.getElementById(id);
+    if(el) el.addEventListener(id==='combustibleSearch'?'input':'change',renderizarTablaCombustible);
+  });
+  if(combustibleCargado){ prepararFiltrosCombustible(); renderizarTablaCombustible(); }
+  else cargarRegistrosCombustible();
+}
+
+function cargarRegistrosCombustible(){
+  if(combustibleCargando) return;
+  combustibleCargando=true;
+  const callback='callback_combustible_'+Date.now();
+  let terminado=false;
+  const script=document.createElement('script');
+  const timeout=setTimeout(()=>finalizarError('La fuente no respondió a tiempo.'),18000);
+  function limpiar(){clearTimeout(timeout);try{delete window[callback]}catch(e){}try{script.remove()}catch(e){}combustibleCargando=false;}
+  function finalizarError(mensaje){if(terminado)return;terminado=true;limpiar();const aviso=document.getElementById('combustibleAviso');const tabla=document.getElementById('combustibleTabla');if(aviso)aviso.textContent=mensaje+' La vista está preparada, pero el servicio de datos debe entregar los registros de combustible. No se modificó la hoja de respuestas.';if(tabla)tabla.innerHTML='<div class="empty">No fue posible obtener los registros reales. No se muestran datos de ejemplo.</div>';const cuenta=document.getElementById('combustibleCount');if(cuenta)cuenta.textContent='Sin conexión';}
+  window[callback]=function(data){
+    if(terminado)return;
+    if(!data || data.ok!==true){finalizarError((data&&data.error)||'El servicio actual no reconoce o no pudo cargar el módulo de combustible.');return;}
+    const arr=Array.isArray(data.combustible)?data.combustible:(Array.isArray(data.registros)?data.registros:(Array.isArray(data.data)?data.data:null));
+    if(!arr){finalizarError('La respuesta del servicio no incluye una lista de registros de combustible.');return;}
+    terminado=true;limpiar();registrosCombustible=arr;combustibleCargado=true;
+    const aviso=document.getElementById('combustibleAviso');if(aviso)aviso.textContent='Fuente conectada. Los datos se consultan en modo lectura; la hoja de respuestas permanece intacta.';
+    prepararFiltrosCombustible();renderizarTablaCombustible();
+  };
+  script.onerror=()=>finalizarError('No fue posible conectar con el servicio de datos de AUTORITAS.');
+  script.src=API_URL+'?callback='+encodeURIComponent(callback)+'&modulo=combustible&t='+Date.now();
+  document.head.appendChild(script);
+}
+
+function valorCombustible(r, nombres){return campoDirectorio(r,nombres)||'';}
+function fechaCombustible(r){
+  const raw=valorCombustible(r,['Marca temporal','Fecha','Fecha de carga']);
+  if(!raw)return '';
+  const d=new Date(raw);
+  if(!Number.isNaN(d.getTime()))return d;
+  const m=String(raw).match(/(\d{1,2})[\/.-](\d{1,2})[\/.-](\d{2,4})/);
+  if(m){let y=Number(m[3]);if(y<100)y+=2000;const x=new Date(y,Number(m[2])-1,Number(m[1]));if(!Number.isNaN(x.getTime()))return x;}
+  return null;
+}
+function numeroCombustible(r,nombres){const v=String(valorCombustible(r,nombres)).replace(/[$,\s]/g,'');const n=Number(v);return Number.isFinite(n)?n:0;}
+function monedaCombustible(n){return n.toLocaleString('es-MX',{style:'currency',currency:'MXN',minimumFractionDigits:2,maximumFractionDigits:2});}
+function prepararFiltrosCombustible(){
+  const unidadesEl=document.getElementById('combustibleUnidad'), pagosEl=document.getElementById('combustiblePago');if(!unidadesEl||!pagosEl)return;
+  const actualU=unidadesEl.value, actualP=pagosEl.value;
+  const unidadesLista=valoresUnicos(registrosCombustible.map(r=>valorCombustible(r,['SELECCIONAR UNIDAD','Unidad','No Unidad'])));
+  const pagosLista=valoresUnicos(registrosCombustible.map(r=>valorCombustible(r,['SELECCIONAR TIPO DE PAGO (carga)','Tipo de pago','Tipo de Pago'])));
+  unidadesEl.innerHTML='<option value="">Todas las unidades</option>'+unidadesLista.map(x=>`<option value="${escapeHtml(x)}">${escapeHtml(x)}</option>`).join('');
+  pagosEl.innerHTML='<option value="">Todos los tipos de pago</option>'+pagosLista.map(x=>`<option value="${escapeHtml(x)}">${escapeHtml(x)}</option>`).join('');
+  unidadesEl.value=actualU;pagosEl.value=actualP;
+}
+function datosFiltradosCombustible(){
+  const q=normalizarTexto(document.getElementById('combustibleSearch')?.value||'');
+  const unidad=document.getElementById('combustibleUnidad')?.value||'';
+  const pago=document.getElementById('combustiblePago')?.value||'';
+  const desde=document.getElementById('combustibleDesde')?.value||'';
+  const hasta=document.getElementById('combustibleHasta')?.value||'';
+  return registrosCombustible.filter(r=>{
+    const u=valorCombustible(r,['SELECCIONAR UNIDAD','Unidad','No Unidad']);
+    const p=valorCombustible(r,['SELECCIONAR TIPO DE PAGO (carga)','Tipo de pago','Tipo de Pago']);
+    const f=fechaCombustible(r);
+    if(unidad&&u!==unidad)return false;if(pago&&p!==pago)return false;
+    if(desde&&f instanceof Date&&f<new Date(desde+'T00:00:00'))return false;
+    if(hasta&&f instanceof Date&&f>new Date(hasta+'T23:59:59'))return false;
+    if(q){const texto=[u,p,valorCombustible(r,['SELECCIONAR CLAVE DEL PERSONAL QUE CARGA COMBUSTIBLE','Clave del personal']),valorCombustible(r,['# DE EMPLEADO','No. de empleado']),valorCombustible(r,['SELECCIONAR PUESTO','Puesto']),valorCombustible(r,['OBSERVACIONES (SIEMPRE CARGAR OBSERVACIONES)','Observaciones'])].join(' ');if(!normalizarTexto(texto).includes(q))return false;}
+    return true;
+  }).sort((a,b)=>{const fa=fechaCombustible(a),fb=fechaCombustible(b);return (fb instanceof Date?fb.getTime():0)-(fa instanceof Date?fa.getTime():0);});
+}
+function renderizarTablaCombustible(){
+  const tabla=document.getElementById('combustibleTabla');if(!tabla)return;
+  if(!combustibleCargado)return;
+  const datos=datosFiltradosCombustible();
+  const total=datos.reduce((s,r)=>s+numeroCombustible(r,['COLOCAR EL COSTO MARCADO EN EL TICKET','Costo','Importe']),0);
+  const litros=datos.reduce((s,r)=>s+numeroCombustible(r,['COLOCAR EL # DE LITROS CARGADOS (SOLO NÚMEROS)','Litros']),0);
+  const cuenta=document.getElementById('combustibleCount');if(cuenta)cuenta.textContent=datos.length+' '+(datos.length===1?'registro':'registros');
+  const g=document.getElementById('combustibleTotalGasto');if(g)g.textContent=monedaCombustible(total);
+  const l=document.getElementById('combustibleTotalLitros');if(l)l.textContent=litros.toLocaleString('es-MX',{maximumFractionDigits:2})+' L';
+  const c=document.getElementById('combustibleTotalCargas');if(c)c.textContent=String(datos.length);
+  if(!datos.length){tabla.innerHTML='<div class="empty">No hay cargas que coincidan con los filtros seleccionados.</div>';return;}
+  const filas=datos.map(r=>{
+    const f=fechaCombustible(r);const fecha=f instanceof Date?f.toLocaleString('es-MX',{dateStyle:'short',timeStyle:'short'}):valorCombustible(r,['Marca temporal','Fecha']);
+    const unidad=valorCombustible(r,['SELECCIONAR UNIDAD','Unidad','No Unidad']);
+    const pago=valorCombustible(r,['SELECCIONAR TIPO DE PAGO (carga)','Tipo de pago','Tipo de Pago']);
+    const empleado=valorCombustible(r,['SELECCIONAR CLAVE DEL PERSONAL QUE CARGA COMBUSTIBLE','Clave del personal'])||valorCombustible(r,['# DE EMPLEADO','No. de empleado']);
+    const puesto=valorCombustible(r,['SELECCIONAR PUESTO','Puesto']);
+    const km=valorCombustible(r,['KILOMETRAJE (SOLO NÚMEROS)','Kilometraje']);
+    const costo=numeroCombustible(r,['COLOCAR EL COSTO MARCADO EN EL TICKET','Costo','Importe']);
+    const lt=numeroCombustible(r,['COLOCAR EL # DE LITROS CARGADOS (SOLO NÚMEROS)','Litros']);
+    const obs=valorCombustible(r,['OBSERVACIONES (SIEMPRE CARGAR OBSERVACIONES)','Observaciones']);
+    return `<tr><td>${escapeHtml(fecha)}</td><td><strong>${escapeHtml(unidad)}</strong></td><td>${escapeHtml(pago)}</td><td>${escapeHtml(empleado)}${puesto?'<br><small>'+escapeHtml(puesto)+'</small>':''}</td><td>${escapeHtml(km)}</td><td>${escapeHtml(lt?lt.toLocaleString('es-MX',{maximumFractionDigits:2}):'')}</td><td>${escapeHtml(monedaCombustible(costo))}</td><td>${escapeHtml(obs)}</td></tr>`;
+  }).join('');
+  tabla.innerHTML=`<table class="data-table"><thead><tr><th>Fecha y hora</th><th>Unidad</th><th>Tipo de pago</th><th>Personal</th><th>Kilometraje</th><th>Litros</th><th>Importe</th><th>Observaciones</th></tr></thead><tbody>${filas}</tbody></table>`;
+}
+function limpiarFiltrosCombustible(){
+  ['combustibleSearch','combustibleUnidad','combustiblePago','combustibleDesde','combustibleHasta'].forEach(id=>{const e=document.getElementById(id);if(e)e.value='';});
+  renderizarTablaCombustible();
 }
 
 function campoDirectorio(registro, nombres){
