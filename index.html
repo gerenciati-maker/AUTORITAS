@@ -723,6 +723,45 @@ body{
 @media(max-width:900px){.asistencias-filtros{grid-template-columns:1fr 1fr}.asistencias-info-grid{grid-template-columns:1fr}}
 @media(max-width:600px){.asistencias-filtros{grid-template-columns:1fr}}
 
+
+/* ===== CENTRO DE CONTROL: BARRA LATERAL ===== */
+:root{--sidebar:#082f55;--sidebar2:#0b416f;--sidebar-text:#dce9f7;--sidebar-muted:#9db6ce}
+body{background:#f3f6fa}
+.header{padding:14px 24px;position:sticky;top:0;z-index:50}
+.header-inner{max-width:none}
+.logo{border-radius:12px;letter-spacing:-1px}
+.header h1{font-size:21px;letter-spacing:.5px}
+.workspace{display:flex;align-items:stretch;min-height:calc(100vh - 80px)}
+.sidebar{width:260px;flex:0 0 260px;background:linear-gradient(180deg,var(--sidebar),#062440);color:white;padding:20px 13px;display:flex;flex-direction:column;gap:7px;box-shadow:5px 0 20px rgba(9,39,67,.08)}
+.sidebar-label{padding:14px 12px 7px;color:var(--sidebar-muted);font-size:10px;font-weight:800;letter-spacing:1.2px;text-transform:uppercase}
+.sidebar-link,.sidebar-sub-link{width:100%;border:0;background:transparent;color:var(--sidebar-text);display:flex;align-items:center;gap:12px;padding:12px 13px;border-radius:10px;text-align:left;cursor:pointer;font-size:12px;font-weight:750;transition:background .18s,color .18s}
+.sidebar-link:hover,.sidebar-sub-link:hover{background:rgba(255,255,255,.09);color:#fff}
+.sidebar-link.active,.sidebar-sub-link.active{background:#fff;color:#07518f;box-shadow:0 5px 15px rgba(0,0,0,.12)}
+.sidebar-icon{width:22px;min-width:22px;text-align:center;font-size:16px}
+.sidebar-chevron{margin-left:auto;transition:transform .2s}
+.sidebar-group.open .sidebar-chevron{transform:rotate(180deg)}
+.sidebar-submenu{display:none;padding:5px 0 4px 22px}
+.sidebar-group.open .sidebar-submenu{display:block}
+.sidebar-sub-link{font-size:11px;font-weight:650;padding:10px 11px;color:#c6d8e9}
+.sidebar-footer{margin-top:auto;padding:15px 12px 5px;color:#9db6ce;font-size:10px;line-height:1.6;border-top:1px solid rgba(255,255,255,.12)}
+.container{max-width:none;width:calc(100% - 260px);min-width:0;margin:0;padding:25px;flex:1}
+.module-nav{display:none}
+.module-view{animation:fadeIn .18s ease}
+@keyframes fadeIn{from{opacity:.75;transform:translateY(3px)}to{opacity:1;transform:translateY(0)}}
+.control-hero{background:linear-gradient(120deg,#073b6c,#0875bd);color:#fff;padding:25px;border-radius:17px;margin-bottom:20px;box-shadow:var(--sombra)}
+.control-hero h2{margin:0 0 7px;font-size:23px}
+.control-hero p{margin:0;color:#d7eaff;font-size:13px;line-height:1.5}
+.vehicle-subnav{display:grid;grid-template-columns:repeat(5,minmax(130px,1fr));gap:10px;margin-bottom:20px}
+.vehicle-subnav button{border:1px solid var(--gris-borde);background:#fff;color:#344054;border-radius:12px;padding:14px 12px;text-align:left;cursor:pointer;font-size:11px;font-weight:800;min-height:70px}
+.vehicle-subnav button span{display:block;font-size:19px;margin-bottom:8px}
+.vehicle-subnav button:hover,.vehicle-subnav button.active{border-color:#1677c8;background:#eaf4ff;color:#0057a8}
+.vehicle-panel{background:white;border:1px solid var(--gris-borde);border-radius:15px;padding:22px;box-shadow:var(--sombra)}
+.vehicle-panel h3{margin:0 0 8px;color:#17365d;font-size:18px}
+.vehicle-panel p{margin:0;color:#667085;font-size:13px;line-height:1.6}
+.vehicle-note{margin-top:16px;padding:13px 15px;border-radius:10px;background:#fff8e6;border:1px solid #f4dfaa;color:#7a5700;font-size:12px;line-height:1.5}
+@media(max-width:1050px){.sidebar{width:225px;flex-basis:225px}.container{width:calc(100% - 225px);padding:18px}.vehicle-subnav{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:700px){.header{padding:13px 15px}.header-inner{align-items:center}.header h1{font-size:17px}.header p{font-size:11px}.workspace{display:block}.sidebar{width:100%;padding:10px;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:5px}.sidebar-label,.sidebar-footer{display:none}.sidebar-link{font-size:10px;padding:10px 8px;gap:7px}.sidebar-group{grid-column:1/-1}.sidebar-group>.sidebar-link{width:100%}.sidebar-submenu{padding-left:8px;display:none;grid-template-columns:repeat(2,minmax(0,1fr));gap:4px}.sidebar-group.open .sidebar-submenu{display:grid}.sidebar-sub-link{padding:9px 7px;font-size:10px}.container{width:100%;padding:14px}.vehicle-subnav{grid-template-columns:1fr 1fr}.vehicle-subnav button{min-height:65px;padding:10px}.btn-refresh{padding:9px 10px;font-size:11px}}
+
 </style>
 </head>
 
@@ -756,12 +795,24 @@ body{
 </header>
 
 
-<nav class="module-nav" aria-label="Módulos">
-  <button class="module-btn active" data-module="estado" onclick="cambiarModulo('estado',this)">ESTADO DE FUERZA</button>
-  <button class="module-btn" data-module="directorio" onclick="cambiarModulo('directorio',this)">DIRECTORIO DE SERVICIOS</button>
-  <button class="module-btn" data-module="unidades" onclick="cambiarModulo('unidades',this)">UNIDADES</button>
-  <button class="module-btn" data-module="asistencias" onclick="cambiarModulo('asistencias',this)">ASISTENCIAS</button>
-</nav>
+<div class="workspace">
+<aside class="sidebar" aria-label="Navegación principal">
+  <div class="sidebar-label">Menú principal</div>
+  <button class="sidebar-link active module-btn" data-module="estado" onclick="cambiarModulo('estado',this)"><span class="sidebar-icon">▦</span><span>Estado de fuerza</span></button>
+  <button class="sidebar-link module-btn" data-module="asistencias" onclick="cambiarModulo('asistencias',this)"><span class="sidebar-icon">✓</span><span>Asistencias</span></button>
+  <button class="sidebar-link module-btn" data-module="directorio" onclick="cambiarModulo('directorio',this)"><span class="sidebar-icon">▤</span><span>Directorio de servicios</span></button>
+  <div class="sidebar-group" id="controlVehicularGroup">
+    <button class="sidebar-link module-btn" data-module="vehicular" onclick="toggleControlVehicular(this)"><span class="sidebar-icon">▣</span><span>Unidades</span><span class="sidebar-chevron">⌄</span></button>
+    <div class="sidebar-submenu">
+      <button class="sidebar-sub-link" onclick="cambiarVehicularSubmodulo('unidadesAsignaciones',this)">Unidades y asignaciones</button>
+      <button class="sidebar-sub-link" onclick="cambiarVehicularSubmodulo('combustible',this)">Combustible y gastos</button>
+      <button class="sidebar-sub-link" onclick="cambiarVehicularSubmodulo('mantenimiento',this)">Mantenimiento y taller</button>
+      <button class="sidebar-sub-link" onclick="cambiarVehicularSubmodulo('fotomultas',this)">Fotomultas e infracciones</button>
+      <button class="sidebar-sub-link" onclick="cambiarVehicularSubmodulo('historialVehicular',this)">Historial y reportes</button>
+    </div>
+  </div>
+  <div class="sidebar-footer">AUTORITAS MÉXICO<br>Centro de control administrativo</div>
+</aside>
 
 <main class="container">
 
@@ -997,26 +1048,7 @@ body{
   </div>
 </section>
 
-<section id="unidadesView" class="module-view">
-  <div class="data-card">
-    <div class="data-head">
-      <div>
-        <h2>Unidades</h2>
-        <p>Inventario y asignación de unidades AUTORITAS.</p>
-      </div>
-      <div id="unidadesCount" class="data-count">0 registros</div>
-    </div>
-    <div class="data-filters">
-      <input id="unidadesSearch" class="input" type="text" autocomplete="off" placeholder="Buscar por unidad, marca, modelo, placas o asignación...">
-      <select id="unidadesMarca" class="select"><option value="">Todas las marcas</option></select>
-      <select id="unidadesAsignacion" class="select"><option value="">Todas las asignaciones</option></select>
-      <button class="btn-clear" onclick="limpiarUnidades()">Limpiar</button>
-    </div>
-    <div id="unidadesBody" class="unit-grid">
-      <div class="loading">Cargando unidades...</div>
-    </div>
-  </div>
-</section>
+
 
 
 <section id="asistenciasView" class="module-view">
@@ -1067,7 +1099,42 @@ body{
   </div>
 </section>
 
+<section id="vehicularView" class="module-view">
+  <div class="control-hero">
+    <h2>Unidades</h2>
+    <p>Consulta centralizada de unidades, asignaciones, combustible, mantenimiento e incidencias vehiculares.</p>
+  </div>
+  <div class="vehicle-subnav" aria-label="Submódulos de Control Vehicular">
+    <button class="active" onclick="cambiarVehicularSubmodulo('unidadesAsignaciones',this)"><span>▣</span>Unidades y asignaciones</button>
+    <button onclick="cambiarVehicularSubmodulo('combustible',this)"><span>⛽</span>Combustible y gastos</button>
+    <button onclick="cambiarVehicularSubmodulo('mantenimiento',this)"><span>⚙</span>Mantenimiento y taller</button>
+    <button onclick="cambiarVehicularSubmodulo('fotomultas',this)"><span>⚠</span>Fotomultas e infracciones</button>
+    <button onclick="cambiarVehicularSubmodulo('historialVehicular',this)"><span>▤</span>Historial y reportes</button>
+  </div>
+  <div id="vehicularPanel" class="vehicle-panel">
+    <div class="data-card">
+    <div class="data-head">
+      <div>
+        <h2>Unidades</h2>
+        <p>Inventario y asignación de unidades AUTORITAS.</p>
+      </div>
+      <div id="unidadesCount" class="data-count">0 registros</div>
+    </div>
+    <div class="data-filters">
+      <input id="unidadesSearch" class="input" type="text" autocomplete="off" placeholder="Buscar por unidad, marca, modelo, placas o asignación...">
+      <select id="unidadesMarca" class="select"><option value="">Todas las marcas</option></select>
+      <select id="unidadesAsignacion" class="select"><option value="">Todas las asignaciones</option></select>
+      <button class="btn-clear" onclick="limpiarUnidades()">Limpiar</button>
+    </div>
+    <div id="unidadesBody" class="unit-grid">
+      <div class="loading">Cargando unidades...</div>
+    </div>
+  </div>
+  </div>
+</section>
+
 </main>
+</div>
 
 
 <script>
@@ -2571,9 +2638,6 @@ document
 document.getElementById("directorioSearch").addEventListener("input", renderizarDirectorio);
 document.getElementById("directorioSector").addEventListener("change", renderizarDirectorio);
 document.getElementById("directorioStatus").addEventListener("change", renderizarDirectorio);
-document.getElementById("unidadesSearch").addEventListener("input", renderizarUnidades);
-document.getElementById("unidadesMarca").addEventListener("change", renderizarUnidades);
-document.getElementById("unidadesAsignacion").addEventListener("change", renderizarUnidades);
 
 
 
@@ -2589,8 +2653,8 @@ function cambiarModulo(modulo, boton){
   const vistas = {
     estado: 'estadoView',
     directorio: 'directorioView',
-    unidades: 'unidadesView',
-    asistencias: 'asistenciasView'
+    asistencias: 'asistenciasView',
+    vehicular: 'vehicularView'
   };
 
   const vista = document.getElementById(vistas[modulo]);
@@ -2636,6 +2700,108 @@ function cambiarModulo(modulo, boton){
   }
 }
 
+
+function toggleControlVehicular(boton){
+  const grupo = document.getElementById('controlVehicularGroup');
+  if(grupo) grupo.classList.toggle('open');
+  cambiarModulo('vehicular', boton);
+  const primero = document.querySelector('.sidebar-sub-link');
+  if(primero) cambiarVehicularSubmodulo('unidadesAsignaciones', primero);
+}
+
+const textosVehiculares = {
+  unidadesAsignaciones: {
+    titulo: 'Unidades y asignaciones',
+    descripcion: 'Consulta centralizada del inventario vehicular, placas, características y responsables asignados.',
+    nota: 'El inventario debe vincularse con la fuente de datos vehicular ya existente. No se alteran ni se inventan registros.'
+  },
+  combustible: {
+    titulo: 'Combustible y gastos',
+    descripcion: 'Espacio de consulta para bitácoras de combustible, kilometraje, litros, importes, comprobantes y gastos asociados.',
+    nota: 'La bitácora digital de combustible ya existe en Google Forms/Sheets. Para mostrar registros reales debe conectarse su hoja de respuestas sin modificar el formulario ni sus datos.'
+  },
+  mantenimiento: {
+    titulo: 'Mantenimiento y taller',
+    descripcion: 'Seguimiento de servicios preventivos, reparaciones, fechas de ingreso y salida de taller, costos y próximas revisiones.',
+    nota: 'No hay una fuente de mantenimiento conectada en este archivo. Esta vista es únicamente la estructura visual inicial.'
+  },
+  fotomultas: {
+    titulo: 'Fotomultas e infracciones',
+    descripcion: 'Control de infracciones, fecha, unidad, placas, responsable, importe, estatus de atención y evidencia.',
+    nota: 'No hay registros de fotomultas conectados en este archivo. No se crean datos ficticios ni se altera información histórica.'
+  },
+  historialVehicular: {
+    titulo: 'Historial y reportes vehiculares',
+    descripcion: 'Concentración futura de movimientos, consumo, mantenimientos e incidencias para facilitar la revisión administrativa.',
+    nota: 'Los reportes se habilitarán cuando estén identificadas e integradas sus fuentes reales de información.'
+  }
+};
+
+function cambiarVehicularSubmodulo(clave, boton){
+  const vistaVehicular = document.getElementById('vehicularView');
+  if(vistaVehicular && !vistaVehicular.classList.contains('active')){
+    const botonPrincipal = document.querySelector('[data-module="vehicular"]');
+    cambiarModulo('vehicular', botonPrincipal);
+    const grupo = document.getElementById('controlVehicularGroup');
+    if(grupo) grupo.classList.add('open');
+  }
+  const info = textosVehiculares[clave];
+  if(!info) return;
+  const panel = document.getElementById('vehicularPanel');
+  if(!panel) return;
+  document.querySelectorAll('.vehicle-subnav button').forEach(b => b.classList.remove('active'));
+  document.querySelectorAll('.sidebar-sub-link').forEach(b => b.classList.remove('active'));
+  if(boton) boton.classList.add('active');
+  const pares = {
+    unidadesAsignaciones: 0,
+    combustible: 1,
+    mantenimiento: 2,
+    fotomultas: 3,
+    historialVehicular: 4
+  };
+  const botonesTarjeta = document.querySelectorAll('.vehicle-subnav button');
+  if(botonesTarjeta[pares[clave]]) botonesTarjeta[pares[clave]].classList.add('active');
+  if(clave === 'unidadesAsignaciones'){
+    panel.innerHTML = `<div class="data-card">
+    <div class="data-head">
+      <div>
+        <h2>Unidades</h2>
+        <p>Inventario y asignación de unidades AUTORITAS.</p>
+      </div>
+      <div id="unidadesCount" class="data-count">0 registros</div>
+    </div>
+    <div class="data-filters">
+      <input id="unidadesSearch" class="input" type="text" autocomplete="off" placeholder="Buscar por unidad, marca, modelo, placas o asignación...">
+      <select id="unidadesMarca" class="select"><option value="">Todas las marcas</option></select>
+      <select id="unidadesAsignacion" class="select"><option value="">Todas las asignaciones</option></select>
+      <button class="btn-clear" onclick="limpiarUnidades()">Limpiar</button>
+    </div>
+    <div id="unidadesBody" class="unit-grid">
+      <div class="loading">Cargando unidades...</div>
+    </div>
+  </div>`;
+    if(!unidades.length){
+      const body = document.getElementById('unidadesBody');
+      if(body) body.innerHTML = '<div class="loading">Cargando unidades...</div>';
+      solicitarModulo('unidades', function(data){
+        unidades = Array.isArray(data.unidades) ? data.unidades : [];
+        construirFiltrosUnidades();
+        renderizarUnidades();
+      });
+    }else{
+      construirFiltrosUnidades();
+      renderizarUnidades();
+    }
+    const search = document.getElementById('unidadesSearch');
+    const marca = document.getElementById('unidadesMarca');
+    const asignacion = document.getElementById('unidadesAsignacion');
+    if(search) search.addEventListener('input', renderizarUnidades);
+    if(marca) marca.addEventListener('change', renderizarUnidades);
+    if(asignacion) asignacion.addEventListener('change', renderizarUnidades);
+    return;
+  }
+  panel.innerHTML = `<h3>${escapeHtml(info.titulo)}</h3><p>${escapeHtml(info.descripcion)}</p><div class="vehicle-note">${escapeHtml(info.nota)}</div>`;
+}
 
 function campoDirectorio(registro, nombres){
   return obtenerCampo(registro,nombres);
