@@ -762,6 +762,33 @@ body{background:#f3f6fa}
 @media(max-width:1050px){.sidebar{width:225px;flex-basis:225px}.container{width:calc(100% - 225px);padding:18px}.vehicle-subnav{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media(max-width:700px){.header{padding:13px 15px}.header-inner{align-items:center}.header h1{font-size:17px}.header p{font-size:11px}.workspace{display:block}.sidebar{width:100%;padding:10px;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:5px}.sidebar-label,.sidebar-footer{display:none}.sidebar-link{font-size:10px;padding:10px 8px;gap:7px}.sidebar-group{grid-column:1/-1}.sidebar-group>.sidebar-link{width:100%}.sidebar-submenu{padding-left:8px;display:none;grid-template-columns:repeat(2,minmax(0,1fr));gap:4px}.sidebar-group.open .sidebar-submenu{display:grid}.sidebar-sub-link{padding:9px 7px;font-size:10px}.container{width:100%;padding:14px}.vehicle-subnav{grid-template-columns:1fr 1fr}.vehicle-subnav button{min-height:65px;padding:10px}.btn-refresh{padding:9px 10px;font-size:11px}}
 
+
+/* ================= PROTOCOLOS DE EMERGENCIA ================= */
+.protocol-toolbar{display:flex;gap:10px;flex-wrap:wrap;margin:16px 0 18px}
+.protocol-search{flex:1;min-width:220px;border:1px solid var(--gris-borde);border-radius:11px;padding:12px 14px;font-size:14px;background:#fff}
+.protocol-count{font-size:12px;color:var(--gris-texto);align-self:center}
+.protocol-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:13px}
+.protocol-card{border:1px solid var(--gris-borde);border-radius:14px;background:#fff;padding:16px;text-align:left;cursor:pointer;box-shadow:0 4px 14px rgba(0,55,110,.045);transition:.15s;min-height:132px;color:#172b4d}
+.protocol-card:hover,.protocol-card.selected{border-color:#1677c8;box-shadow:0 8px 20px rgba(0,87,168,.12);transform:translateY(-1px)}
+.protocol-card .protocol-icon{display:inline-flex;width:34px;height:34px;border-radius:10px;background:#eaf4ff;color:#0057a8;align-items:center;justify-content:center;font-size:18px;margin-bottom:10px}
+.protocol-card strong{display:block;font-size:13px;line-height:1.4;margin-bottom:6px}
+.protocol-card small{display:block;color:#667085;font-size:11px;line-height:1.45}
+.protocol-status{display:inline-block;margin-top:10px;font-size:10px;font-weight:700;color:#7a5700;background:#fff4d6;border-radius:20px;padding:5px 8px}
+.protocol-detail{margin-top:18px;background:#fff;border:1px solid var(--gris-borde);border-radius:16px;padding:20px;box-shadow:var(--sombra)}
+.protocol-detail-head{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;border-bottom:1px solid #e8edf3;padding-bottom:15px;margin-bottom:16px}
+.protocol-detail h3{margin:0 0 7px;font-size:20px;color:#073b6c}
+.protocol-detail p{margin:0;color:#667085;font-size:12px;line-height:1.6}
+.protocol-code{font-size:10px;letter-spacing:.06em;font-weight:700;color:#0057a8;background:#eaf4ff;padding:7px 9px;border-radius:8px;white-space:nowrap}
+.protocol-steps{list-style:none;padding:0;margin:0;display:grid;gap:10px;counter-reset:step}
+.protocol-steps li{display:grid;grid-template-columns:36px 1fr;gap:12px;padding:13px;border:1px solid #e8edf3;border-radius:11px;background:#fbfdff}
+.protocol-steps .step-number{display:flex;align-items:center;justify-content:center;width:32px;height:32px;border-radius:9px;background:#eaf4ff;color:#0057a8;font-weight:800;font-size:12px}
+.protocol-steps strong{display:block;font-size:12px;margin-bottom:5px;color:#073b6c}
+.protocol-steps span{font-size:12px;line-height:1.6;color:#344054}
+.protocol-warning{margin-top:15px;padding:12px 14px;border-radius:10px;border:1px solid #f4dfaa;background:#fff8e6;color:#7a5700;font-size:11px;line-height:1.6}
+.protocol-empty{padding:28px;text-align:center;color:#667085;border:1px dashed var(--gris-borde);border-radius:12px;background:#fff;font-size:13px}
+@media(max-width:900px){.protocol-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:560px){.protocol-grid{grid-template-columns:1fr}.protocol-detail{padding:14px}.protocol-detail-head{display:block}.protocol-code{display:inline-block;margin-top:10px}.protocol-steps li{grid-template-columns:30px 1fr;padding:10px}.protocol-steps .step-number{width:28px;height:28px}}
+
 </style>
 </head>
 
@@ -801,6 +828,7 @@ body{background:#f3f6fa}
   <button class="sidebar-link active module-btn" data-module="estado" onclick="cambiarModulo('estado',this)"><span class="sidebar-icon">▦</span><span>Estado de fuerza</span></button>
   <button class="sidebar-link module-btn" data-module="asistencias" onclick="cambiarModulo('asistencias',this)"><span class="sidebar-icon">✓</span><span>Asistencias</span></button>
   <button class="sidebar-link module-btn" data-module="directorio" onclick="cambiarModulo('directorio',this)"><span class="sidebar-icon">▤</span><span>Directorio de servicios</span></button>
+  <button class="sidebar-link module-btn" data-module="protocolos" onclick="cambiarModulo('protocolos',this)"><span class="sidebar-icon">✚</span><span>Protocolos de emergencia</span></button>
   <div class="sidebar-group" id="controlVehicularGroup">
     <button class="sidebar-link module-btn" data-module="vehicular" onclick="toggleControlVehicular(this)"><span class="sidebar-icon">▣</span><span>Unidades</span><span class="sidebar-chevron">⌄</span></button>
     <div class="sidebar-submenu">
@@ -1097,6 +1125,22 @@ body{background:#f3f6fa}
       <div class="leyenda-item"><span class="codigo-asistencia codigo-INC">INC</span> Incapacidad</div>
     </div>
   </div>
+</section>
+
+<section id="protocolosView" class="module-view">
+  <div class="control-hero">
+    <h2>Protocolos de emergencia</h2>
+    <p>Catálogo de consulta operativa. Selecciona un protocolo para revisar su secuencia de actuación.</p>
+  </div>
+  <div class="protocol-toolbar">
+    <input id="protocolSearch" class="protocol-search" type="search" placeholder="Buscar por emergencia, código o palabra clave..." autocomplete="off" aria-label="Buscar protocolos">
+    <span id="protocolCount" class="protocol-count">13 protocolos en catálogo</span>
+  </div>
+  <div id="protocolGrid" class="protocol-grid"></div>
+  <div id="protocolDetail" class="protocol-detail" aria-live="polite">
+    <div class="protocol-empty">Selecciona una emergencia del catálogo para consultar su ficha operativa.</div>
+  </div>
+  <div class="protocol-warning"><strong>Uso controlado:</strong> este módulo contiene información operativa. La versión actual integra la secuencia cotejada de Emergencia Médica; las demás fichas se habilitarán al transcribir y verificar cada protocolo contra el manual oficial. En una emergencia real, activa los canales de respuesta establecidos y contacta a los servicios correspondientes.</div>
 </section>
 
 <section id="vehicularView" class="module-view">
@@ -2646,6 +2690,64 @@ document.getElementById("directorioStatus").addEventListener("change", renderiza
    CAMBIO DE MODULO
 ===================================================== */
 
+const catalogoProtocolos = [
+  {id:'medica',nombre:'Emergencia médica',codigo:'CÓDIGO BLANCO',icono:'✚',keywords:'salud lesionado paramédicos 911',estado:'Ficha disponible'},
+  {id:'agresion',nombre:'Agresión',icono:'⚠',keywords:'violencia persona',estado:'En integración'},
+  {id:'punto-seguro',nombre:'Punto seguro',icono:'⌖',keywords:'resguardo seguridad',estado:'En integración'},
+  {id:'extorsion',nombre:'Extorsión',icono:'☎',keywords:'amenaza llamada',estado:'En integración'},
+  {id:'intrusion',nombre:'Intrusión / allanamiento',icono:'⇥',keywords:'acceso persona ajena',estado:'En integración'},
+  {id:'robo',nombre:'Robo',icono:'▣',keywords:'hurto sustracción',estado:'En integración'},
+  {id:'abuso-confianza',nombre:'Abuso de confianza',icono:'⚖',keywords:'incidente patrimonio',estado:'En integración'},
+  {id:'intrusion-vehicular',nombre:'Intrusión vehicular o peatonal',icono:'⇄',keywords:'acceso vehículo persona',estado:'En integración'},
+  {id:'menor-extraviado',nombre:'Menor extraviado o desaparecido',icono:'⌕',keywords:'niño niña búsqueda',estado:'En integración'},
+  {id:'manifestacion',nombre:'Manifestación violenta / intento de saqueo',icono:'⚑',keywords:'disturbios multitud',estado:'En integración'},
+  {id:'incendio',nombre:'Incendio',icono:'♨',keywords:'fuego humo',estado:'En integración'},
+  {id:'energia',nombre:'Falla parcial o general de energía / sistema',icono:'ϟ',keywords:'electricidad apagón sistemas',estado:'En integración'},
+  {id:'amenaza-bomba',nombre:'Amenaza de bomba',icono:'⚠',keywords:'objeto sospechoso explosivo',estado:'En integración'},
+  {id:'muerte-accidental',nombre:'Muerte accidental / suicidio',icono:'!',keywords:'fallecimiento',estado:'En integración'},
+  {id:'homicidio',nombre:'Homicidio',icono:'!',keywords:'delito escena',estado:'En integración'},
+  {id:'persona-armada',nombre:'Persona armada / tirador activo',icono:'⚠',keywords:'arma disparos',estado:'En integración'},
+  {id:'sismo',nombre:'Sismo',icono:'⌁',keywords:'terremoto temblor',estado:'En integración'},
+  {id:'volcan',nombre:'Erupción volcánica',icono:'♨',keywords:'volcán ceniza',estado:'En integración'},
+  {id:'inundacion',nombre:'Inundación',icono:'≋',keywords:'lluvia agua anegamiento',estado:'En integración'}
+];
+const pasosEmergenciaMedica = [
+  {n:'1',titulo:'SOLICITUD DE ATENCIÓN',texto:'Cualquier guardia puede recibir la solicitud de atención por cualquier persona que se percate de la emergencia o bien por el mismo afectado personalmente o mediante cualquier medio (teléfono, radio).'},
+  {n:'2',titulo:'RECABAR DE DATOS',texto:'Recabar la información: nombre del lesionado, lugar donde se encuentra la emergencia, qué tipo de lesión o síntoma presenta, todo esto para poder solicitar atención de paramédico al 911.'},
+  {n:'3',titulo:'EMITIR ALARMA',texto:'Se repetirá por radio tres veces “CÓDIGO BLANCO” y la ubicación de la emergencia, para que los elementos de seguridad designados se trasladen al lugar para auxiliar al lesionado y los pórticos estén pendientes con el ingreso de los servicios de emergencia.'},
+  {n:'4',titulo:'NOTIFICACIÓN DE EMERGENCIA',texto:'Informar a Torre de Control mediante la activación del botón de pánico para que esta a su vez y sin esperar órdenes, solicite el apoyo al centro de emergencias 911, al gerente de operaciones, coordinador y supervisor proporcionando los datos recabados y solicitando apoyo del paramédico, para dar la atención.'},
+  {n:'5',titulo:'GUIAR A LOS SERVICIOS DE EMERGENCIA',texto:'Una vez que lleguen los servicios de emergencia, se guiará a los paramédicos auxiliándolos con todo su equipo de emergencia al lugar de los hechos, y si es posible avisará a los familiares de la persona afectada estén enterados de la situación.'},
+  {n:'6',titulo:'VALORACIÓN DE LA SITUACIÓN',texto:'Si el código blanco es generado como consecuencia de una agresión o de un hecho violento, independientemente de llamar a los servicios de emergencia, se llamará también a la policía. De igual manera se avisará a la Torre de Control para su conocimiento.'},
+  {n:'7',titulo:'PARAMÉDICOS',texto:'Serán los responsables de los procedimientos médicos que sean utilizados, así como los medicamentos que sean suministrados al paciente y determinarán si es necesario o no trasladar al paciente a un hospital.'},
+  {n:'10',titulo:'FIRMA DE REPORTE DE ATENCIÓN PREHOSPITALARIA POR PARTE DE LOS FAMILIARES',texto:'Firma del reporte de atención prehospitalaria y consentimiento de traslado, por parte de los familiares; en caso de que no se encuentre presente un familiar de la persona afectada, será necesario avisar a estos por el medio más expedito.'},
+  {n:'11',titulo:'TRASLADO DEL PACIENTE',texto:'Los paramédicos trasladarán al paciente a su clínica para su valoración y atención médica.'},
+  {n:'12',titulo:'REPORTE',texto:'El jefe de turno elaborará un reporte informativo para el gerente de operaciones mediante el chat telefónico, donde se especificará todos los detalles sobre el incidente; así mismo, el gerente de operaciones informará al director ejecutivo de Autoritas México S.A. de C.V. sobre el incidente.'},
+  {n:'13',titulo:'COMUNICADO',texto:'A órdenes del director ejecutivo se informará sobre el particular al enlace encargado del servicio mediante un comunicado que informará de manera simple, clara y concisa sobre el particular.'}
+];
+function renderizarCatalogoProtocolos(filtro=''){
+  const grid=document.getElementById('protocolGrid'); if(!grid)return;
+  const q=filtro.trim().toLocaleLowerCase('es');
+  const encontrados=catalogoProtocolos.filter(p=>(p.nombre+' '+(p.codigo||'')+' '+p.keywords).toLocaleLowerCase('es').includes(q));
+  const seleccionado=document.getElementById('protocolDetail')?.dataset.selected || '';
+  grid.innerHTML=encontrados.map(p=>`<button type="button" class="protocol-card ${p.id===seleccionado?'selected':''}" onclick="mostrarProtocolo('${p.id}')"><span class="protocol-icon">${p.icono}</span><strong>${p.nombre}</strong><small>${p.codigo||'Consulta operativa'}</small><span class="protocol-status">${p.estado}</span></button>`).join('') || '<div class="protocol-empty">No se encontraron protocolos con esa búsqueda.</div>';
+  const count=document.getElementById('protocolCount'); if(count)count.textContent=`${encontrados.length} de ${catalogoProtocolos.length} protocolos`;
+}
+function mostrarProtocolo(id){
+  const p=catalogoProtocolos.find(x=>x.id===id); const detail=document.getElementById('protocolDetail'); if(!p||!detail)return;
+  detail.dataset.selected=id; renderizarCatalogoProtocolos(document.getElementById('protocolSearch')?.value||'');
+  if(id==='medica'){
+    detail.innerHTML=`<div class="protocol-detail-head"><div><h3>${p.nombre} (${p.codigo})</h3><p><strong>Objetivo y alcance:</strong> Los guardias de seguridad son los encargados de proteger, vigilar, auxiliar, evacuar y asesorar a condóminos, residentes, visitas y empleados ante emergencias que pongan en riesgo su integridad física o patrimonial, coordinando con autoridades y servicios de emergencia.</p><p style="margin-top:8px"><strong>Actores indicados en el manual:</strong> Gerente de operaciones, Torre de Control, coordinadores, supervisores, guardias de seguridad, Policía Municipal, Policía Estatal y agentes investigadores de las fiscalías.</p></div><span class="protocol-code">MPEM-001 · REV. 1</span></div><ol class="protocol-steps">${pasosEmergenciaMedica.map(s=>`<li><div class="step-number">${s.n}</div><div><strong>${s.titulo}</strong><span>${s.texto}</span></div></li>`).join('')}</ol><div class="protocol-warning"><strong>Nota de cotejo del manual:</strong> la secuencia visible en el documento pasa del paso 7 al 10. Por eso se conserva la numeración original y no se inventan los pasos 8 y 9. Antes de usar esta ficha como versión definitiva, debe cotejarse con las páginas, diagramas y anexos del manual completo.</div>`;
+  }else{
+    detail.innerHTML=`<div class="protocol-detail-head"><div><h3>${p.nombre}</h3><p>Esta ficha está incluida en el catálogo de protocolos, pero su secuencia oficial todavía no se ha transcrito y cotejado completamente.</p></div><span class="protocol-code">PENDIENTE DE VALIDACIÓN</span></div><div class="protocol-empty">Para evitar instrucciones incompletas o incorrectas, aquí se habilitarán los pasos oficiales después de verificarlos contra el Manual de Protocolos de Emergencia.</div>`;
+  }
+  detail.scrollIntoView({behavior:'smooth',block:'start'});
+}
+function inicializarProtocolos(){
+  renderizarCatalogoProtocolos();
+  const search=document.getElementById('protocolSearch');
+  if(search && !search.dataset.bound){search.addEventListener('input',()=>renderizarCatalogoProtocolos(search.value));search.dataset.bound='1';}
+}
+
 function cambiarModulo(modulo, boton){
   document.querySelectorAll('.module-view').forEach(v => v.classList.remove('active'));
   document.querySelectorAll('.module-btn').forEach(b => b.classList.remove('active'));
@@ -2654,12 +2756,15 @@ function cambiarModulo(modulo, boton){
     estado: 'estadoView',
     directorio: 'directorioView',
     asistencias: 'asistenciasView',
+    protocolos: 'protocolosView',
     vehicular: 'vehicularView'
   };
 
   const vista = document.getElementById(vistas[modulo]);
   if(vista) vista.classList.add('active');
   if(boton) boton.classList.add('active');
+
+  if(modulo === 'protocolos'){ inicializarProtocolos(); }
 
   if(modulo === 'directorio'){
     if(!directorioServicios.length){
