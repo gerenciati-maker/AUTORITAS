@@ -694,7 +694,7 @@ body{
 
 
 
-/* ===== EXPEDIENTE POR UNIDAD · PROTOTIPO V3 ===== */
+/* ===== EXPEDIENTE POR UNIDAD ===== */
 .unit-card{cursor:pointer;transition:transform .18s ease,box-shadow .18s ease,border-color .18s ease;position:relative;overflow:hidden}
 .unit-card:hover{transform:translateY(-3px);box-shadow:0 12px 28px rgba(23,54,93,.12);border-color:#b8cbe0}
 .unit-open{margin-top:14px;display:flex;align-items:center;justify-content:space-between;color:var(--azul);font-size:11px;font-weight:800;border-top:1px solid #edf1f5;padding-top:11px}
@@ -807,7 +807,7 @@ body{background:#f3f6fa}
 @media(max-width:560px){.protocol-grid{grid-template-columns:1fr}.protocol-detail{padding:14px}.protocol-detail-head{display:block}.protocol-code{display:inline-block;margin-top:10px}.protocol-steps li{grid-template-columns:30px 1fr;padding:10px}.protocol-steps .step-number{width:28px;height:28px}}
 
 
-/* ===== PROTOTIPO VISUAL 2026 - SOLO DEMO ===== */
+/* ===== INICIO PORTAL 2026 ===== */
 .demo-pill{display:inline-flex;align-items:center;gap:7px;margin-left:12px;padding:6px 10px;border-radius:999px;background:rgba(255,255,255,.14);border:1px solid rgba(255,255,255,.2);font-size:10px;font-weight:800;letter-spacing:.6px}
 .demo-home{display:grid;gap:20px}.demo-welcome{display:flex;justify-content:space-between;align-items:center;gap:18px;background:linear-gradient(125deg,#fff,#f5faff);border:1px solid #dbe7f3;border-radius:18px;padding:24px 26px;box-shadow:var(--sombra)}
 .demo-welcome h2{margin:0 0 7px;color:#0a3763;font-size:25px}.demo-welcome p{margin:0;color:#667085;font-size:13px;line-height:1.6}.demo-welcome-mark{width:64px;height:64px;border-radius:18px;background:linear-gradient(135deg,#075aa7,#0b7fc7);display:flex;align-items:center;justify-content:center;color:white;font-size:28px;font-weight:900;box-shadow:0 10px 25px rgba(0,87,168,.22)}
@@ -818,7 +818,7 @@ body{background:#f3f6fa}
 @media(max-width:650px){.demo-module-grid{grid-template-columns:1fr}.demo-welcome{padding:18px}.demo-welcome-mark{display:none}.demo-tcr{align-items:flex-start;flex-direction:column}}
 
 
-/* ===== PROTOTIPO V2: MENU RETRACTIL + ESTADO DE FUERZA VISUAL ===== */
+/* ===== MENU RETRACTIL + ESTADO DE FUERZA VISUAL ===== */
 .menu-toggle{width:42px;height:42px;border:1px solid rgba(255,255,255,.28);background:rgba(255,255,255,.12);color:#fff;border-radius:11px;cursor:pointer;font-size:21px;display:flex;align-items:center;justify-content:center;flex:0 0 auto}.menu-toggle:hover{background:rgba(255,255,255,.22)}
 .header-left{display:flex;align-items:center;gap:14px}.workspace{position:relative}.sidebar{transition:width .22s ease,flex-basis .22s ease,transform .22s ease,padding .22s ease}.container{transition:width .22s ease,padding .22s ease}
 body.sidebar-collapsed .sidebar{width:74px;flex-basis:74px;padding-left:10px;padding-right:10px}body.sidebar-collapsed .sidebar .sidebar-label,body.sidebar-collapsed .sidebar .sidebar-link>span:not(.sidebar-icon),body.sidebar-collapsed .sidebar .sidebar-submenu,body.sidebar-collapsed .sidebar .sidebar-footer{display:none}body.sidebar-collapsed .sidebar-link{justify-content:center;padding-left:8px;padding-right:8px}body.sidebar-collapsed .sidebar-icon{font-size:19px}body.sidebar-collapsed .container{width:calc(100% - 74px)}
@@ -859,7 +859,7 @@ body.sidebar-collapsed .sidebar{width:74px;flex-basis:74px;padding-left:10px;pad
 
       <div>
         <h1>AUTORITAS</h1>
-        <p>Portal Administrativo <span class="demo-pill">PROTOTIPO VISUAL</span></p>
+        <p>Portal Administrativo</p>
       </div>
 
     </div>
@@ -902,21 +902,17 @@ body.sidebar-collapsed .sidebar{width:74px;flex-basis:74px;padding-left:10px;pad
 <section id="inicioView" class="module-view active">
   <div class="demo-home">
     <div class="demo-welcome">
-      <div><h2>Centro de Control Administrativo</h2><p>Acceso rápido a los módulos reales del portal AUTORITAS. Este inicio es únicamente una propuesta visual para revisar la interfaz antes de modificar el sistema oficial.</p></div>
+      <div><h2>Centro de Control Administrativo</h2><p>Acceso rápido a los módulos del Portal Administrativo AUTORITAS.</p></div>
       <div class="demo-welcome-mark">A</div>
     </div>
-    <div class="demo-section-head"><h3>Módulos del sistema</h3><span>Propuesta de navegación</span></div>
+    <div class="demo-section-head"><h3>Módulos del sistema</h3><span>Accesos principales</span></div>
     <div class="demo-module-grid">
       <button class="demo-module-card" onclick="cambiarModulo('estado',document.querySelector('[data-module=estado]'))"><span class="demo-icon">▦</span><strong>Estado de fuerza</strong><small>Consulta de personal activo, proyectos, servicios, posiciones y bajas.</small><span class="demo-arrow">→</span></button>
       <button class="demo-module-card" onclick="cambiarModulo('asistencias',document.querySelector('[data-module=asistencias]'))"><span class="demo-icon">✓</span><strong>Asistencias</strong><small>Consulta por servicio e inmueble, periodo, faltas y novedades de asistencia.</small><span class="demo-arrow">→</span></button>
       <button class="demo-module-card" onclick="cambiarModulo('directorio',document.querySelector('[data-module=directorio]'))"><span class="demo-icon">▤</span><strong>Directorio de servicios</strong><small>Servicios, responsables, ubicación, sector, estatus y plantilla.</small><span class="demo-arrow">→</span></button>
       <button class="demo-module-card" onclick="cambiarModulo('protocolos',document.querySelector('[data-module=protocolos]'))"><span class="demo-icon">✚</span><strong>Protocolos de emergencia</strong><small>Catálogo operativo y secuencias de actuación disponibles para consulta.</small><span class="demo-arrow">→</span></button>
       <button class="demo-module-card" onclick="cambiarModulo('vehicular',document.querySelector('[data-module=vehicular]'))"><span class="demo-icon">▣</span><strong>Unidades</strong><small>Asignaciones, combustible, mantenimiento, fotomultas e historial vehicular.</small><span class="demo-arrow">→</span></button>
-      <button class="demo-module-card" onclick="alert('Propuesta visual: este acceso todavía no existe como módulo independiente en el INDEX actual.')"><span class="demo-icon">↻</span><strong>Actualizar información</strong><small>Acceso visual a la actualización de datos, conservando la función actual del portal.</small><span class="demo-arrow">→</span></button>
-    </div>
-    <div class="demo-strip">
-      <div class="demo-panel"><h4>Lo que conserva este prototipo</h4><div class="demo-list"><div class="demo-list-row"><span>Estado de fuerza y estructura de personal</span><span class="demo-tag">ACTUAL</span></div><div class="demo-list-row"><span>Matriz y seguimiento de asistencias</span><span class="demo-tag">ACTUAL</span></div><div class="demo-list-row"><span>Directorio y protocolos</span><span class="demo-tag">ACTUAL</span></div><div class="demo-list-row"><span>Control de unidades y submódulos</span><span class="demo-tag">ACTUAL</span></div></div></div>
-      <div class="demo-tcr"><div><h4>Torre de Control (TCR)</h4><p>Interfaz más limpia y ejecutiva, sin agregar indicadores ni datos que tu portal no maneja.</p></div><span class="demo-tag">24/7</span></div>
+      <button class="demo-module-card" onclick="cargarDatos()"><span class="demo-icon">↻</span><strong>Actualizar información</strong><small>Actualiza la información disponible del portal.</small><span class="demo-arrow">→</span></button>
     </div>
   </div>
 </section>
