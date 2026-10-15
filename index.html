@@ -693,11 +693,28 @@ body{
 @media(max-width:650px){.module-nav{padding:0 15px}.data-filters{grid-template-columns:1fr}.unit-grid{grid-template-columns:1fr}.unit-details{grid-template-columns:1fr 1fr}}
 
 
+
+/* ===== EXPEDIENTE POR UNIDAD · PROTOTIPO V3 ===== */
+.unit-card{cursor:pointer;transition:transform .18s ease,box-shadow .18s ease,border-color .18s ease;position:relative;overflow:hidden}
+.unit-card:hover{transform:translateY(-3px);box-shadow:0 12px 28px rgba(23,54,93,.12);border-color:#b8cbe0}
+.unit-open{margin-top:14px;display:flex;align-items:center;justify-content:space-between;color:var(--azul);font-size:11px;font-weight:800;border-top:1px solid #edf1f5;padding-top:11px}
+.vehicle-exp-head{display:flex;justify-content:space-between;gap:18px;align-items:flex-start;margin-bottom:18px}
+.vehicle-back{border:0;background:#eef4fa;color:#17365d;border-radius:10px;padding:9px 12px;font-weight:800;cursor:pointer;margin-bottom:14px}
+.vehicle-title{font-size:25px;font-weight:900;color:#17365d;margin:0}.vehicle-subtitle{color:#667085;font-size:13px;margin-top:5px}
+.vehicle-tabs{display:flex;gap:8px;flex-wrap:wrap;border-bottom:1px solid #e5eaf0;padding-bottom:12px;margin-bottom:18px}
+.vehicle-tabs button{border:1px solid #dce4ec;background:#fff;color:#475467;border-radius:10px;padding:10px 13px;font-weight:800;cursor:pointer}
+.vehicle-tabs button.active{background:#17365d;color:#fff;border-color:#17365d}
+.vehicle-summary{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:12px}
+.vehicle-summary .unit-detail{padding:13px}
+.vehicle-section-note{padding:16px;border:1px dashed #cbd5e1;background:#f8fafc;border-radius:12px;color:#667085;font-size:12px;line-height:1.6}
+.vehicle-general{margin-left:auto;border:1px solid #dce4ec;background:#fff;color:#17365d;border-radius:10px;padding:9px 12px;font-weight:800;cursor:pointer}
+@media(max-width:650px){.vehicle-exp-head{display:block}.vehicle-general{margin-top:10px}}
+
 /* =====================================================
    ASISTENCIAS
 ===================================================== */
 .asistencias-card{background:white;border:1px solid var(--gris-borde);border-radius:16px;padding:20px;box-shadow:var(--sombra)}
-.asistencias-filtros{display:grid;grid-template-columns:2fr 1fr 1fr auto;gap:12px;margin-bottom:20px}
+.asistencias-filtros{display:grid;grid-template-columns:2fr 1fr 1fr;gap:12px;margin-bottom:12px}
 .asistencias-info{background:#f8fbff;border:1px solid #dcecff;border-radius:12px;padding:15px;margin-bottom:20px}
 .asistencias-info-grid{display:grid;grid-template-columns:2fr 1fr 1fr;gap:15px}
 .asistencia-info-label{font-size:10px;color:#667085;font-weight:bold;text-transform:uppercase}
@@ -789,6 +806,40 @@ body{background:#f3f6fa}
 @media(max-width:900px){.protocol-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media(max-width:560px){.protocol-grid{grid-template-columns:1fr}.protocol-detail{padding:14px}.protocol-detail-head{display:block}.protocol-code{display:inline-block;margin-top:10px}.protocol-steps li{grid-template-columns:30px 1fr;padding:10px}.protocol-steps .step-number{width:28px;height:28px}}
 
+
+/* ===== PROTOTIPO VISUAL 2026 - SOLO DEMO ===== */
+.demo-pill{display:inline-flex;align-items:center;gap:7px;margin-left:12px;padding:6px 10px;border-radius:999px;background:rgba(255,255,255,.14);border:1px solid rgba(255,255,255,.2);font-size:10px;font-weight:800;letter-spacing:.6px}
+.demo-home{display:grid;gap:20px}.demo-welcome{display:flex;justify-content:space-between;align-items:center;gap:18px;background:linear-gradient(125deg,#fff,#f5faff);border:1px solid #dbe7f3;border-radius:18px;padding:24px 26px;box-shadow:var(--sombra)}
+.demo-welcome h2{margin:0 0 7px;color:#0a3763;font-size:25px}.demo-welcome p{margin:0;color:#667085;font-size:13px;line-height:1.6}.demo-welcome-mark{width:64px;height:64px;border-radius:18px;background:linear-gradient(135deg,#075aa7,#0b7fc7);display:flex;align-items:center;justify-content:center;color:white;font-size:28px;font-weight:900;box-shadow:0 10px 25px rgba(0,87,168,.22)}
+.demo-section-head{display:flex;justify-content:space-between;align-items:end;gap:10px}.demo-section-head h3{margin:0;color:#17365d;font-size:18px}.demo-section-head span{font-size:11px;color:#7a8795}
+.demo-module-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}.demo-module-card{border:1px solid #dce4ec;background:#fff;border-radius:16px;padding:18px;text-align:left;cursor:pointer;min-height:160px;box-shadow:0 5px 18px rgba(0,55,110,.06);transition:.18s;position:relative;overflow:hidden}.demo-module-card:before{content:'';position:absolute;left:0;top:0;width:4px;height:100%;background:#0a69b7;opacity:0;transition:.18s}.demo-module-card:hover{transform:translateY(-2px);border-color:#a9cce9;box-shadow:0 10px 25px rgba(0,55,110,.11)}.demo-module-card:hover:before{opacity:1}.demo-icon{width:42px;height:42px;border-radius:12px;background:#eaf4ff;color:#0057a8;display:flex;align-items:center;justify-content:center;font-size:20px;margin-bottom:14px}.demo-module-card strong{display:block;color:#17365d;font-size:15px;margin-bottom:7px}.demo-module-card small{display:block;color:#667085;line-height:1.55;font-size:11px;padding-right:18px}.demo-arrow{position:absolute;right:16px;bottom:16px;color:#1677c8;font-weight:900}.demo-strip{display:grid;grid-template-columns:1.3fr 1fr;gap:14px}.demo-panel{background:#fff;border:1px solid #dce4ec;border-radius:16px;padding:18px;box-shadow:0 5px 18px rgba(0,55,110,.05)}.demo-panel h4{margin:0 0 13px;color:#17365d;font-size:14px}.demo-list{display:grid;gap:9px}.demo-list-row{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:10px 11px;background:#f8fbfe;border-radius:10px;font-size:11px;color:#475467}.demo-tag{padding:4px 8px;border-radius:999px;background:#eaf4ff;color:#0057a8;font-size:9px;font-weight:800}.demo-tcr{background:linear-gradient(120deg,#062f57,#075f9d);color:white;border-radius:16px;padding:20px;display:flex;align-items:center;justify-content:space-between;gap:18px}.demo-tcr h4{margin:0 0 6px;font-size:17px}.demo-tcr p{margin:0;color:#d5e9fa;font-size:11px;line-height:1.5}.demo-tcr .demo-tag{background:rgba(255,255,255,.14);color:#fff;border:1px solid rgba(255,255,255,.18)}
+.sidebar-link.active,.sidebar-sub-link.active{background:linear-gradient(135deg,#0a69b7,#0b82cf);color:#fff;box-shadow:0 7px 18px rgba(0,0,0,.16)}
+@media(max-width:1000px){.demo-module-grid{grid-template-columns:repeat(2,1fr)}.demo-strip{grid-template-columns:1fr}}
+@media(max-width:650px){.demo-module-grid{grid-template-columns:1fr}.demo-welcome{padding:18px}.demo-welcome-mark{display:none}.demo-tcr{align-items:flex-start;flex-direction:column}}
+
+
+/* ===== PROTOTIPO V2: MENU RETRACTIL + ESTADO DE FUERZA VISUAL ===== */
+.menu-toggle{width:42px;height:42px;border:1px solid rgba(255,255,255,.28);background:rgba(255,255,255,.12);color:#fff;border-radius:11px;cursor:pointer;font-size:21px;display:flex;align-items:center;justify-content:center;flex:0 0 auto}.menu-toggle:hover{background:rgba(255,255,255,.22)}
+.header-left{display:flex;align-items:center;gap:14px}.workspace{position:relative}.sidebar{transition:width .22s ease,flex-basis .22s ease,transform .22s ease,padding .22s ease}.container{transition:width .22s ease,padding .22s ease}
+body.sidebar-collapsed .sidebar{width:74px;flex-basis:74px;padding-left:10px;padding-right:10px}body.sidebar-collapsed .sidebar .sidebar-label,body.sidebar-collapsed .sidebar .sidebar-link>span:not(.sidebar-icon),body.sidebar-collapsed .sidebar .sidebar-submenu,body.sidebar-collapsed .sidebar .sidebar-footer{display:none}body.sidebar-collapsed .sidebar-link{justify-content:center;padding-left:8px;padding-right:8px}body.sidebar-collapsed .sidebar-icon{font-size:19px}body.sidebar-collapsed .container{width:calc(100% - 74px)}
+/* Fotos protagonistas */
+.people{grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:14px}.person{display:block;padding:0;overflow:hidden;border-radius:14px;background:#fff;box-shadow:0 5px 16px rgba(0,55,110,.07);transition:.18s}.person:hover{transform:translateY(-2px);box-shadow:0 10px 24px rgba(0,55,110,.12)}.person-photo{width:100%;height:220px;border-radius:0;display:block;object-fit:cover;object-position:center top;background:#eaf1f8}.person-info{padding:12px 13px 14px}.person-name{font-size:13px;min-height:32px}.person-number{margin-top:5px}.person-position{font-size:10px;color:#475467;margin-top:5px;font-weight:700}.person-status{margin-top:8px}
+.export-btn{height:42px;border:0;border-radius:9px;padding:0 16px;background:#0875bd;color:#fff;cursor:pointer;font-weight:800;white-space:nowrap}.export-btn:hover{background:#075f9d}
+@media(max-width:700px){.menu-toggle{display:flex}.workspace{display:block}.sidebar{position:fixed;left:0;top:70px;bottom:0;width:270px!important;z-index:80;display:flex!important;transform:translateX(-105%);padding:16px 12px!important}.sidebar.mobile-open{transform:translateX(0)}.sidebar .sidebar-label,.sidebar .sidebar-link>span:not(.sidebar-icon),.sidebar .sidebar-footer{display:flex!important}.sidebar .sidebar-footer{display:block!important}.sidebar .sidebar-link{justify-content:flex-start!important}.container,body.sidebar-collapsed .container{width:100%!important}.people{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.person-photo{height:190px}}
+@media(max-width:430px){.people{grid-template-columns:1fr 1fr}.person-photo{height:170px}.person-info{padding:10px}.person-name{font-size:11px}.person-number,.person-position{font-size:9px}}
+
+
+/* ===== V5 DIRECTORIO JERÁRQUICO ===== */
+.dir-supervisor-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(290px,1fr));gap:16px;padding:18px;background:transparent!important;overflow:visible!important}
+.dir-supervisor-card,.dir-service-card{border:1px solid #e3e8ef;background:#fff;border-radius:16px;padding:18px;text-align:left;cursor:pointer;transition:.2s;box-shadow:0 5px 16px rgba(15,23,42,.05);font:inherit;color:inherit}
+.dir-supervisor-card{display:flex;align-items:center;gap:14px}.dir-supervisor-card:hover,.dir-service-card:hover{transform:translateY(-2px);box-shadow:0 10px 24px rgba(15,23,42,.1);border-color:#b9c6d6}
+.dir-avatar{width:52px;height:52px;border-radius:15px;display:grid;place-items:center;background:#eef4f9;font-size:25px;flex:none}.dir-supervisor-info{min-width:0;flex:1}.dir-supervisor-info small,.dir-profile-head small,.dir-info-box small{font-size:11px;font-weight:800;letter-spacing:.08em;color:#7a8797}.dir-supervisor-info h3,.dir-service-card h3{margin:3px 0 4px;color:#0f2742}.dir-supervisor-info p,.dir-service-card p,.dir-profile-head p{margin:0;color:#6b7787}.dir-chevron{font-size:22px;color:#8594a6}
+.dir-path{display:flex;gap:9px;align-items:center;flex-wrap:wrap;margin:8px 0 18px;color:#778496;font-size:13px}.dir-path strong{color:#183a5b}
+.dir-service-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:16px}.dir-service-card{min-height:155px;display:flex;flex-direction:column;justify-content:space-between}.dir-service-card small{color:#8793a1;font-weight:700}.dir-service-foot{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-top:18px;font-size:12px;font-weight:800;color:#315d82}
+.dir-service-profile{background:#fff;border:1px solid #e3e8ef;border-radius:18px;padding:22px;box-shadow:0 6px 20px rgba(15,23,42,.05)}.dir-profile-head{display:flex;justify-content:space-between;gap:18px;align-items:flex-start;padding-bottom:18px;border-bottom:1px solid #edf0f4}.dir-profile-head h2{margin:4px 0;color:#102d49}.dir-entry-photo{margin:18px 0;border-radius:16px;overflow:hidden;background:#eef2f6;position:relative;max-height:320px}.dir-entry-photo img{width:100%;height:320px;object-fit:cover;display:block}.dir-entry-photo span{position:absolute;left:12px;bottom:12px;background:rgba(15,39,66,.82);color:#fff;padding:7px 10px;border-radius:8px;font-size:12px}
+.dir-profile-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin-top:18px}.dir-info-box{border:1px solid #e7ebf0;background:#f9fbfc;border-radius:13px;padding:14px;display:flex;flex-direction:column;gap:6px}.dir-info-box strong{color:#1d344d;line-height:1.4}.dir-info-box.dir-wide{grid-column:1/-1}.dir-info-box .map-link{margin-top:5px;width:max-content}.dir-number{font-size:22px}.dir-profile-actions{display:flex;justify-content:flex-end;margin-top:18px;padding-top:16px;border-top:1px solid #edf0f4}
+@media(max-width:700px){.dir-profile-grid{grid-template-columns:1fr}.dir-entry-photo img{height:220px}.dir-profile-head{flex-direction:column}.dir-supervisor-grid{grid-template-columns:1fr;padding:8px}}
+
 </style>
 </head>
 
@@ -798,6 +849,8 @@ body{background:#f3f6fa}
 
   <div class="header-inner">
 
+    <div class="header-left">
+      <button class="menu-toggle" type="button" onclick="toggleSidebar()" aria-label="Mostrar u ocultar menú">☰</button>
     <div class="brand">
 
       <div class="logo">
@@ -806,9 +859,10 @@ body{background:#f3f6fa}
 
       <div>
         <h1>AUTORITAS</h1>
-        <p>Portal Administrativo</p>
+        <p>Portal Administrativo <span class="demo-pill">PROTOTIPO VISUAL</span></p>
       </div>
 
+    </div>
     </div>
 
     <button
@@ -825,7 +879,8 @@ body{background:#f3f6fa}
 <div class="workspace">
 <aside class="sidebar" aria-label="Navegación principal">
   <div class="sidebar-label">Menú principal</div>
-  <button class="sidebar-link active module-btn" data-module="estado" onclick="cambiarModulo('estado',this)"><span class="sidebar-icon">▦</span><span>Estado de fuerza</span></button>
+  <button class="sidebar-link active module-btn" data-module="inicio" onclick="cambiarModulo('inicio',this)"><span class="sidebar-icon">⌂</span><span>Inicio</span></button>
+  <button class="sidebar-link module-btn" data-module="estado" onclick="cambiarModulo('estado',this)"><span class="sidebar-icon">▦</span><span>Estado de fuerza</span></button>
   <button class="sidebar-link module-btn" data-module="asistencias" onclick="cambiarModulo('asistencias',this)"><span class="sidebar-icon">✓</span><span>Asistencias</span></button>
   <button class="sidebar-link module-btn" data-module="directorio" onclick="cambiarModulo('directorio',this)"><span class="sidebar-icon">▤</span><span>Directorio de servicios</span></button>
   <button class="sidebar-link module-btn" data-module="protocolos" onclick="cambiarModulo('protocolos',this)"><span class="sidebar-icon">✚</span><span>Protocolos de emergencia</span></button>
@@ -844,7 +899,29 @@ body{background:#f3f6fa}
 
 <main class="container">
 
-<div id="estadoView" class="module-view active">
+<section id="inicioView" class="module-view active">
+  <div class="demo-home">
+    <div class="demo-welcome">
+      <div><h2>Centro de Control Administrativo</h2><p>Acceso rápido a los módulos reales del portal AUTORITAS. Este inicio es únicamente una propuesta visual para revisar la interfaz antes de modificar el sistema oficial.</p></div>
+      <div class="demo-welcome-mark">A</div>
+    </div>
+    <div class="demo-section-head"><h3>Módulos del sistema</h3><span>Propuesta de navegación</span></div>
+    <div class="demo-module-grid">
+      <button class="demo-module-card" onclick="cambiarModulo('estado',document.querySelector('[data-module=estado]'))"><span class="demo-icon">▦</span><strong>Estado de fuerza</strong><small>Consulta de personal activo, proyectos, servicios, posiciones y bajas.</small><span class="demo-arrow">→</span></button>
+      <button class="demo-module-card" onclick="cambiarModulo('asistencias',document.querySelector('[data-module=asistencias]'))"><span class="demo-icon">✓</span><strong>Asistencias</strong><small>Consulta por servicio e inmueble, periodo, faltas y novedades de asistencia.</small><span class="demo-arrow">→</span></button>
+      <button class="demo-module-card" onclick="cambiarModulo('directorio',document.querySelector('[data-module=directorio]'))"><span class="demo-icon">▤</span><strong>Directorio de servicios</strong><small>Servicios, responsables, ubicación, sector, estatus y plantilla.</small><span class="demo-arrow">→</span></button>
+      <button class="demo-module-card" onclick="cambiarModulo('protocolos',document.querySelector('[data-module=protocolos]'))"><span class="demo-icon">✚</span><strong>Protocolos de emergencia</strong><small>Catálogo operativo y secuencias de actuación disponibles para consulta.</small><span class="demo-arrow">→</span></button>
+      <button class="demo-module-card" onclick="cambiarModulo('vehicular',document.querySelector('[data-module=vehicular]'))"><span class="demo-icon">▣</span><strong>Unidades</strong><small>Asignaciones, combustible, mantenimiento, fotomultas e historial vehicular.</small><span class="demo-arrow">→</span></button>
+      <button class="demo-module-card" onclick="alert('Propuesta visual: este acceso todavía no existe como módulo independiente en el INDEX actual.')"><span class="demo-icon">↻</span><strong>Actualizar información</strong><small>Acceso visual a la actualización de datos, conservando la función actual del portal.</small><span class="demo-arrow">→</span></button>
+    </div>
+    <div class="demo-strip">
+      <div class="demo-panel"><h4>Lo que conserva este prototipo</h4><div class="demo-list"><div class="demo-list-row"><span>Estado de fuerza y estructura de personal</span><span class="demo-tag">ACTUAL</span></div><div class="demo-list-row"><span>Matriz y seguimiento de asistencias</span><span class="demo-tag">ACTUAL</span></div><div class="demo-list-row"><span>Directorio y protocolos</span><span class="demo-tag">ACTUAL</span></div><div class="demo-list-row"><span>Control de unidades y submódulos</span><span class="demo-tag">ACTUAL</span></div></div></div>
+      <div class="demo-tcr"><div><h4>Torre de Control (TCR)</h4><p>Interfaz más limpia y ejecutiva, sin agregar indicadores ni datos que tu portal no maneja.</p></div><span class="demo-tag">24/7</span></div>
+    </div>
+  </div>
+</section>
+
+<div id="estadoView" class="module-view">
 
   <!-- =========================
        MÉTRICAS
@@ -1060,7 +1137,7 @@ body{background:#f3f6fa}
     <div class="data-head">
       <div>
         <h2>Directorio de Servicios</h2>
-        <p>Consulta administrativa de servicios, responsables, ubicación y plantilla.</p>
+        <p>Navega por supervisor, consulta sus servicios y abre la ficha completa de cada servicio.</p>
       </div>
       <div id="directorioCount" class="data-count">0 registros</div>
     </div>
@@ -1084,18 +1161,17 @@ body{background:#f3f6fa}
     <div class="data-head">
       <div>
         <h2>Asistencias</h2>
-        <p>Consulta de asistencia por servicio / inmueble y periodo.</p>
+        <p>La información validada por TCR se consulta automáticamente por servicio e intervalo.</p>
       </div>
-      <div id="asistenciasInfo" class="data-count">Selecciona un servicio y periodo</div>
+      <div style="display:flex;align-items:center;gap:10px"><div id="asistenciasInfo" class="data-count">Preparando consulta...</div><button class="btn-clear" style="padding:8px 12px" onclick="cacheAsistencias.clear();consultarAsistencias(true)">↻ ACTUALIZAR</button></div>
     </div>
 
     <div class="asistencias-filtros">
-      <select id="asistenciaServicio" class="select">
+      <select id="asistenciaServicio" class="select" onchange="programarConsultaAsistencias()">
         <option value="">Seleccionar servicio / inmueble</option>
       </select>
-      <input id="asistenciaFechaInicio" class="input" type="date">
-      <input id="asistenciaFechaFin" class="input" type="date">
-      <button class="btn-clear" onclick="consultarAsistencias()">CONSULTAR</button>
+      <input id="asistenciaFechaInicio" class="input" type="date" onchange="programarConsultaAsistencias()">
+      <input id="asistenciaFechaFin" class="input" type="date" onchange="programarConsultaAsistencias()">
     </div>
 
     <div id="asistenciaInfoServicio" class="asistencias-info" style="display:none;">
@@ -1112,7 +1188,7 @@ body{background:#f3f6fa}
     </div>
 
     <div id="matrizAsistencias" class="empty">
-      Selecciona un servicio y un periodo para consultar las asistencias.
+      Selecciona un servicio. La consulta se realizará automáticamente.
     </div>
 
     <div class="asistencias-leyenda">
@@ -1148,13 +1224,7 @@ body{background:#f3f6fa}
     <h2>Unidades</h2>
     <p>Consulta centralizada de unidades, asignaciones, combustible, mantenimiento e incidencias vehiculares.</p>
   </div>
-  <div class="vehicle-subnav" aria-label="Submódulos de Control Vehicular">
-    <button class="active" onclick="cambiarVehicularSubmodulo('unidadesAsignaciones',this)"><span>▣</span>Unidades y asignaciones</button>
-    <button onclick="cambiarVehicularSubmodulo('combustible',this)"><span>⛽</span>Combustible y gastos</button>
-    <button onclick="cambiarVehicularSubmodulo('mantenimiento',this)"><span>⚙</span>Mantenimiento y taller</button>
-    <button onclick="cambiarVehicularSubmodulo('fotomultas',this)"><span>⚠</span>Fotomultas e infracciones</button>
-    <button onclick="cambiarVehicularSubmodulo('historialVehicular',this)"><span>▤</span>Historial y reportes</button>
-  </div>
+
   <div id="vehicularPanel" class="vehicle-panel">
     <div class="data-card">
     <div class="data-head">
@@ -1162,7 +1232,7 @@ body{background:#f3f6fa}
         <h2>Unidades</h2>
         <p>Inventario y asignación de unidades AUTORITAS.</p>
       </div>
-      <div id="unidadesCount" class="data-count">0 registros</div>
+      <div style="display:flex;gap:8px;align-items:center"><button class="vehicle-general" onclick="abrirReporteGeneralCombustible()">▤ Reportes generales</button><div id="unidadesCount" class="data-count">0 registros</div></div>
     </div>
     <div class="data-filters">
       <input id="unidadesSearch" class="input" type="text" autocomplete="off" placeholder="Buscar por unidad, marca, modelo, placas o asignación...">
@@ -1206,6 +1276,9 @@ let unidades = [];
 let cargando = false;
 
 let datosAsistencias = null;
+let cacheAsistencias = new Map();
+let timerConsultaAsistencias = null;
+let consultaAsistenciasEnCurso = false;
 
 
 /* =====================================================
@@ -2437,6 +2510,8 @@ function crearPersona(persona){
           ${escapeHtml(numero)}
         </div>
 
+        <div class="person-position">${escapeHtml(posicionPersona(persona) || "SIN POSICIÓN")}</div>
+
         <span class="person-status">
           ACTIVO
         </span>
@@ -2748,11 +2823,50 @@ function inicializarProtocolos(){
   if(search && !search.dataset.bound){search.addEventListener('input',()=>renderizarCatalogoProtocolos(search.value));search.dataset.bound='1';}
 }
 
+
+function toggleSidebar(){
+  if(window.innerWidth<=700){
+    document.querySelector('.sidebar')?.classList.toggle('mobile-open');
+  }else{
+    document.body.classList.toggle('sidebar-collapsed');
+  }
+}
+function cerrarSidebarMovil(){if(window.innerWidth<=700)document.querySelector('.sidebar')?.classList.remove('mobile-open');}
+
+function exportarCombustibleExcel(){
+  if(!combustibleCargado){alert('Primero deben cargarse los registros de combustible.');return;}
+  const datos=datosFiltradosCombustible();
+  if(!datos.length){alert('No hay registros para exportar con los filtros actuales.');return;}
+  const encabezados=['Fecha y hora','Unidad','Tipo de pago','Personal','Puesto','Kilometraje','Litros','Importe','Observaciones'];
+  const filas=datos.map(r=>{
+    const f=fechaCombustible(r);
+    return [
+      f instanceof Date?f.toLocaleString('es-MX'):valorCombustible(r,['Marca temporal','Fecha']),
+      valorCombustible(r,['SELECCIONAR UNIDAD','Unidad','No Unidad']),
+      valorCombustible(r,['SELECCIONAR TIPO DE PAGO (carga)','Tipo de pago','Tipo de Pago']),
+      valorCombustible(r,['SELECCIONAR CLAVE DEL PERSONAL QUE CARGA COMBUSTIBLE','Clave del personal'])||valorCombustible(r,['# DE EMPLEADO','No. de empleado']),
+      valorCombustible(r,['SELECCIONAR PUESTO','Puesto']),
+      valorCombustible(r,['KILOMETRAJE (SOLO NÚMEROS)','Kilometraje']),
+      numeroCombustible(r,['COLOCAR EL # DE LITROS CARGADOS (SOLO NÚMEROS)','Litros']),
+      numeroCombustible(r,['COLOCAR EL COSTO MARCADO EN EL TICKET','Costo','Importe']),
+      valorCombustible(r,['OBSERVACIONES (SIEMPRE CARGAR OBSERVACIONES)','Observaciones'])
+    ];
+  });
+  const esc=v=>'"'+String(v??'').replace(/"/g,'""')+'"';
+  const csv='\ufeff'+[encabezados,...filas].map(f=>f.map(esc).join(',')).join('\r\n');
+  const blob=new Blob([csv],{type:'text/csv;charset=utf-8;'});
+  const a=document.createElement('a');a.href=URL.createObjectURL(blob);
+  const d=new Date();a.download='AUTORITAS_Combustible_'+d.toISOString().slice(0,10)+'.csv';
+  document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(a.href),1000);
+}
+
 function cambiarModulo(modulo, boton){
+  cerrarSidebarMovil();
   document.querySelectorAll('.module-view').forEach(v => v.classList.remove('active'));
   document.querySelectorAll('.module-btn').forEach(b => b.classList.remove('active'));
 
   const vistas = {
+    inicio: 'inicioView',
     estado: 'estadoView',
     directorio: 'directorioView',
     asistencias: 'asistenciasView',
@@ -2800,19 +2914,18 @@ function cambiarModulo(modulo, boton){
 
   if(modulo === 'asistencias'){
     // El catálogo de servicios ya viene con ESTADO DE FUERZA.
-    // La consulta de historial se hace únicamente al presionar CONSULTAR.
+    // Con la nueva captura normalizada, la vista consulta sola al entrar y al cambiar filtros.
     construirServiciosAsistencias();
+    inicializarAsistenciasAutomaticas();
   }
 }
 
 
-function toggleControlVehicular(boton){
-  const grupo = document.getElementById('controlVehicularGroup');
-  if(grupo) grupo.classList.toggle('open');
+function abrirModuloUnidades(boton){
   cambiarModulo('vehicular', boton);
-  const primero = document.querySelector('.sidebar-sub-link');
-  if(primero) cambiarVehicularSubmodulo('unidadesAsignaciones', primero);
+  cambiarVehicularSubmodulo('unidadesAsignaciones', null);
 }
+function toggleControlVehicular(boton){ abrirModuloUnidades(boton); }
 
 const textosVehiculares = {
   unidadesAsignaciones: {
@@ -2877,7 +2990,7 @@ function cambiarVehicularSubmodulo(clave, boton){
         <h2>Unidades</h2>
         <p>Inventario y asignación de unidades AUTORITAS.</p>
       </div>
-      <div id="unidadesCount" class="data-count">0 registros</div>
+      <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap"><button class="export-btn" onclick="abrirReporteGeneralCombustible()">⇩ Reporte general de combustible</button><div id="unidadesCount" class="data-count">0 registros</div></div>
     </div>
     <div class="data-filters">
       <input id="unidadesSearch" class="input" type="text" autocomplete="off" placeholder="Buscar por unidad, marca, modelo, placas o asignación...">
@@ -2912,6 +3025,45 @@ function cambiarVehicularSubmodulo(clave, boton){
   panel.innerHTML = `<h3>${escapeHtml(info.titulo)}</h3><p>${escapeHtml(info.descripcion)}</p><div class="vehicle-note">${escapeHtml(info.nota)}</div>`;
 }
 
+
+let unidadSeleccionada = null;
+function indiceUnidad(r){ return unidades.indexOf(r); }
+function abrirExpedienteUnidad(indice){
+  const r=unidades[indice]; if(!r) return;
+  unidadSeleccionada=r;
+  renderizarExpedienteUnidad('informacion');
+}
+function volverAUnidades(){ unidadSeleccionada=null; cambiarVehicularSubmodulo('unidadesAsignaciones',null); }
+function renderizarExpedienteUnidad(tab){
+  const r=unidadSeleccionada, panel=document.getElementById('vehicularPanel'); if(!r||!panel)return;
+  const nombre=campoDirectorio(r,['NOM PARA SISTEMAS'])||'SIN NOMBRE';
+  const no=campoDirectorio(r,['No Unidad']); const asign=campoDirectorio(r,['Asignación'])||'SIN ASIGNAR';
+  const tabs=[['informacion','▣ Información'],['combustible','⛽ Combustible'],['mantenimiento','⚙ Mantenimiento'],['fotomultas','⚠ Fotomultas'],['historial','▤ Historial']];
+  panel.innerHTML=`<button class="vehicle-back" onclick="volverAUnidades()">← Volver a unidades</button>
+    <div class="vehicle-exp-head"><div><h2 class="vehicle-title">${escapeHtml(nombre)}</h2><div class="vehicle-subtitle">${escapeHtml(no)} · ${escapeHtml(campoDirectorio(r,['Marca']))} ${escapeHtml(campoDirectorio(r,['Modelo']))} · ${escapeHtml(campoDirectorio(r,['Placas']))}</div></div><span class="${normalizarTexto(asign)==='SIN ASIGNAR'?'status-inactive':'status-active'}">${escapeHtml(asign)}</span></div>
+    <div class="vehicle-tabs">${tabs.map(x=>`<button class="${tab===x[0]?'active':''}" onclick="renderizarExpedienteUnidad('${x[0]}')">${x[1]}</button>`).join('')}</div><div id="unidadExpContenido"></div>`;
+  const c=document.getElementById('unidadExpContenido');
+  if(tab==='informacion') c.innerHTML=`<div class="vehicle-summary">
+    <div class="unit-detail"><div class="unit-detail-label">No. unidad</div><div class="unit-detail-value">${escapeHtml(no)}</div></div>
+    <div class="unit-detail"><div class="unit-detail-label">Tipo</div><div class="unit-detail-value">${escapeHtml(campoDirectorio(r,['Tipo']))}</div></div>
+    <div class="unit-detail"><div class="unit-detail-label">Marca / Modelo</div><div class="unit-detail-value">${escapeHtml(campoDirectorio(r,['Marca']))} ${escapeHtml(campoDirectorio(r,['Modelo']))}</div></div>
+    <div class="unit-detail"><div class="unit-detail-label">Año</div><div class="unit-detail-value">${escapeHtml(campoDirectorio(r,['AÑO']))}</div></div>
+    <div class="unit-detail"><div class="unit-detail-label">Placas</div><div class="unit-detail-value">${escapeHtml(campoDirectorio(r,['Placas']))}</div></div>
+    <div class="unit-detail"><div class="unit-detail-label">Color</div><div class="unit-detail-value">${escapeHtml(campoDirectorio(r,['COLOR']))}</div></div>
+    <div class="unit-detail"><div class="unit-detail-label">Asignación</div><div class="unit-detail-value">${escapeHtml(asign)}</div></div>
+    <div class="unit-detail"><div class="unit-detail-label">Barandeado</div><div class="unit-detail-value">${String(campoDirectorio(r,['BARANDEADO'])).toUpperCase()==='TRUE'?'SÍ':'NO'}</div></div></div>
+`;
+  else if(tab==='combustible') renderizarCombustibleUnidad();
+  else { const nombres={mantenimiento:'Mantenimiento y taller',fotomultas:'Fotomultas e infracciones',historial:'Historial de la unidad'}; c.innerHTML=`<div class="vehicle-section-note"><strong>${nombres[tab]}</strong><br>Esta sección queda preparada dentro del expediente de <b>${escapeHtml(nombre)}</b>. Se conectará a su fuente real de datos en la siguiente etapa; no se muestran registros ficticios.</div>`; }
+}
+function abrirReporteGeneralCombustible(){ unidadSeleccionada=null; renderizarPanelCombustible(); }
+function renderizarCombustibleUnidad(){
+  const c=document.getElementById('unidadExpContenido'); if(!c)return;
+  c.innerHTML=`<div class="data-head"><div><h2>Combustible</h2><p>Bitácora exclusiva de ${escapeHtml(campoDirectorio(unidadSeleccionada,['NOM PARA SISTEMAS'])||campoDirectorio(unidadSeleccionada,['No Unidad']))}.</p></div><button class="export-btn" onclick="exportarCombustibleExcel()">⇩ Descargar Excel de esta unidad</button></div><div class="data-filters" style="grid-template-columns:1fr 1fr 2fr auto"><input id="combustibleDesde" class="input" type="date"><input id="combustibleHasta" class="input" type="date"><input id="combustibleSearch" class="input" type="search" placeholder="Buscar personal u observaciones..."><button class="btn-clear" onclick="limpiarFiltrosCombustible()">Limpiar</button></div><div id="combustibleResumen"></div><div id="combustibleTabla" class="data-table-wrap"><div class="loading">Cargando combustible...</div></div>`;
+  ['combustibleDesde','combustibleHasta','combustibleSearch'].forEach(id=>{const el=document.getElementById(id);if(el)el.addEventListener(id==='combustibleSearch'?'input':'change',renderizarTablaCombustible)});
+  if(combustibleCargado) renderizarTablaCombustible(); else cargarRegistrosCombustible();
+}
+
 let registrosCombustible = [];
 let combustibleCargado = false;
 let combustibleCargando = false;
@@ -2920,9 +3072,10 @@ function renderizarPanelCombustible(){
   const panel = document.getElementById('vehicularPanel');
   if(!panel) return;
   panel.innerHTML = `
+    <button class="vehicle-back" onclick="volverAUnidades()">← Volver a unidades</button>
     <div class="data-card">
       <div class="data-head">
-        <div><h2>Combustible y gastos</h2><p>Consulta de cargas registradas en el formulario original.</p></div>
+        <div><h2>Reporte general de combustible</h2><p>Toda la flotilla · aplica filtros y descarga exactamente lo que estás viendo.</p></div>
         <div id="combustibleCount" class="data-count">Preparando consulta…</div>
       </div>
       <div class="stats-grid" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin:16px 0">
@@ -2937,6 +3090,7 @@ function renderizarPanelCombustible(){
         <label class="input" style="display:flex;align-items:center;gap:8px">Desde <input id="combustibleDesde" type="date" style="min-width:0;width:100%;border:0;background:transparent"></label>
         <label class="input" style="display:flex;align-items:center;gap:8px">Hasta <input id="combustibleHasta" type="date" style="min-width:0;width:100%;border:0;background:transparent"></label>
         <button class="btn-clear" onclick="limpiarFiltrosCombustible()">Limpiar filtros</button>
+        <button class="export-btn" onclick="exportarCombustibleExcel()">⇩ Descargar Excel general</button>
       </div>
       <div id="combustibleAviso" class="vehicle-note" style="margin-bottom:14px">Conectando con la fuente de combustible…</div>
       <div id="combustibleTabla" class="data-table-wrap"><div class="loading">Cargando registros de combustible…</div></div>
@@ -3001,6 +3155,7 @@ function datosFiltradosCombustible(){
   const hasta=document.getElementById('combustibleHasta')?.value||'';
   return registrosCombustible.filter(r=>{
     const u=valorCombustible(r,['SELECCIONAR UNIDAD','Unidad','No Unidad']);
+    if(unidadSeleccionada){ const objetivo=[campoDirectorio(unidadSeleccionada,['NOM PARA SISTEMAS']),campoDirectorio(unidadSeleccionada,['No Unidad'])].map(normalizarTexto).filter(Boolean); if(objetivo.length && !objetivo.includes(normalizarTexto(u))) return false; }
     const p=valorCombustible(r,['SELECCIONAR TIPO DE PAGO (carga)','Tipo de pago','Tipo de Pago']);
     const f=fechaCombustible(r);
     if(unidad&&u!==unidad)return false;if(pago&&p!==pago)return false;
@@ -3064,41 +3219,120 @@ function construirFiltrosUnidades(){
   asignacion.innerHTML='<option value="">Todas las asignaciones</option>'+asignaciones.map(x=>`<option value="${escapeHtml(x)}">${escapeHtml(x)}</option>`).join('');
 }
 
+let directorioSupervisorSeleccionado = null;
+let directorioServicioSeleccionado = null;
+
+function supervisoresDeServicio(r){
+  const vals=[
+    campoDirectorio(r,['SUPERVISOR OPERATIVO DIURNO']),
+    campoDirectorio(r,['SUPERVISOR OPERATIVO NOCTURNO'])
+  ].map(x=>String(x||'').trim()).filter(Boolean);
+  return [...new Set(vals)];
+}
+
+function fotoEntradaServicio(r){
+  const raw=String(campoDirectorio(r,['FOTO ENTRADA','FOTO DE ENTRADA','FOTO SERVICIO','FOTOGRAFÍA','FOTOGRAFIA','IMAGEN'])||'').trim();
+  const m=raw.match(/https?:\/\/[^\s)\]]+/);
+  return m?m[0]:'';
+}
+
+function urlMapsServicio(r){
+  const maps=String(campoDirectorio(r,['LIGA DE MAPS'])||'').replace(/^\[|\]$/g,'');
+  return (maps.match(/https?:\/\/[^\s)]+/)||[])[0]||'';
+}
+
 function renderizarDirectorio(){
-  const body=document.getElementById('directorioBody');
-  if(!body) return;
+  if(directorioServicioSeleccionado){ renderizarFichaServicio(directorioServicioSeleccionado); return; }
+  if(directorioSupervisorSeleccionado){ renderizarServiciosSupervisor(directorioSupervisorSeleccionado); return; }
+  renderizarSupervisoresDirectorio();
+}
+
+function datosDirectorioFiltrados(){
   const texto=normalizarTexto(document.getElementById('directorioSearch')?.value || '');
   const sector=normalizarTexto(document.getElementById('directorioSector')?.value || '');
   const status=normalizarTexto(document.getElementById('directorioStatus')?.value || '');
-  const datos=directorioServicios.filter(r=>{
+  return directorioServicios.filter(r=>{
     const s=normalizarTexto(campoDirectorio(r,['SECTOR / PROYECTO']));
     const st=normalizarTexto(campoDirectorio(r,['ESTATUS DE PROYECTOS']));
     if(sector && s!==sector) return false;
     if(status && st!==status) return false;
     if(texto){
-      const contenido=[campoDirectorio(r,['CLIENTE']),campoDirectorio(r,['SERVICIO']),campoDirectorio(r,['ID SERVICIO']),campoDirectorio(r,['CODIFICACIÓN DE UN FORMULARIO Y SERVICIO']),campoDirectorio(r,['CCORDINADOR','COORDINADOR']),campoDirectorio(r,['DIRECCIÓN'])].join(' ');
+      const contenido=[campoDirectorio(r,['CLIENTE']),campoDirectorio(r,['SERVICIO']),campoDirectorio(r,['ID SERVICIO']),campoDirectorio(r,['CODIFICACIÓN DE UN FORMULARIO Y SERVICIO']),campoDirectorio(r,['CCORDINADOR','COORDINADOR']),campoDirectorio(r,['DIRECCIÓN']),...supervisoresDeServicio(r)].join(' ');
       if(!normalizarTexto(contenido).includes(texto)) return false;
     }
     return true;
   });
-  document.getElementById('directorioCount').textContent=datos.length+(datos.length===1?' registro':' registros');
-  if(!datos.length){body.innerHTML='<div class="empty">No se encontraron servicios con los filtros actuales.</div>';return;}
-  const filas=datos.map(r=>{
-    const est=campoDirectorio(r,['ESTATUS DE PROYECTOS']);
-    const maps=String(campoDirectorio(r,['LIGA DE MAPS'])||'').replace(/^\[|\]$/g,'');
-    const url=(maps.match(/https?:\/\/[^\s)]+/)||[])[0]||'';
-    return `<tr>
-      <td><strong>${escapeHtml(campoDirectorio(r,['SERVICIO']))}</strong><br><small>${escapeHtml(campoDirectorio(r,['ID SERVICIO']))}</small></td>
-      <td>${escapeHtml(campoDirectorio(r,['CLIENTE']))}</td>
-      <td>${escapeHtml(campoDirectorio(r,['SECTOR / PROYECTO']))}</td>
-      <td>${escapeHtml(campoDirectorio(r,['CCORDINADOR','COORDINADOR']))}</td>
-      <td>${escapeHtml(campoDirectorio(r,['SUPERVISOR OPERATIVO DIURNO']))}<br>${escapeHtml(campoDirectorio(r,['SUPERVISOR OPERATIVO NOCTURNO']))}</td>
-      <td>${escapeHtml(campoDirectorio(r,['DIRECCIÓN']))}${url?`<br><a class="map-link" href="${escapeHtml(url)}" target="_blank" rel="noopener">Ver mapa</a>`:''}</td>
-      <td><span class="${normalizarTexto(est)==='ACTIVO'?'status-active':'status-inactive'}">${escapeHtml(est||'SIN ESTATUS')}</span></td>
-      <td>${escapeHtml(campoDirectorio(r,['DEBE']))} / ${escapeHtml(campoDirectorio(r,['ES']))}</td>
-    </tr>`;
+}
+
+function renderizarSupervisoresDirectorio(){
+  const body=document.getElementById('directorioBody'); if(!body)return;
+  const datos=datosDirectorioFiltrados();
+  const mapa=new Map();
+  datos.forEach(r=>{
+    const sups=supervisoresDeServicio(r);
+    (sups.length?sups:['SIN SUPERVISOR ASIGNADO']).forEach(sup=>{
+      if(!mapa.has(sup)) mapa.set(sup,[]);
+      mapa.get(sup).push(r);
+    });
+  });
+  document.getElementById('directorioCount').textContent=mapa.size+(mapa.size===1?' supervisor':' supervisores');
+  if(!mapa.size){body.innerHTML='<div class="empty">No se encontraron supervisores o servicios con los filtros actuales.</div>';return;}
+  const cards=[...mapa.entries()].sort((a,b)=>a[0].localeCompare(b[0],'es')).map(([sup,servs])=>{
+    const activos=servs.filter(r=>normalizarTexto(campoDirectorio(r,['ESTATUS DE PROYECTOS']))==='ACTIVO').length;
+    return `<button class="dir-supervisor-card" onclick="abrirSupervisorDirectorio(${JSON.stringify(sup).replace(/"/g,'&quot;')})">
+      <div class="dir-avatar">👤</div><div class="dir-supervisor-info"><small>SUPERVISOR</small><h3>${escapeHtml(sup)}</h3><p>${servs.length} ${servs.length===1?'servicio':'servicios'} · ${activos} activos</p></div><span class="dir-chevron">→</span>
+    </button>`;
   }).join('');
-  body.innerHTML=`<table class="data-table"><thead><tr><th>Servicio</th><th>Cliente</th><th>Sector / Proyecto</th><th>Coordinador</th><th>Supervisión</th><th>Dirección</th><th>Estatus</th><th>Debe / Es</th></tr></thead><tbody>${filas}</tbody></table>`;
+  body.className='dir-supervisor-grid'; body.innerHTML=cards;
+}
+
+function abrirSupervisorDirectorio(nombre){ directorioSupervisorSeleccionado=nombre; directorioServicioSeleccionado=null; renderizarDirectorio(); }
+function volverDirectorioSupervisores(){ directorioSupervisorSeleccionado=null; directorioServicioSeleccionado=null; renderizarDirectorio(); }
+function abrirServicioDirectorio(indice){ const r=directorioServicios[indice]; if(!r)return; directorioServicioSeleccionado=r; renderizarDirectorio(); }
+function volverServiciosSupervisor(){ directorioServicioSeleccionado=null; renderizarDirectorio(); }
+
+function renderizarServiciosSupervisor(nombre){
+  const body=document.getElementById('directorioBody'); if(!body)return;
+  const datos=directorioServicios.filter(r=>supervisoresDeServicio(r).includes(nombre));
+  document.getElementById('directorioCount').textContent=datos.length+(datos.length===1?' servicio':' servicios');
+  body.className='';
+  body.innerHTML=`<button class="vehicle-back" onclick="volverDirectorioSupervisores()">← Volver a supervisores</button>
+    <div class="dir-path"><span>Directorio</span><b>›</b><strong>${escapeHtml(nombre)}</strong></div>
+    <div class="dir-service-grid">${datos.map(r=>{
+      const i=directorioServicios.indexOf(r), est=campoDirectorio(r,['ESTATUS DE PROYECTOS']);
+      return `<button class="dir-service-card" onclick="abrirServicioDirectorio(${i})"><div><small>${escapeHtml(campoDirectorio(r,['ID SERVICIO']))}</small><h3>${escapeHtml(campoDirectorio(r,['SERVICIO'])||'SIN NOMBRE')}</h3><p>${escapeHtml(campoDirectorio(r,['CLIENTE']))}</p></div><div class="dir-service-foot"><span class="${normalizarTexto(est)==='ACTIVO'?'status-active':'status-inactive'}">${escapeHtml(est||'SIN ESTATUS')}</span><span>Ver ficha →</span></div></button>`;
+    }).join('')}</div>`;
+}
+
+function renderizarFichaServicio(r){
+  const body=document.getElementById('directorioBody'); if(!body)return;
+  const maps=urlMapsServicio(r), foto=fotoEntradaServicio(r), est=campoDirectorio(r,['ESTATUS DE PROYECTOS']);
+  const sup=directorioSupervisorSeleccionado || supervisoresDeServicio(r)[0] || 'Supervisor';
+  document.getElementById('directorioCount').textContent='Ficha del servicio'; body.className='';
+  body.innerHTML=`<button class="vehicle-back" onclick="volverServiciosSupervisor()">← Volver a servicios de ${escapeHtml(sup)}</button>
+    <div class="dir-path"><span>Directorio</span><b>›</b><span>${escapeHtml(sup)}</span><b>›</b><strong>${escapeHtml(campoDirectorio(r,['SERVICIO']))}</strong></div>
+    <div class="dir-service-profile">
+      <div class="dir-profile-head"><div><small>${escapeHtml(campoDirectorio(r,['ID SERVICIO']))}</small><h2>${escapeHtml(campoDirectorio(r,['SERVICIO'])||'SIN NOMBRE')}</h2><p>${escapeHtml(campoDirectorio(r,['CLIENTE']))}</p></div><span class="${normalizarTexto(est)==='ACTIVO'?'status-active':'status-inactive'}">${escapeHtml(est||'SIN ESTATUS')}</span></div>
+      ${foto?`<div class="dir-entry-photo"><img src="${escapeHtml(foto)}" alt="Acceso del servicio" onerror="this.parentElement.style.display='none'"><span>Referencia visual del acceso</span></div>`:''}
+      <div class="dir-profile-grid">
+        <div class="dir-info-box dir-wide"><small>DIRECCIÓN</small><strong>${escapeHtml(campoDirectorio(r,['DIRECCIÓN'])||'Sin dirección registrada')}</strong>${maps?`<a class="map-link" href="${escapeHtml(maps)}" target="_blank" rel="noopener">📍 Abrir ubicación en Maps</a>`:''}</div>
+        <div class="dir-info-box"><small>SECTOR / PROYECTO</small><strong>${escapeHtml(campoDirectorio(r,['SECTOR / PROYECTO']))}</strong></div>
+        <div class="dir-info-box"><small>COORDINADOR</small><strong>${escapeHtml(campoDirectorio(r,['CCORDINADOR','COORDINADOR']))}</strong></div>
+        <div class="dir-info-box"><small>SUPERVISIÓN DIURNA</small><strong>${escapeHtml(campoDirectorio(r,['SUPERVISOR OPERATIVO DIURNO'])||'—')}</strong></div>
+        <div class="dir-info-box"><small>SUPERVISIÓN NOCTURNA</small><strong>${escapeHtml(campoDirectorio(r,['SUPERVISOR OPERATIVO NOCTURNO'])||'—')}</strong></div>
+        <div class="dir-info-box"><small>DEBE</small><strong class="dir-number">${escapeHtml(campoDirectorio(r,['DEBE'])||'—')}</strong></div>
+        <div class="dir-info-box"><small>ES</small><strong class="dir-number">${escapeHtml(campoDirectorio(r,['ES'])||'—')}</strong></div>
+      </div>
+      <div class="dir-profile-actions"><button class="export-btn" onclick="verPersonalServicioDesdeDirectorio(${JSON.stringify(String(campoDirectorio(r,['SERVICIO'])||'')).replace(/"/g,'&quot;')})">Ver personal asignado →</button></div>
+    </div>`;
+}
+
+function verPersonalServicioDesdeDirectorio(servicio){
+  const search=document.getElementById('search'); if(search) search.value=servicio;
+  const area=document.getElementById('areaFilter'); if(area) area.value='';
+  const project=document.getElementById('projectFilter'); if(project) project.value='';
+  cambiarModulo('estado',document.querySelector('[data-module="estado"]'));
+  renderizarOrganigrama();
 }
 
 function renderizarUnidades(){
@@ -3122,7 +3356,8 @@ function renderizarUnidades(){
   if(!datos.length){body.innerHTML='<div class="empty">No se encontraron unidades con los filtros actuales.</div>';return;}
   body.innerHTML=datos.map(r=>{
     const asign=campoDirectorio(r,['Asignación'])||'SIN ASIGNAR';
-    return `<article class="unit-card">
+    const idx=indiceUnidad(r);
+    return `<article class="unit-card" onclick="abrirExpedienteUnidad(${idx})">
       <div class="unit-top"><div><div class="unit-name">${escapeHtml(campoDirectorio(r,['NOM PARA SISTEMAS'])||'SIN NOMBRE')}</div><div class="unit-code">${escapeHtml(campoDirectorio(r,['No Unidad']))}</div></div><span class="${normalizarTexto(asign)==='SIN ASIGNAR'?'status-inactive':'status-active'}">${escapeHtml(asign)}</span></div>
       <div class="unit-details">
         <div class="unit-detail"><div class="unit-detail-label">Tipo</div><div class="unit-detail-value">${escapeHtml(campoDirectorio(r,['Tipo']))}</div></div>
@@ -3131,7 +3366,7 @@ function renderizarUnidades(){
         <div class="unit-detail"><div class="unit-detail-label">Placas</div><div class="unit-detail-value">${escapeHtml(campoDirectorio(r,['Placas']))}</div></div>
         <div class="unit-detail"><div class="unit-detail-label">Color</div><div class="unit-detail-value">${escapeHtml(campoDirectorio(r,['COLOR']))}</div></div>
         <div class="unit-detail"><div class="unit-detail-label">Barandeado</div><div class="unit-detail-value">${String(campoDirectorio(r,['BARANDEADO'])).toUpperCase()==='TRUE'?'SÍ':'NO'}</div></div>
-      </div>
+      </div><div class="unit-open"><span>Ver expediente de la unidad</span><span>→</span></div>
     </article>`;
   }).join('');
 }
@@ -3260,42 +3495,67 @@ function obtenerCodigoAsistencia(registro){
   }
 }
 
-function consultarAsistencias(){
+function fechaISOHoy(){
+  const d = new Date();
+  const y = d.getFullYear();
+  const m = String(d.getMonth()+1).padStart(2,"0");
+  const dia = String(d.getDate()).padStart(2,"0");
+  return `${y}-${m}-${dia}`;
+}
+
+function inicializarAsistenciasAutomaticas(){
+  const servicio = document.getElementById("asistenciaServicio");
+  const inicio = document.getElementById("asistenciaFechaInicio");
+  const fin = document.getElementById("asistenciaFechaFin");
+  if(!servicio || !inicio || !fin) return;
+
+  // Por defecto se consulta el día actual; el usuario puede ampliar el periodo.
+  const hoy = fechaISOHoy();
+  if(!inicio.value) inicio.value = hoy;
+  if(!fin.value) fin.value = hoy;
+
+  // Si todavía no hay servicio seleccionado, tomamos el primero disponible.
+  if(!servicio.value && servicio.options.length > 1){
+    servicio.selectedIndex = 1;
+  }
+
+  if(servicio.value) programarConsultaAsistencias(80);
+}
+
+function programarConsultaAsistencias(espera=350){
+  clearTimeout(timerConsultaAsistencias);
+  timerConsultaAsistencias = setTimeout(()=>consultarAsistencias(true), espera);
+}
+
+function consultarAsistencias(automatica=false){
 
   const servicio = document.getElementById("asistenciaServicio").value;
   const fechaInicio = document.getElementById("asistenciaFechaInicio").value;
   const fechaFin = document.getElementById("asistenciaFechaFin").value;
-  const boton = document.querySelector('#asistenciasView button[onclick="consultarAsistencias()"]');
 
-  if(!servicio){ alert("Selecciona un servicio / inmueble."); return; }
-  if(!fechaInicio || !fechaFin){ alert("Selecciona la fecha inicial y la fecha final."); return; }
+  if(!servicio){ document.getElementById("asistenciasInfo").textContent = "Selecciona un servicio"; return; }
+  if(!fechaInicio || !fechaFin){ return; }
   if(fechaInicio > fechaFin){ alert("La fecha inicial no puede ser mayor que la fecha final."); return; }
 
-  document.getElementById("matrizAsistencias").innerHTML = '<div class="loading">Consultando historial...</div>';
+  document.getElementById("matrizAsistencias").innerHTML = '<div class="loading">Cargando información validada por TCR...</div>';
   document.getElementById("seguimientoFaltas").style.display = "none";
   document.getElementById("asistenciaInfoServicio").style.display = "none";
-  document.getElementById("asistenciasInfo").textContent = "Consultando historial...";
+  document.getElementById("asistenciasInfo").textContent = "Cargando información validada por TCR...";
 
-  if(boton){
-    boton.disabled = true;
-    boton.dataset.textoOriginal = boton.textContent;
-    boton.textContent = "CONSULTANDO...";
-    boton.style.opacity = "0.65";
-    boton.style.pointerEvents = "none";
+  const claveCache = [servicio,fechaInicio,fechaFin].join("|");
+  if(cacheAsistencias.has(claveCache)){
+    datosAsistencias = cacheAsistencias.get(claveCache);
+    const resultadoCache = datosAsistencias && datosAsistencias.asistencias ? datosAsistencias.asistencias : datosAsistencias;
+    renderizarAsistencias(resultadoCache);
+    document.getElementById("asistenciasInfo").title = "Resultado reutilizado sin nueva consulta";
+    return;
   }
 
   const callback = "callback_asistencias_" + Date.now();
   let terminado = false;
   const inicioConsulta = performance.now();
 
-  const finalizarConsulta = () => {
-    if(boton){
-      boton.disabled = false;
-      boton.textContent = boton.dataset.textoOriginal || "CONSULTAR";
-      boton.style.opacity = "";
-      boton.style.pointerEvents = "";
-    }
-  };
+  const finalizarConsulta = () => { consultaAsistenciasEnCurso = false; };
 
   const script = document.createElement("script");
 
@@ -3305,6 +3565,7 @@ function consultarAsistencias(){
 
     try{
       datosAsistencias = data;
+      cacheAsistencias.set(claveCache, data);
       const resultado = data && data.asistencias ? data.asistencias : data;
 
       if(!resultado || resultado.ok === false){
@@ -3332,8 +3593,7 @@ function consultarAsistencias(){
     "&modulo=asistencias" +
     "&servicio=" + encodeURIComponent(servicio) +
     "&fechaInicio=" + encodeURIComponent(fechaInicio) +
-    "&fechaFin=" + encodeURIComponent(fechaFin) +
-    "&t=" + Date.now();
+    "&fechaFin=" + encodeURIComponent(fechaFin);
 
   script.onerror = function(){
     if(terminado) return;
