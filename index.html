@@ -2905,7 +2905,7 @@ const textosVehiculares = {
   fotomultas: {
     titulo: 'Fotomultas e infracciones',
     descripcion: 'Control de infracciones, fecha, unidad, placas, responsable, importe, estatus de atención y evidencia.',
-    nota: 'No hay registros de fotomultas conectados en este archivo. No se crean datos ficticios ni se altera información histórica.'
+    nota: 'Consulta real de revisiones, infracciones y seguimiento de pago/descuento registrada por TCR.'
   },
   historialVehicular: {
     titulo: 'Historial y reportes vehiculares',
@@ -2940,6 +2940,11 @@ function cambiarVehicularSubmodulo(clave, boton){
   if(botonesTarjeta[pares[clave]]) botonesTarjeta[pares[clave]].classList.add('active');
   if(clave === 'combustible'){
     renderizarPanelCombustible();
+    return;
+  }
+  if(clave === 'fotomultas'){
+    unidadSeleccionada = null;
+    renderizarPanelFotomultas();
     return;
   }
   if(clave === 'unidadesAsignaciones'){
@@ -3013,7 +3018,8 @@ function renderizarExpedienteUnidad(tab){
     <div class="unit-detail"><div class="unit-detail-label">Barandeado</div><div class="unit-detail-value">${String(campoDirectorio(r,['BARANDEADO'])).toUpperCase()==='TRUE'?'SÍ':'NO'}</div></div></div>
 `;
   else if(tab==='combustible') renderizarCombustibleUnidad();
-  else { const nombres={mantenimiento:'Mantenimiento y taller',fotomultas:'Fotomultas e infracciones',historial:'Historial de la unidad'}; c.innerHTML=`<div class="vehicle-section-note"><strong>${nombres[tab]}</strong><br>Esta sección queda preparada dentro del expediente de <b>${escapeHtml(nombre)}</b>. Se conectará a su fuente real de datos en la siguiente etapa; no se muestran registros ficticios.</div>`; }
+  else if(tab==='fotomultas') renderizarFotomultasUnidad();
+  else { const nombres={mantenimiento:'Mantenimiento y taller',historial:'Historial de la unidad'}; c.innerHTML=`<div class="vehicle-section-note"><strong>${nombres[tab]}</strong><br>Esta sección queda preparada dentro del expediente de <b>${escapeHtml(nombre)}</b>. Se conectará a su fuente real de datos en la siguiente etapa; no se muestran registros ficticios.</div>`; }
 }
 function abrirReporteGeneralCombustible(){ unidadSeleccionada=null; renderizarPanelCombustible(); }
 function renderizarCombustibleUnidad(){
@@ -3152,6 +3158,170 @@ function renderizarTablaCombustible(){
 function limpiarFiltrosCombustible(){
   ['combustibleSearch','combustibleUnidad','combustiblePago','combustibleDesde','combustibleHasta'].forEach(id=>{const e=document.getElementById(id);if(e)e.value='';});
   renderizarTablaCombustible();
+}
+
+
+/* =====================================================
+   FOTOMULTAS / INFRACCIONES
+===================================================== */
+let registrosFotomultas = [];
+let fotomultasCargado = false;
+let fotomultasCargando = false;
+
+function valorFotomulta(r,nombres){ return campoDirectorio(r,nombres)||''; }
+function claveUnidadVehicular(v){ return normalizarTexto(v).replace(/[^A-Z0-9]/g,''); }
+function numeroFotomulta(r,nombres){
+  const v=String(valorFotomulta(r,nombres)).replace(/[$,\s]/g,'');
+  const n=Number(v); return Number.isFinite(n)?n:0;
+}
+function fechaFotomulta(r,nombres){
+  const raw=valorFotomulta(r,nombres); if(!raw)return null;
+  if(raw instanceof Date && !Number.isNaN(raw.getTime())) return raw;
+  const d=new Date(raw); if(!Number.isNaN(d.getTime()))return d;
+  const m=String(raw).match(/(\d{1,2})[\/.\-](\d{1,2})[\/.\-](\d{2,4})/);
+  if(m){let y=Number(m[3]);if(y<100)y+=2000;const x=new Date(y,Number(m[2])-1,Number(m[1]));if(!Number.isNaN(x.getTime()))return x;}
+  return null;
+}
+function textoFechaFotomulta(r,nombres){
+  const f=fechaFotomulta(r,nombres);
+  return f instanceof Date ? f.toLocaleDateString('es-MX') : String(valorFotomulta(r,nombres)||'');
+}
+function esRegistroConMulta(r){
+  const resultado=normalizarTexto(valorFotomulta(r,['Resultado de revisión','RESULTADO DE REVISIÓN']));
+  const folio=String(valorFotomulta(r,['Folio de infracción','FOLIO DE INFRACCIÓN'])).trim();
+  const cantidad=numeroFotomulta(r,['Cantidad de infracciones detectadas','CANTIDAD DE INFRACCIONES DETECTADAS']);
+  return resultado.includes('MULTA') || !!folio || cantidad>0;
+}
+function pagoFotomulta(r){ return normalizarTexto(valorFotomulta(r,['PAGO REALIZADO','Pago realizado'])); }
+function descuentoFotomulta(r){ return normalizarTexto(valorFotomulta(r,['DESCUENTO A SUPERVISOR','Descuento a supervisor'])); }
+function estatusFotomulta(r){
+  const e=String(valorFotomulta(r,['ESTATUS DE SEGUIMIENTO','Estatus de seguimiento'])||'').trim();
+  if(e) return e;
+  if(!esRegistroConMulta(r)) return 'SIN FOTOMULTAS';
+  if(pagoFotomulta(r)==='SI' && ['APLICADO','SI'].includes(descuentoFotomulta(r))) return 'CERRADA';
+  if(pagoFotomulta(r)==='SI') return 'PAGADA / DESCUENTO PENDIENTE';
+  return 'PAGO PENDIENTE';
+}
+function claseEstatusFotomulta(r){
+  const e=normalizarTexto(estatusFotomulta(r));
+  if(e.includes('CERR')||e.includes('SIN FOTOMULTA')) return 'status-active';
+  if(e.includes('PENDIENTE')||e.includes('REPORTADA')||e.includes('PROGRAM')) return 'status-inactive';
+  return 'badge';
+}
+function coincideUnidadFotomulta(r,unidadObj){
+  if(!unidadObj) return true;
+  const origen=claveUnidadVehicular(valorFotomulta(r,['UNIDAD','Unidad','No Unidad']));
+  const candidatos=[
+    campoDirectorio(unidadObj,['NOM PARA SISTEMAS']),
+    campoDirectorio(unidadObj,['No Unidad']),
+    campoDirectorio(unidadObj,['UNIDAD'])
+  ].map(claveUnidadVehicular).filter(Boolean);
+  return candidatos.includes(origen);
+}
+function cargarRegistrosFotomultas(alTerminar){
+  if(fotomultasCargado){ if(typeof alTerminar==='function')alTerminar(); return; }
+  if(fotomultasCargando) return;
+  fotomultasCargando=true;
+  const callback='callback_fotomultas_'+Date.now();
+  let terminado=false;
+  const script=document.createElement('script');
+  const timeout=setTimeout(()=>finalizarError('La fuente de fotomultas no respondió a tiempo.'),18000);
+  function limpiar(){clearTimeout(timeout);try{delete window[callback]}catch(e){}try{script.remove()}catch(e){}fotomultasCargando=false;}
+  function finalizarError(mensaje){
+    if(terminado)return;terminado=true;limpiar();
+    const tabla=document.getElementById('fotomultasTabla');
+    const aviso=document.getElementById('fotomultasAviso');
+    if(aviso)aviso.textContent=mensaje;
+    if(tabla)tabla.innerHTML='<div class="empty">No fue posible obtener los registros reales de fotomultas.</div>';
+  }
+  window[callback]=function(data){
+    if(terminado)return;
+    if(!data||data.ok!==true){finalizarError((data&&data.error)||'El servicio no pudo cargar Fotomultas.');return;}
+    const arr=Array.isArray(data.fotomultas)?data.fotomultas:(Array.isArray(data.registros)?data.registros:null);
+    if(!arr){finalizarError('La API respondió, pero no entregó la lista de fotomultas.');return;}
+    terminado=true;limpiar();registrosFotomultas=arr;fotomultasCargado=true;
+    if(typeof alTerminar==='function')alTerminar();
+  };
+  script.onerror=()=>finalizarError('No fue posible conectar con el servicio de datos de AUTORITAS.');
+  script.src=API_URL+'?callback='+encodeURIComponent(callback)+'&modulo=fotomultas&t='+Date.now();
+  document.head.appendChild(script);
+}
+function renderizarPanelFotomultas(){
+  const panel=document.getElementById('vehicularPanel'); if(!panel)return;
+  panel.innerHTML=`<div class="data-card">
+    <div class="data-head"><div><h2>Fotomultas e infracciones</h2><p>Revisiones TCR, infracciones detectadas y seguimiento administrativo.</p></div><div id="fotomultasCount" class="data-count">Cargando…</div></div>
+    <div class="vehicle-summary" id="fotomultasResumen" style="margin-bottom:14px"></div>
+    <div class="data-filters" style="grid-template-columns:2fr 1fr 1fr auto">
+      <input id="fotomultasSearch" class="input" type="search" placeholder="Buscar unidad, placas, folio, asignación o supervisor…">
+      <select id="fotomultasResultado" class="select"><option value="">Todos los resultados</option><option value="MULTAS">Con multas</option><option value="SIN">Sin fotomultas</option></select>
+      <select id="fotomultasPago" class="select"><option value="">Todos los pagos</option><option value="NO">Pago pendiente</option><option value="SI">Pagada</option></select>
+      <button class="btn-clear" onclick="limpiarFiltrosFotomultas()">Limpiar</button>
+    </div>
+    <div id="fotomultasAviso" class="vehicle-note" style="margin-bottom:14px">Conectando con la base real de fotomultas…</div>
+    <div id="fotomultasTabla" class="data-table-wrap"><div class="loading">Cargando registros…</div></div>
+  </div>`;
+  ['fotomultasSearch','fotomultasResultado','fotomultasPago'].forEach(id=>{const e=document.getElementById(id);if(e)e.addEventListener(id==='fotomultasSearch'?'input':'change',renderizarTablaFotomultas);});
+  if(fotomultasCargado) renderizarTablaFotomultas(); else cargarRegistrosFotomultas(renderizarTablaFotomultas);
+}
+function renderizarFotomultasUnidad(){
+  const c=document.getElementById('unidadExpContenido');if(!c)return;
+  const nom=campoDirectorio(unidadSeleccionada,['NOM PARA SISTEMAS'])||campoDirectorio(unidadSeleccionada,['No Unidad']);
+  c.innerHTML=`<div class="data-head"><div><h2>Fotomultas</h2><p>Revisiones e infracciones de ${escapeHtml(nom)}.</p></div><div id="fotomultasCount" class="data-count">Cargando…</div></div><div id="fotomultasResumen" class="vehicle-summary" style="margin-bottom:14px"></div><div id="fotomultasAviso" class="vehicle-note" style="margin-bottom:14px">Conectando con la base real de fotomultas…</div><div id="fotomultasTabla" class="data-table-wrap"><div class="loading">Cargando registros…</div></div>`;
+  if(fotomultasCargado) renderizarTablaFotomultas(); else cargarRegistrosFotomultas(renderizarTablaFotomultas);
+}
+function datosFiltradosFotomultas(){
+  const q=normalizarTexto(document.getElementById('fotomultasSearch')?.value||'');
+  const resultado=document.getElementById('fotomultasResultado')?.value||'';
+  const pago=document.getElementById('fotomultasPago')?.value||'';
+  return registrosFotomultas.filter(r=>{
+    if(unidadSeleccionada && !coincideUnidadFotomulta(r,unidadSeleccionada)) return false;
+    const conMulta=esRegistroConMulta(r);
+    if(resultado==='MULTAS'&&!conMulta)return false;
+    if(resultado==='SIN'&&conMulta)return false;
+    if(pago && pagoFotomulta(r)!==pago)return false;
+    if(q){
+      const texto=['UNIDAD','MARCA','Modelo','COLOR','Placas','ASIGNACIÓN','Folio de infracción','RESPONSABLE / SUPERVISOR','ESTATUS DE SEGUIMIENTO'].map(k=>valorFotomulta(r,[k])).join(' ');
+      if(!normalizarTexto(texto).includes(q))return false;
+    }
+    return true;
+  }).sort((a,b)=>{
+    const fa=fechaFotomulta(a,['Fecha de revisión']),fb=fechaFotomulta(b,['Fecha de revisión']);
+    return (fb?fb.getTime():0)-(fa?fa.getTime():0);
+  });
+}
+function renderizarTablaFotomultas(){
+  const tabla=document.getElementById('fotomultasTabla');if(!tabla||!fotomultasCargado)return;
+  const datos=datosFiltradosFotomultas();
+  const multas=datos.filter(esRegistroConMulta);
+  const importe=multas.reduce((s,r)=>s+numeroFotomulta(r,['Importe total detectado (MXN)','IMPORTE TOTAL DETECTADO (MXN)']),0);
+  const pendientes=multas.filter(r=>pagoFotomulta(r)!=='SI');
+  const unidadesRevisadas=new Set(datos.map(r=>claveUnidadVehicular(valorFotomulta(r,['UNIDAD']))).filter(Boolean)).size;
+  const unidadesMulta=new Set(multas.map(r=>claveUnidadVehicular(valorFotomulta(r,['UNIDAD']))).filter(Boolean)).size;
+  const count=document.getElementById('fotomultasCount');if(count)count.textContent=datos.length+' '+(datos.length===1?'registro':'registros');
+  const resumen=document.getElementById('fotomultasResumen');if(resumen)resumen.innerHTML=`
+    <div class="unit-detail"><div class="unit-detail-label">Unidades revisadas</div><div class="unit-detail-value">${unidadesRevisadas}</div></div>
+    <div class="unit-detail"><div class="unit-detail-label">Con infracciones</div><div class="unit-detail-value">${unidadesMulta}</div></div>
+    <div class="unit-detail"><div class="unit-detail-label">Infracciones</div><div class="unit-detail-value">${multas.length}</div></div>
+    <div class="unit-detail"><div class="unit-detail-label">Importe detectado</div><div class="unit-detail-value">${monedaCombustible(importe)}</div></div>
+    <div class="unit-detail"><div class="unit-detail-label">Pendientes de pago</div><div class="unit-detail-value">${pendientes.length}</div></div>`;
+  const aviso=document.getElementById('fotomultasAviso');if(aviso)aviso.textContent='Fuente conectada en modo lectura. El seguimiento se toma directamente de la base de TCR.';
+  if(!datos.length){tabla.innerHTML='<div class="empty">No hay registros de fotomultas que coincidan con esta consulta.</div>';return;}
+  const filas=datos.map(r=>{
+    const conMulta=esRegistroConMulta(r);
+    const unidad=valorFotomulta(r,['UNIDAD']);
+    const folio=valorFotomulta(r,['Folio de infracción','FOLIO DE INFRACCIÓN']);
+    const imp=numeroFotomulta(r,['Importe total detectado (MXN)','IMPORTE TOTAL DETECTADO (MXN)']);
+    const pago=valorFotomulta(r,['PAGO REALIZADO','Pago realizado']);
+    const descuento=valorFotomulta(r,['DESCUENTO A SUPERVISOR','Descuento a supervisor']);
+    const prog=textoFechaFotomulta(r,['FECHA PROGRAMADA DE DESCUENTO','Fecha programada de descuento']);
+    const est=estatusFotomulta(r);
+    return `<tr><td>${escapeHtml(textoFechaFotomulta(r,['Fecha de revisión']))}</td><td><strong>${escapeHtml(unidad)}</strong><br><small>${escapeHtml(valorFotomulta(r,['MARCA']))} ${escapeHtml(valorFotomulta(r,['Modelo','MODELO']))}</small></td><td>${escapeHtml(valorFotomulta(r,['Placas']))}</td><td>${escapeHtml(valorFotomulta(r,['ASIGNACIÓN']))}</td><td>${conMulta?escapeHtml(textoFechaFotomulta(r,['Fecha de infracción'])):'—'}</td><td>${conMulta?escapeHtml(folio||'—'):'—'}</td><td>${conMulta?escapeHtml(monedaCombustible(imp)):'—'}</td><td>${escapeHtml(valorFotomulta(r,['RESPONSABLE / SUPERVISOR'])||'—')}</td><td><span class="${claseEstatusFotomulta(r)}">${escapeHtml(est)}</span><br><small>Pago: ${escapeHtml(pago||'—')} · Descuento: ${escapeHtml(descuento||'—')}${prog?' · '+escapeHtml(prog):''}</small></td></tr>`;
+  }).join('');
+  tabla.innerHTML=`<table class="data-table"><thead><tr><th>Revisión</th><th>Unidad</th><th>Placas</th><th>Asignación</th><th>Infracción</th><th>Folio</th><th>Importe</th><th>Supervisor</th><th>Seguimiento</th></tr></thead><tbody>${filas}</tbody></table>`;
+}
+function limpiarFiltrosFotomultas(){
+  ['fotomultasSearch','fotomultasResultado','fotomultasPago'].forEach(id=>{const e=document.getElementById(id);if(e)e.value='';});
+  renderizarTablaFotomultas();
 }
 
 function campoDirectorio(registro, nombres){
