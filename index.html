@@ -525,17 +525,40 @@ body{
   display:block;
 }
 
-.baja-person{
-  display:flex;
-  align-items:center;
-  gap:12px;
-  padding:10px;
-  border-bottom:1px solid #eee;
+.bajas-body{
+  padding:18px;
 }
 
-.baja-person:last-child{
-  border-bottom:0;
+.bajas-grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fill,minmax(290px,1fr));
+  gap:14px;
 }
+
+.baja-person{
+  display:grid;
+  grid-template-columns:82px minmax(0,1fr);
+  gap:14px;
+  align-items:center;
+  padding:14px;
+  border:1px solid #f0d1ce;
+  border-radius:13px;
+  background:#fff;
+}
+
+.baja-person .baja-photo{
+  width:82px;
+  height:96px;
+  border-radius:11px;
+  object-fit:cover;
+  background:#eef3f8;
+}
+
+.baja-info{min-width:0;}
+.baja-name{font-size:14px;font-weight:800;color:#243b53;line-height:1.25;}
+.baja-line{font-size:11px;color:#667085;margin-top:5px;line-height:1.35;}
+.baja-line strong{color:#344054;}
+.baja-status{display:inline-flex;margin-top:8px;padding:4px 9px;border-radius:999px;background:#fdecea;color:#b42318;font-size:10px;font-weight:800;}
 
 /* =========================
    ESTADOS
@@ -2526,105 +2549,45 @@ function crearPersona(persona){
 
 function renderizarBajas(){
 
-  const bajas =
-    personal.filter(esBaja);
-
-
-  const contenedor =
-    document.getElementById(
-      "bajasBody"
-    );
-
+  const bajas = personal.filter(esBaja);
+  const contenedor = document.getElementById("bajasBody");
 
   if(!bajas.length){
-
-    contenedor.innerHTML =
-      `<div class="empty">
-        No hay personal dado de baja.
-      </div>`;
-
+    contenedor.innerHTML = `<div class="empty">No hay personal dado de baja.</div>`;
     return;
-
   }
 
-
-  contenedor.innerHTML =
-    bajas
-      .map(persona => {
-
-        const nombre =
-          nombrePersona(persona) ||
-          "SIN NOMBRE";
-
-
-        const numero =
-          numeroEmpleado(persona) ||
-          "SIN NÚMERO";
-
-
-        const servicio =
-          servicioPersona(persona) ||
-          "";
-
-
-        const fecha =
-          fechaBaja(persona) ||
-          "";
-
-
-        const foto =
-          normalizarFoto(
-            obtenerFoto(persona)
-          ) ||
-          avatarFallback(nombre);
-
+  contenedor.innerHTML = `
+    <div class="bajas-grid">
+      ${bajas.map(persona => {
+        const nombre = nombrePersona(persona) || "SIN NOMBRE";
+        const numero = numeroEmpleado(persona) || "SIN NÚMERO";
+        const servicio = servicioPersona(persona) || "Sin servicio registrado";
+        const posicion = posicionPersona(persona) || "Sin posición registrada";
+        const fecha = fechaBaja(persona) || "";
+        const foto = normalizarFoto(obtenerFoto(persona)) || avatarFallback(nombre);
 
         return `
-          <div class="baja-person">
-
+          <article class="baja-person">
             <img
               loading="lazy"
               decoding="async"
-              class="person-photo"
+              class="baja-photo"
               src="${escapeHtml(foto)}"
               alt="${escapeHtml(nombre)}"
               onerror="this.onerror=null;this.src='${avatarFallback(nombre)}';"
             >
-
-            <div class="person-info">
-
-              <div class="person-name">
-                ${escapeHtml(nombre)}
-              </div>
-
-              <div class="person-number">
-                No. empleado:
-                ${escapeHtml(numero)}
-              </div>
-
-              <div class="person-number">
-                ${escapeHtml(servicio)}
-              </div>
-
-              ${
-                fecha
-                  ? `
-                    <div class="person-number">
-                      Fecha baja:
-                      ${escapeHtml(fecha)}
-                    </div>
-                  `
-                  : ""
-              }
-
+            <div class="baja-info">
+              <div class="baja-name">${escapeHtml(nombre)}</div>
+              <div class="baja-line"><strong>No. empleado:</strong> ${escapeHtml(numero)}</div>
+              <div class="baja-line"><strong>Posición:</strong> ${escapeHtml(posicion)}</div>
+              <div class="baja-line"><strong>Último servicio:</strong> ${escapeHtml(servicio)}</div>
+              ${fecha ? `<div class="baja-line"><strong>Fecha de baja:</strong> ${escapeHtml(fecha)}</div>` : ""}
+              <span class="baja-status">BAJA</span>
             </div>
-
-          </div>
-        `;
-
-      })
-      .join("");
-
+          </article>`;
+      }).join("")}
+    </div>`;
 }
 
 
