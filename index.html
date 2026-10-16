@@ -1285,6 +1285,7 @@ const API_URL =
 ===================================================== */
 
 let servicios = [];
+let serviciosAsistencia = [];
 
 let personal = [];
 
@@ -1355,15 +1356,43 @@ function obtenerCampo(objeto, posibles){
 
 function nombrePersona(persona){
 
-  return obtenerCampo(
+  const nombreDirecto = obtenerCampo(
     persona,
     [
       "Nombre",
       "NOMBRE",
-      "NOMBRE COMPLETO"
+      "NOMBRE COMPLETO",
+      "NOMBRE DEL EMPLEADO",
+      "NOMBRE EMPLEADO",
+      "NOMBRE DEL ELEMENTO",
+      "NOMBRE ELEMENTO",
+      "NOMBRES",
+      "NOMBRE(S)"
     ]
   );
 
+  if(nombreDirecto) return nombreDirecto;
+
+  // Respaldo: localiza automáticamente la columna de nombre aunque
+  // el encabezado de ESTADO DE FUERZA tenga una variante distinta.
+  if(persona && typeof persona === "object"){
+    const claveNombre = Object.keys(persona).find(clave => {
+      const k = normalizarTexto(clave);
+      return k.includes("NOMBRE") &&
+             !k.includes("SERVICIO") &&
+             !k.includes("PROYECTO") &&
+             !k.includes("POSICION") &&
+             !k.includes("PUESTO");
+    });
+
+    if(claveNombre){
+      const valor = persona[claveNombre];
+      if(valor !== null && valor !== undefined && String(valor).trim() !== "")
+        return String(valor).trim();
+    }
+  }
+
+  return "";
 }
 
 
@@ -2872,10 +2901,23 @@ function cambiarModulo(modulo, boton){
   }
 
   if(modulo === 'asistencias'){
-    // El catálogo de servicios ya viene con ESTADO DE FUERZA.
-    // Con la nueva captura normalizada, la vista consulta sola al entrar y al cambiar filtros.
-    construirServiciosAsistencias();
-    inicializarAsistenciasAutomaticas();
+    // ASISTENCIAS usa su propio catálogo real desde HISTORIAL.
+    // Nunca toma servicios de ESTADO DE FUERZA.
+    if(!serviciosAsistencia.length){
+      const info = document.getElementById('asistenciasInfo');
+      if(info) info.textContent = 'Cargando servicios validados por TCR...';
+
+      solicitarModulo('asistenciacatalogo', function(data){
+        serviciosAsistencia = Array.isArray(data.serviciosAsistencia)
+          ? data.serviciosAsistencia
+          : [];
+        construirServiciosAsistencias();
+        inicializarAsistenciasAutomaticas();
+      });
+    }else{
+      construirServiciosAsistencias();
+      inicializarAsistenciasAutomaticas();
+    }
   }
 }
 
@@ -3525,44 +3567,32 @@ function construirServiciosAsistencias(){
   const actual = select.value;
   select.innerHTML = '<option value="">Seleccionar servicio / inmueble</option>';
 
-  const nombres = [];
-
-  servicios.forEach(servicio => {
-    const codigo = obtenerCampo(servicio,[
-      "CODIFICACIÓN DE UN FORMULARIO Y SERVICIO",
-      "CODIFICACION DE UN FORMULARIO Y SERVICIO"
-    ]);
-    const nombre = obtenerCampo(servicio,["SERVICIO"]);
-    const inmueble = obtenerCampo(servicio,["INMUEBLE","INMUEBLE SERVICIO"]);
-    const valor = String(codigo || nombre || "").trim();
-    const texto = inmueble ? valor + " / " + inmueble : valor;
-
-    if(valor){
-      nombres.push({valor, texto});
-    }
-  });
-
-  const unicos = [];
   const vistos = new Set();
-  nombres
-    .sort((a,b)=>normalizarTexto(a.texto).localeCompare(normalizarTexto(b.texto),"es"))
-    .forEach(item => {
-      const clave = normalizarTexto(item.valor);
-      if(!vistos.has(clave)){
-        vistos.add(clave);
-        unicos.push(item);
-      }
-    });
+  const catalogo = (Array.isArray(serviciosAsistencia) ? serviciosAsistencia : [])
+    .map(v => String(v || "").trim())
+    .filter(Boolean)
+    .filter(v => {
+      const clave = normalizarTexto(v);
+      if(!clave || vistos.has(clave)) return false;
+      vistos.add(clave);
+      return true;
+    })
+    .sort((a,b)=>normalizarTexto(a).localeCompare(normalizarTexto(b),"es"));
 
-  unicos.forEach(item => {
+  catalogo.forEach(nombre => {
     const option = document.createElement("option");
-    option.value = item.valor;
-    option.textContent = item.texto;
+    option.value = nombre;
+    option.textContent = nombre;
     select.appendChild(option);
   });
 
   if(actual && [...select.options].some(o => o.value === actual)){
     select.value = actual;
+  }
+
+  const info = document.getElementById('asistenciasInfo');
+  if(info && !catalogo.length){
+    info.textContent = 'No hay servicios disponibles en HISTORIAL';
   }
 }
 
