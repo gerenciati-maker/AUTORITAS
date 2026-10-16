@@ -1182,7 +1182,7 @@ body.sidebar-collapsed .sidebar{width:74px;flex-basis:74px;padding-left:10px;pad
         <h2>Asistencias</h2>
         <p>La información validada por TCR se consulta automáticamente por servicio e intervalo.</p>
       </div>
-      <div style="display:flex;align-items:center;gap:10px"><div id="asistenciasInfo" class="data-count">Preparando consulta...</div><button class="btn-clear" style="padding:8px 12px" onclick="cacheAsistencias.clear();consultarAsistencias(true)">↻ ACTUALIZAR</button></div>
+      <div style="display:flex;align-items:center;gap:10px"><div id="asistenciasInfo" class="data-count">Preparando consulta...</div><button class="btn-clear" style="padding:8px 12px" onclick="cacheAsistencias.clear();consultarAsistencias('forzar')">↻ ACTUALIZAR</button></div>
     </div>
 
     <div class="asistencias-filtros">
@@ -1299,6 +1299,7 @@ let datosAsistencias = null;
 let cacheAsistencias = new Map();
 let timerConsultaAsistencias = null;
 let consultaAsistenciasEnCurso = false;
+let secuenciaConsultaAsistencias = 0;
 
 
 /* =====================================================
@@ -3696,13 +3697,10 @@ function consultarAsistencias(automatica=false){
   if(!fechaInicio || !fechaFin){ return; }
   if(fechaInicio > fechaFin){ alert("La fecha inicial no puede ser mayor que la fecha final."); return; }
 
-  document.getElementById("matrizAsistencias").innerHTML = '<div class="loading">Cargando información validada por TCR...</div>';
-  document.getElementById("seguimientoFaltas").style.display = "none";
-  document.getElementById("asistenciaInfoServicio").style.display = "none";
-  document.getElementById("asistenciasInfo").textContent = "Cargando información validada por TCR...";
-
   const claveCache = [servicio,fechaInicio,fechaFin].join("|");
-  if(cacheAsistencias.has(claveCache)){
+  const forzarActualizacion = automatica === "forzar";
+
+  if(!forzarActualizacion && cacheAsistencias.has(claveCache)){
     datosAsistencias = cacheAsistencias.get(claveCache);
     const resultadoCache = datosAsistencias && datosAsistencias.asistencias ? datosAsistencias.asistencias : datosAsistencias;
     renderizarAsistencias(resultadoCache);
@@ -3710,31 +3708,60 @@ function consultarAsistencias(automatica=false){
     return;
   }
 
-  const callback = "callback_asistencias_" + Date.now();
+  document.getElementById("matrizAsistencias").innerHTML = '<div class="loading">Cargando información validada por TCR...</div>';
+  document.getElementById("seguimientoFaltas").style.display = "none";
+  document.getElementById("asistenciaInfoServicio").style.display = "none";
+  document.getElementById("asistenciasInfo").textContent = "Consultando HISTORIAL validado por TCR...";
+
+  consultaAsistenciasEnCurso = true;
+  const miSecuencia = ++secuenciaConsultaAsistencias;
+  const callback = "callback_asistencias_" + Date.now() + "_" + miSecuencia;
   let terminado = false;
   const inicioConsulta = performance.now();
-
-  const finalizarConsulta = () => { consultaAsistenciasEnCurso = false; };
-
   const script = document.createElement("script");
+
+  const limpiar = () => {
+    if(miSecuencia === secuenciaConsultaAsistencias) consultaAsistenciasEnCurso = false;
+    try{ delete window[callback]; }catch(e){}
+    try{ script.remove(); }catch(e){}
+  };
+
+  const timeout = setTimeout(function(){
+    if(terminado || miSecuencia !== secuenciaConsultaAsistencias) return;
+    terminado = true;
+    document.getElementById("asistenciasInfo").textContent = "La consulta tardó demasiado";
+    document.getElementById("matrizAsistencias").innerHTML = '<div class="empty">La consulta superó 90 segundos. Intenta reducir el periodo o actualizar nuevamente.</div>';
+    limpiar();
+  },90000);
 
   window[callback] = function(data){
     if(terminado) return;
     terminado = true;
+    clearTimeout(timeout);
+
+    // Si el usuario cambió servicio/fechas mientras esta petición viajaba,
+    // ignoramos la respuesta vieja para no pintar información de otra consulta.
+    if(miSecuencia !== secuenciaConsultaAsistencias){
+      limpiar();
+      return;
+    }
 
     try{
       datosAsistencias = data;
-      cacheAsistencias.set(claveCache, data);
       const resultado = data && data.asistencias ? data.asistencias : data;
 
-      if(!resultado || resultado.ok === false){
+      if(!resultado || resultado.ok === false || data?.ok === false){
         throw new Error(resultado?.error || data?.error || "No fue posible consultar las asistencias.");
       }
 
+      cacheAsistencias.set(claveCache, data);
       renderizarAsistencias(resultado);
 
-      const segundos = ((performance.now() - inicioConsulta) / 1000).toFixed(1);
-      document.getElementById("asistenciasInfo").title = "Consulta completada en " + segundos + " s";
+      const segundos = ((performance.now() - inicioConsulta) / 1000).toFixed(2);
+      const diagnostico = data?.diagnostico || resultado?.diagnostico || null;
+      document.getElementById("asistenciasInfo").title = diagnostico?.estrategia
+        ? "V3 " + diagnostico.estrategia + " · " + segundos + " s"
+        : "Consulta completada en " + segundos + " s";
 
     }catch(error){
       console.error("Error asistencias:", error);
@@ -3742,9 +3769,7 @@ function consultarAsistencias(automatica=false){
       document.getElementById("matrizAsistencias").innerHTML = `<div class="empty">Error al consultar las asistencias.<br><br>${escapeHtml(error.message)}</div>`;
     }
 
-    finalizarConsulta();
-    try{ delete window[callback]; }catch(e){}
-    try{ script.remove(); }catch(e){}
+    limpiar();
   };
 
   script.src = API_URL +
@@ -3752,16 +3777,18 @@ function consultarAsistencias(automatica=false){
     "&modulo=asistencias" +
     "&servicio=" + encodeURIComponent(servicio) +
     "&fechaInicio=" + encodeURIComponent(fechaInicio) +
-    "&fechaFin=" + encodeURIComponent(fechaFin);
+    "&fechaFin=" + encodeURIComponent(fechaFin) +
+    "&t=" + Date.now();
 
   script.onerror = function(){
     if(terminado) return;
     terminado = true;
-    finalizarConsulta();
-    document.getElementById("asistenciasInfo").textContent = "Error de conexión";
-    document.getElementById("matrizAsistencias").innerHTML = '<div class="empty">No fue posible conectar con el historial de asistencias.</div>';
-    try{ delete window[callback]; }catch(e){}
-    try{ script.remove(); }catch(e){}
+    clearTimeout(timeout);
+    if(miSecuencia === secuenciaConsultaAsistencias){
+      document.getElementById("asistenciasInfo").textContent = "Error de conexión";
+      document.getElementById("matrizAsistencias").innerHTML = '<div class="empty">No fue posible conectar con el historial de asistencias.</div>';
+    }
+    limpiar();
   };
 
   document.body.appendChild(script);
