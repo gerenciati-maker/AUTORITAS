@@ -763,6 +763,17 @@ body{
 @media(max-width:900px){.asistencias-filtros{grid-template-columns:1fr 1fr}.asistencias-info-grid{grid-template-columns:1fr}}
 @media(max-width:600px){.asistencias-filtros{grid-template-columns:1fr}}
 
+/* ===== ASISTENCIAS: VISTA OPERATIVA FINAL ===== */
+.asistencia-sin-registro{background:#f0f4f8!important;position:relative}.asistencia-sin-registro::after{content:'•';color:#c5d0dc;font-size:15px}
+.asistencia-separador td{height:8px!important;padding:0!important;background:#e6edf4!important;border-left:0!important;border-right:0!important}
+.codigo-click{cursor:pointer;text-decoration:underline;text-underline-offset:2px}
+.asistencia-subcard{margin-top:18px;border:1px solid #e1e7ee;border-radius:12px;overflow:hidden}.asistencia-subcard-title{padding:12px 15px;background:#f7f9fc;color:#17365d;font-weight:900;font-size:12px;text-transform:uppercase;letter-spacing:.3px}
+.asistencia-apoyos-table{width:100%;border-collapse:collapse}.asistencia-apoyos-table th,.asistencia-apoyos-table td{padding:9px 12px;border-bottom:1px solid #edf1f5;text-align:left;font-size:12px}.asistencia-apoyos-table th{background:#fafafa;color:#667085;font-size:10px;text-transform:uppercase}
+.asistencia-modal-bg{display:none;position:fixed;inset:0;background:rgba(5,24,43,.62);z-index:200;padding:25px;align-items:center;justify-content:center}.asistencia-modal{background:#fff;border-radius:16px;max-width:720px;width:100%;max-height:88vh;overflow:auto;padding:22px;box-shadow:0 20px 60px rgba(0,0,0,.25)}
+.asistencia-modal-head{display:flex;align-items:flex-start;justify-content:space-between;gap:20px}.asistencia-modal-head h3{margin:0;color:#17365d;font-size:18px}.asistencia-modal-close{border:0;background:#eef2f6;color:#344054;border-radius:8px;padding:8px 11px;font-weight:800;cursor:pointer}
+.asistencia-mes{border-top:1px solid #e5eaf0;padding-top:12px;margin-top:14px}.asistencia-fecha-falta{padding:8px 10px;border-radius:8px;background:#f7f8fa;margin:6px 0;font-size:12px}.asistencia-fecha-falta.seleccionada{border:1px solid #d92d20;background:#fff1f0}
+.asistencia-ap-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:14px}.asistencia-ap-dato{background:#f7f8fa;padding:11px;border-radius:9px;font-size:12px}.asistencia-ap-dato b{display:block;font-size:10px;color:#667085;margin-bottom:4px;text-transform:uppercase}@media(max-width:650px){.asistencia-ap-grid{grid-template-columns:1fr}}
+
 
 /* ===== CENTRO DE CONTROL: BARRA LATERAL ===== */
 :root{--sidebar:#082f55;--sidebar2:#0b416f;--sidebar-text:#dce9f7;--sidebar-muted:#9db6ce}
@@ -1210,6 +1221,9 @@ body.sidebar-collapsed .sidebar{width:74px;flex-basis:74px;padding-left:10px;pad
       Selecciona un servicio. La consulta se realizará automáticamente.
     </div>
 
+    <div id="apoyosPeriodo" class="asistencia-subcard" style="display:none;"><div class="asistencia-subcard-title">Apoyos del periodo</div><div id="apoyosPeriodoContenido"></div></div>
+    <div id="apoyosRealizados" class="asistencia-subcard" style="display:none;"><div class="asistencia-subcard-title">Apoyos realizados por el personal</div><div id="apoyosRealizadosContenido"></div></div>
+
     <div class="asistencias-leyenda">
       <div class="leyenda-item"><span class="codigo-asistencia codigo-F">F</span> Falta confirmada</div>
       <div class="leyenda-item"><span class="codigo-asistencia codigo-A">A</span> Asistencia correcta</div>
@@ -1221,6 +1235,8 @@ body.sidebar-collapsed .sidebar{width:74px;flex-basis:74px;padding-left:10px;pad
     </div>
   </div>
 </section>
+
+<div id="asistenciaModalBg" class="asistencia-modal-bg" onclick="if(event.target===this)cerrarModalAsistencia()"><div id="asistenciaModal" class="asistencia-modal"></div></div>
 
 <section id="protocolosView" class="module-view">
   <div class="control-hero">
@@ -3759,106 +3775,39 @@ function consultarAsistencias(automatica=false){
   document.body.appendChild(script);
 }
 
+function normalizarTextoAsistenciaV7(v){return String(v||"").trim().toUpperCase().normalize("NFD").replace(/[\u0300-\u036f]/g,"").replace(/\s+/g," ");}
 function renderizarAsistencias(data){
-  const fechas = Array.isArray(data.fechas) ? data.fechas : [];
-  const empleados = Array.isArray(data.empleados) ? data.empleados : [];
-  const faltas = Array.isArray(data.seguimientoFaltas) ? data.seguimientoFaltas : [];
-
-  document.getElementById("asistenciasInfo").textContent =
-    empleados.length + (empleados.length === 1 ? " empleado" : " empleados");
-
-  document.getElementById("asistenciaInfoServicio").style.display = "block";
-  document.getElementById("asistenciaServicioTexto").textContent =
-    data.servicio || data.inmueble || "";
-  document.getElementById("asistenciaFechaInicioTexto").textContent =
-    formatearFechaCorta(data.fechaInicio || data.fechaInicial);
-  document.getElementById("asistenciaFechaFinTexto").textContent =
-    formatearFechaCorta(data.fechaFin || data.fechaFinal);
-
-  renderizarSeguimientoFaltas(faltas);
-  renderizarMatrizAsistencias(fechas, empleados);
+  const fechas=Array.isArray(data.fechas)?data.fechas:[], todos=Array.isArray(data.empleados)?data.empleados:[], faltas=Array.isArray(data.seguimientoFaltas)?data.seguimientoFaltas:[], registros=Array.isArray(data.registros)?data.registros:[];
+  const servicio=String(data.servicio||data.inmueble||"").trim(), ns=normalizarTextoAsistenciaV7(servicio), propios=new Set();
+  registros.forEach(r=>{const n=String(r.numeroEmpleado||"").trim(), d=normalizarTextoAsistenciaV7(r.servicioDestino||r.servicio), o=normalizarTextoAsistenciaV7(r.servicioOrigen); if(!n)return; const mov=!!o&&o!==d; if((d===ns&&!mov)||(o===ns&&d!==ns)) propios.add(n);});
+  const empleados=todos.filter(e=>propios.has(String(e.numeroEmpleado||e.numero||e.noEmpleado||e.NO_EMPLEADO||"").trim()));
+  document.getElementById("asistenciasInfo").textContent=empleados.length+(empleados.length===1?" empleado":" empleados");
+  document.getElementById("asistenciaInfoServicio").style.display="block"; document.getElementById("asistenciaServicioTexto").textContent=servicio; document.getElementById("asistenciaFechaInicioTexto").textContent=formatearFechaCorta(data.fechaInicio||data.fechaInicial); document.getElementById("asistenciaFechaFinTexto").textContent=formatearFechaCorta(data.fechaFin||data.fechaFinal);
+  renderizarSeguimientoFaltas(faltas); renderizarMatrizAsistencias(fechas,empleados); renderizarApoyosAsistenciasV7(data,servicio);
 }
-
 function renderizarSeguimientoFaltas(faltas){
-  const contenedor = document.getElementById("seguimientoFaltas");
-  const contenido = document.getElementById("faltasContenido");
-
-  if(!faltas.length){
-    contenedor.style.display = "block";
-    contenido.innerHTML =
-      '<div style="padding:14px;color:#667085;font-size:12px;">No se encontraron faltas confirmadas en el periodo.</div>';
-    return;
-  }
-
-  let html = '<table class="faltas-table"><thead><tr><th>No. empleado</th><th>Nombre del guardia</th><th>Faltas confirmadas</th></tr></thead><tbody>';
-
-  faltas.forEach(falta => {
-    html += `<tr>
-      <td>${escapeHtml(falta.numeroEmpleado || falta.numero || "")}</td>
-      <td>${escapeHtml(falta.nombre || falta.NOMBRE || "")}</td>
-      <td class="faltas-numero">${escapeHtml(falta.faltas || 0)}</td>
-    </tr>`;
-  });
-
-  html += '</tbody></table>';
-  contenido.innerHTML = html;
-  contenedor.style.display = "block";
+ const c=document.getElementById("seguimientoFaltas"),x=document.getElementById("faltasContenido"); c.style.display="block";
+ if(!faltas.length){x.innerHTML='<div style="padding:14px;color:#667085;font-size:12px;">No se encontraron faltas confirmadas en el periodo.</div>';return;}
+ let h='<table class="faltas-table"><thead><tr><th>No. empleado</th><th>Nombre del guardia</th><th>Faltas confirmadas</th></tr></thead><tbody>';
+ faltas.forEach(f=>{const u=[...new Set(Array.isArray(f.fechas)?f.fechas:[])];h+=`<tr><td>${escapeHtml(f.numeroEmpleado||f.numero||"")}</td><td>${escapeHtml(f.nombre||f.NOMBRE||"")}</td><td class="faltas-numero">${escapeHtml(u.length||f.faltas||0)}</td></tr>`}); x.innerHTML=h+'</tbody></table>';
 }
-
-function renderizarMatrizAsistencias(fechas, empleados){
-  const contenedor = document.getElementById("matrizAsistencias");
-
-  if(!empleados.length){
-    contenedor.innerHTML = '<div class="empty">No se encontraron registros para el servicio y periodo seleccionado.</div>';
-    return;
-  }
-
-  let html = '<div class="asistencia-table-wrap"><table class="asistencia-table"><thead><tr><th>Nombre del empleado</th>';
-
-  fechas.forEach(fecha => {
-    html += `<th>${nombreDiaCorto(fecha)}<br>${formatearFechaCorta(fecha)}</th>`;
-  });
-
-  html += '</tr></thead><tbody>';
-
-  empleados.forEach(empleado => {
-    const nombre = empleado.nombre || empleado.NOMBRE || empleado.nombreEmpleado || empleado.nombreCompleto || "SIN NOMBRE";
-    const numero = empleado.numeroEmpleado || empleado.numero || empleado.noEmpleado || empleado.NO_EMPLEADO || "";
-    const fuentes = [empleado.dias, empleado.asistencias, empleado.asistencia, empleado.registros, empleado.historial];
-    let registros = {};
-
-    for(const fuente of fuentes){
-      if(fuente && typeof fuente === "object" && !Array.isArray(fuente)){
-        registros = fuente;
-        break;
-      }
-    }
-
-    html += `<tr><td><div class="asistencia-nombre">${escapeHtml(nombre)}</div><div class="asistencia-numero">No. empleado: ${escapeHtml(numero)}</div></td>`;
-
-    fechas.forEach(fecha => {
-      let registro = registros[fecha];
-
-      if(registro === undefined){
-        const clave = Object.keys(registros).find(k => normalizarFechaAsistencia(k) === normalizarFechaAsistencia(fecha));
-        registro = clave ? registros[clave] : null;
-      }
-
-      const codigo = obtenerCodigoAsistencia(registro);
-      const clase = codigo ? "codigo-" + codigo : "";
-      const titulo = typeof registro === "object" && registro
-        ? (registro.estatus || registro.estado || registro.status || codigo || "Sin registro")
-        : (codigo || "Sin registro");
-
-      html += `<td><span class="codigo-asistencia ${clase}" title="${escapeHtml(titulo)}">${escapeHtml(codigo || "—")}</span></td>`;
-    });
-
-    html += '</tr>';
-  });
-
-  html += '</tbody></table></div>';
-  contenedor.innerHTML = html;
+function firmaPatronV7(e,fechas){const d=e.dias||{};return fechas.map(f=>d[f]&&d[f].codigo?d[f].codigo:"-").join("|");}
+function renderizarMatrizAsistencias(fechas,empleados){
+ const c=document.getElementById("matrizAsistencias"); if(!empleados.length){c.innerHTML='<div class="empty">No se encontraron registros propios del servicio para el periodo seleccionado.</div>';return;}
+ const gm=new Map(); empleados.forEach(e=>{const k=firmaPatronV7(e,fechas);if(!gm.has(k))gm.set(k,[]);gm.get(k).push(e)}); const grupos=[...gm.values()].sort((a,b)=>b.length-a.length).map(g=>g.sort((a,b)=>normalizarTextoAsistenciaV7(a.nombre).localeCompare(normalizarTextoAsistenciaV7(b.nombre),"es")));
+ let h='<div class="asistencia-table-wrap"><table class="asistencia-table"><thead><tr><th>Nombre del empleado</th>'+fechas.map(f=>`<th>${nombreDiaCorto(f)}<br>${formatearFechaCorta(f)}</th>`).join('')+'</tr></thead><tbody>';
+ grupos.forEach((g,gi)=>{if(gi)h+=`<tr class="asistencia-separador"><td colspan="${fechas.length+1}"></td></tr>`;g.forEach(e=>{const nombre=e.nombre||e.NOMBRE||"SIN NOMBRE",numero=e.numeroEmpleado||e.numero||e.noEmpleado||e.NO_EMPLEADO||"",dias=e.dias||{};h+=`<tr><td><div class="asistencia-nombre">${escapeHtml(nombre)}</div><div class="asistencia-numero">No. empleado: ${escapeHtml(numero)}</div></td>`;fechas.forEach(f=>{let r=dias[f];if(r===undefined){const k=Object.keys(dias).find(k=>normalizarFechaAsistencia(k)===normalizarFechaAsistencia(f));r=k?dias[k]:null}const cod=obtenerCodigoAsistencia(r);if(!cod){h+='<td class="asistencia-sin-registro" title="Sin registro en HISTORIAL"></td>';return;}const cl='codigo-'+cod;if(cod==='F')h+=`<td><span class="codigo-asistencia ${cl} codigo-click" onclick="verHistorialFaltaV7('${escapeHtml(String(numero))}','${escapeHtml(f)}','${escapeHtml(nombre)}')">F</span></td>`;else if(cod==='AP')h+=`<td><span class="codigo-asistencia ${cl} codigo-click" onclick="verDetalleApoyoV7('${escapeHtml(String(numero))}','${escapeHtml(f)}')">AP</span></td>`;else h+=`<td><span class="codigo-asistencia ${cl}">${escapeHtml(cod)}</span></td>`});h+='</tr>';})}); c.innerHTML=h+'</tbody></table></div>';
 }
+function registrosApoyoV7(data){return (Array.isArray(data.registros)?data.registros:[]).filter(r=>{const o=normalizarTextoAsistenciaV7(r.servicioOrigen),d=normalizarTextoAsistenciaV7(r.servicioDestino||r.servicio);return !!o&&o!==d;});}
+function unicosApoyoV7(a){const m=new Map();a.forEach(r=>{const k=[r.fecha,String(r.numeroEmpleado||''),normalizarTextoAsistenciaV7(r.servicioOrigen),normalizarTextoAsistenciaV7(r.servicioDestino||r.servicio)].join('|');if(!m.has(k))m.set(k,r)});return [...m.values()];}
+function renderizarApoyosAsistenciasV7(data,servicio){const ns=normalizarTextoAsistenciaV7(servicio),r=registrosApoyoV7(data);pintarApoyosV7('apoyosPeriodo','apoyosPeriodoContenido',unicosApoyoV7(r.filter(x=>normalizarTextoAsistenciaV7(x.servicioDestino||x.servicio)===ns&&normalizarTextoAsistenciaV7(x.servicioOrigen)!==ns)),true);pintarApoyosV7('apoyosRealizados','apoyosRealizadosContenido',unicosApoyoV7(r.filter(x=>normalizarTextoAsistenciaV7(x.servicioOrigen)===ns&&normalizarTextoAsistenciaV7(x.servicioDestino||x.servicio)!==ns)),false);}
+function pintarApoyosV7(cajaId,contId,a,rec){const caja=document.getElementById(cajaId),c=document.getElementById(contId);caja.style.display='block';if(!a.length){c.innerHTML='<div style="padding:14px;color:#667085;font-size:12px;">Sin apoyos en el periodo.</div>';return;}let h='<div style="overflow:auto"><table class="asistencia-apoyos-table"><thead><tr><th>Fecha</th><th>No.</th><th>Nombre</th><th>'+(rec?'Servicio de origen':'Apoyó en')+'</th></tr></thead><tbody>';a.forEach(r=>{const s=rec?(r.servicioOrigen||'No indicado'):(r.servicioDestino||r.servicio||'No indicado');h+=`<tr><td>${escapeHtml(formatearFechaCorta(r.fecha))}</td><td>${escapeHtml(r.numeroEmpleado||'')}</td><td>${escapeHtml(r.nombre||'')}</td><td>${escapeHtml(s)}</td></tr>`});c.innerHTML=h+'</tbody></table></div>';}
+function jsonpAsistenciaV7(params){return new Promise((res,rej)=>{const cb='cbh_'+Date.now()+'_'+Math.random().toString(36).slice(2),sc=document.createElement('script');const tm=setTimeout(()=>{delete window[cb];sc.remove();rej(new Error('La consulta tardó demasiado.'))},45000);window[cb]=d=>{clearTimeout(tm);delete window[cb];sc.remove();res(d)};params.callback=cb;sc.src=API_URL+'?'+new URLSearchParams(params).toString();sc.onerror=()=>{clearTimeout(tm);delete window[cb];sc.remove();rej(new Error('No fue posible conectar con la API.'))};document.body.appendChild(sc)});}
+function abrirModalAsistencia(h){document.getElementById('asistenciaModal').innerHTML=h;document.getElementById('asistenciaModalBg').style.display='flex'}function cerrarModalAsistencia(){document.getElementById('asistenciaModalBg').style.display='none'}
+function mesNombreV7(n){return ['ENERO','FEBRERO','MARZO','ABRIL','MAYO','JUNIO','JULIO','AGOSTO','SEPTIEMBRE','OCTUBRE','NOVIEMBRE','DICIEMBRE'][n]}function isoV7(d){return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0')}
+async function verHistorialFaltaV7(numero,fecha,nombre){const d=new Date(fecha+'T12:00:00'),ini=new Date(d.getFullYear(),d.getMonth()-1,1),fin=new Date(d.getFullYear(),d.getMonth()+1,0);abrirModalAsistencia('<div class="asistencia-modal-head"><h3>Historial de faltas</h3><button class="asistencia-modal-close" onclick="cerrarModalAsistencia()">Cerrar</button></div><div class="loading">Consultando…</div>');try{const rr=await jsonpAsistenciaV7({modulo:'historialfaltas',numeroEmpleado:numero,fechaInicio:isoV7(ini),fechaFin:isoV7(fin)});if(!rr||rr.ok===false)throw new Error(rr?.error||'Error');const hi=rr.historialFaltas||{},m=new Map();(hi.registros||[]).forEach(x=>{if(x.fecha&&!m.has(x.fecha))m.set(x.fecha,x)});let h=`<div style="margin-top:14px"><strong>${escapeHtml(hi.nombre||nombre)}</strong><br><span style="color:#667085;font-size:12px">No. ${escapeHtml(numero)}</span></div><p style="font-size:12px"><b>Falta seleccionada:</b> ${escapeHtml(formatearFechaCorta(fecha))}</p>`;[new Date(d.getFullYear(),d.getMonth(),1),new Date(d.getFullYear(),d.getMonth()-1,1)].forEach(mm=>{const ym=mm.getFullYear()+'-'+String(mm.getMonth()+1).padStart(2,'0'),a=[...m.values()].filter(x=>String(x.fecha).startsWith(ym)).sort((a,b)=>a.fecha.localeCompare(b.fecha));h+=`<div class="asistencia-mes"><strong>${mesNombreV7(mm.getMonth())} ${mm.getFullYear()}</strong> · ${a.length} falta(s)`+(a.length?a.map(x=>`<div class="asistencia-fecha-falta ${x.fecha===fecha?'seleccionada':''}">${escapeHtml(formatearFechaCorta(x.fecha))}${x.servicio?' · '+escapeHtml(x.servicio):''}</div>`).join(''):'<div style="padding:8px 0;color:#667085;font-size:12px">Sin faltas.</div>')+'</div>'});abrirModalAsistencia('<div class="asistencia-modal-head"><h3>Historial de faltas</h3><button class="asistencia-modal-close" onclick="cerrarModalAsistencia()">Cerrar</button></div>'+h)}catch(e){abrirModalAsistencia('<div class="asistencia-modal-head"><h3>Historial de faltas</h3><button class="asistencia-modal-close" onclick="cerrarModalAsistencia()">Cerrar</button></div><div style="color:#b42318;padding-top:14px">'+escapeHtml(e.message)+'</div>')}}
+function verDetalleApoyoV7(numero,fecha){const data=datosAsistencias&&datosAsistencias.asistencias?datosAsistencias.asistencias:datosAsistencias,r=registrosApoyoV7(data||{}).find(x=>String(x.numeroEmpleado||'')===String(numero)&&x.fecha===fecha);if(!r){abrirModalAsistencia('<div class="asistencia-modal-head"><h3>Apoyo realizado</h3><button class="asistencia-modal-close" onclick="cerrarModalAsistencia()">Cerrar</button></div><p>No se encontró el detalle.</p>');return;}const dest=r.servicioDestino||r.servicio||'',ori=r.servicioOrigen||'No indicado';abrirModalAsistencia(`<div class="asistencia-modal-head"><h3>Apoyo realizado</h3><button class="asistencia-modal-close" onclick="cerrarModalAsistencia()">Cerrar</button></div><div class="asistencia-ap-grid"><div class="asistencia-ap-dato"><b>Elemento</b>${escapeHtml(r.nombre||'')} · No. ${escapeHtml(r.numeroEmpleado||'')}</div><div class="asistencia-ap-dato"><b>Fecha</b>${escapeHtml(formatearFechaCorta(r.fecha))}</div><div class="asistencia-ap-dato"><b>Servicio de origen</b>${escapeHtml(ori)}</div><div class="asistencia-ap-dato"><b>Apoyó en</b>${escapeHtml(dest)}</div></div>${dest?`<div style="margin-top:15px"><button class="btn-clear" onclick="irDestinoV7('${escapeHtml(dest)}')">Ver asistencia en servicio destino</button></div>`:''}`)}
+function irDestinoV7(dest){const s=document.getElementById('asistenciaServicio');let ok=false;[...s.options].forEach(o=>{if(normalizarTextoAsistenciaV7(o.value)===normalizarTextoAsistenciaV7(dest)){s.value=o.value;ok=true}});cerrarModalAsistencia();if(ok){cacheAsistencias.clear();consultarAsistencias(true)}else alert('El servicio destino no aparece en el catálogo de asistencias.');}
 
 function formatearFechaCorta(fecha){
   if(!fecha) return "";
