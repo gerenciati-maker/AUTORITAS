@@ -496,10 +496,6 @@ body{
   color:#4338ca;
 }
 
-.person:has(.person-incidencia){
-  border-left:4px solid #F59E0B;
-}
-
 .person-incidencia{
   margin-top:8px;
   padding:7px 8px;
@@ -2974,17 +2970,13 @@ function crearPersona(persona){
         </span>
 
         ${(() => {
-          const historial = incidenciasDePersona(persona);
           const incidencia = incidenciaActual;
-          if(!historial.length) return "";
-          if(!incidencia){
-            return `<button type="button" class="person-incidencia person-incidencia-history" onclick='event.stopPropagation(); abrirHistorialIncidencias(${JSON.stringify(String(numero))})'>HISTORIAL DE INCIDENCIAS<small>${historial.length} registro${historial.length === 1 ? "" : "s"} · consultar</small></button>`;
-          }
+          if(!incidencia) return "";
           const tipo = tipoIncidencia(incidencia) || "INCIDENCIA";
           const inicio = formatearFechaIncidencia(fechaIncidencia(incidencia, true));
           const fin = formatearFechaIncidencia(fechaIncidencia(incidencia, false));
           const rango = fin ? `${inicio} → ${fin}` : `${inicio} → VIGENTE`;
-          return `<button type="button" class="person-incidencia person-incidencia-history" onclick='event.stopPropagation(); abrirHistorialIncidencias(${JSON.stringify(String(numero))})'>${escapeHtml(tipo)}<small>${escapeHtml(rango)} · ver historial</small></button>`;
+          return `<div class="person-incidencia">${escapeHtml(tipo)}<small>${escapeHtml(rango)}</small></div>`;
         })()}
 
       </div>
