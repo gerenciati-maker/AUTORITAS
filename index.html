@@ -496,6 +496,28 @@ body{
   color:#4338ca;
 }
 
+.person:has(.person-incidencia){
+  border-left:4px solid #F59E0B;
+}
+
+.person-incidencia{
+  margin-top:8px;
+  padding:7px 8px;
+  border-radius:9px;
+  background:#FFF7E6;
+  color:#B45309;
+  font-size:10px;
+  font-weight:800;
+}
+
+.person-incidencia small{
+  display:block;
+  margin-top:3px;
+  font-size:9px;
+  font-weight:600;
+  color:#92400E;
+}
+
 /* =========================
    BAJAS
 ========================= */
@@ -1313,6 +1335,7 @@ let servicios = [];
 let serviciosAsistencia = [];
 
 let personal = [];
+let incidencias = [];
 
 let directorioServicios = [];
 
@@ -1733,6 +1756,7 @@ function cargarDatos(){
 
     servicios = Array.isArray(data.servicios) ? data.servicios : [];
     personal = Array.isArray(data.personal) ? data.personal : [];
+    incidencias = Array.isArray(data.incidencias) ? data.incidencias : [];
 
     construirFiltros();
     actualizarTodo();
@@ -2567,6 +2591,94 @@ function renderizarOrganigrama(){
 
 
 /* =====================================================
+   INCIDENCIAS
+===================================================== */
+
+function campoIncidencia(incidencia, nombres){
+  return obtenerCampo(incidencia, nombres);
+}
+
+function numeroEmpleadoIncidencia(incidencia){
+  return campoIncidencia(incidencia, [
+    "NO. EMPLEADO",
+    "NO EMPLEADO",
+    "NO. DE EMPLEADO",
+    "NUMERO EMPLEADO",
+    "NÚMERO EMPLEADO"
+  ]);
+}
+
+function personaIncidencia(incidencia){
+  return campoIncidencia(incidencia, ["PERSONA", "NOMBRE"]);
+}
+
+function tipoIncidencia(incidencia){
+  return normalizarTexto(campoIncidencia(incidencia, ["TIPO", "INCIDENCIA"]));
+}
+
+function fechaIncidencia(incidencia, inicio=true){
+  return campoIncidencia(incidencia, inicio
+    ? ["INICIO", "FECHA INICIO"]
+    : ["FIN", "FECHA FIN"]
+  );
+}
+
+function convertirFechaIncidencia(valor){
+  if(!valor) return null;
+  if(valor instanceof Date && !isNaN(valor)) return valor;
+  const texto = String(valor).trim();
+  if(!texto) return null;
+
+  let m = texto.match(/^(\d{4})[-\/]([01]?\d)[-\/]([0-3]?\d)/);
+  if(m) return new Date(Number(m[1]), Number(m[2])-1, Number(m[3]));
+
+  m = texto.match(/^([0-3]?\d)[-\/]([01]?\d)[-\/](\d{4})/);
+  if(m) return new Date(Number(m[3]), Number(m[2])-1, Number(m[1]));
+
+  const d = new Date(texto);
+  return isNaN(d) ? null : d;
+}
+
+function inicioDiaIncidencia(d){
+  return new Date(d.getFullYear(), d.getMonth(), d.getDate());
+}
+
+function incidenciaVigente(incidencia){
+  const inicio = convertirFechaIncidencia(fechaIncidencia(incidencia, true));
+  const fin = convertirFechaIncidencia(fechaIncidencia(incidencia, false));
+  if(!inicio) return false;
+
+  const hoy = inicioDiaIncidencia(new Date());
+  const desde = inicioDiaIncidencia(inicio);
+  const hasta = fin ? inicioDiaIncidencia(fin) : null;
+
+  return hoy >= desde && (!hasta || hoy <= hasta);
+}
+
+function incidenciaDePersona(persona){
+  const numero = normalizarTexto(numeroEmpleado(persona));
+  const nombre = normalizarTexto(nombrePersona(persona));
+
+  return incidencias.find(incidencia => {
+    if(!incidenciaVigente(incidencia)) return false;
+
+    const numeroInc = normalizarTexto(numeroEmpleadoIncidencia(incidencia));
+    const nombreInc = normalizarTexto(personaIncidencia(incidencia));
+
+    if(numero && numeroInc) return numero === numeroInc;
+    return Boolean(nombre && nombreInc && nombre === nombreInc);
+  }) || null;
+}
+
+function formatearFechaIncidencia(valor){
+  const d = convertirFechaIncidencia(valor);
+  if(!d) return "";
+  return String(d.getDate()).padStart(2,"0") + "/" +
+    String(d.getMonth()+1).padStart(2,"0") + "/" +
+    d.getFullYear();
+}
+
+/* =====================================================
    TARJETA DE PERSONA
 ===================================================== */
 
@@ -2638,6 +2750,16 @@ function crearPersona(persona){
         }">
           ${escapeHtml(estatus)}
         </span>
+
+        ${(() => {
+          const incidencia = incidenciaDePersona(persona);
+          if(!incidencia) return "";
+          const tipo = tipoIncidencia(incidencia) || "INCIDENCIA";
+          const inicio = formatearFechaIncidencia(fechaIncidencia(incidencia, true));
+          const fin = formatearFechaIncidencia(fechaIncidencia(incidencia, false));
+          const rango = fin ? `${inicio} → ${fin}` : `${inicio} → VIGENTE`;
+          return `<div class="person-incidencia">${escapeHtml(tipo)}<small>${escapeHtml(rango)}</small></div>`;
+        })()}
 
       </div>
 
