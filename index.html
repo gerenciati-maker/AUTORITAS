@@ -496,13 +496,37 @@ body{
   color:#4338ca;
 }
 
-/* El historial ya no genera color: el naranja SOLO depende de una incidencia vigente. */
-.person-incidencia{
-  display:none;
+.person:has(.person-incidencia){
+  border-left:4px solid #F59E0B;
 }
 
+.person-incidencia{
+  margin-top:8px;
+  padding:7px 8px;
+  border-radius:9px;
+  background:#FFF7E6;
+  color:#B45309;
+  font-size:10px;
+  font-weight:800;
+}
+
+.person-incidencia small{
+  display:block;
+  margin-top:3px;
+  font-size:9px;
+  font-weight:600;
+  color:#92400E;
+}
+
+
 .person-incidencia-history{
-  display:none;
+  width:100%;
+  text-align:left;
+  cursor:pointer;
+  font:inherit;
+}
+.person-incidencia-history:hover{
+  filter:brightness(.97);
 }
 .incidencias-modal{position:fixed;inset:0;z-index:9999;display:flex;align-items:center;justify-content:center;padding:20px}
 .incidencias-modal-backdrop{position:absolute;inset:0;background:rgba(15,23,42,.55)}
@@ -2786,9 +2810,19 @@ function registrosCambioServicioDePersona(numeroEmpleadoPersona){
 
 function abrirHistorialPersona(numeroEmpleadoPersona){
   const numero = normalizarTexto(numeroEmpleadoPersona);
+
+  // El historial debe funcionar también para elementos en BAJA.
+  // Primero identifica la persona desde ESTADO DE FUERZA y usa su nombre
+  // como respaldo cuando algún registro histórico no tenga el No. de Empleado
+  // exactamente con el mismo encabezado/formato.
+  const personaActual = personal.find(p => normalizarTexto(numeroEmpleado(p)) === numero);
+  const nombrePersonaActual = personaActual ? normalizarTexto(nombrePersona(personaActual)) : "";
+
   const registrosInc = incidencias.filter(incidencia => {
     const noInc = normalizarTexto(numeroEmpleadoIncidencia(incidencia));
-    return numero && noInc && numero === noInc;
+    const nombreInc = normalizarTexto(personaIncidencia(incidencia));
+    return (numero && noInc && numero === noInc) ||
+           (nombrePersonaActual && nombreInc && nombrePersonaActual === nombreInc);
   }).sort((a,b) => {
     const da = convertirFechaIncidencia(fechaIncidencia(a, true));
     const db = convertirFechaIncidencia(fechaIncidencia(b, true));
@@ -2796,7 +2830,17 @@ function abrirHistorialPersona(numeroEmpleadoPersona){
   });
 
   const registrosSrv = registrosCambioServicioDePersona(numeroEmpleadoPersona);
-  const persona = personal.find(p => normalizarTexto(numeroEmpleado(p)) === numero);
+  const registrosSrvPorNombre = nombrePersonaActual ? cambiosServicio.filter(registro => {
+    const nombreSrv = normalizarTexto(nombreCambioServicio(registro));
+    return nombreSrv && nombrePersonaActual === nombreSrv;
+  }).sort((a,b) => {
+    const da = fechaCambioServicioDate(fechaCambioServicio(a,true));
+    const db = fechaCambioServicioDate(fechaCambioServicio(b,true));
+    return (da ? da.getTime() : 0) - (db ? db.getTime() : 0);
+  }) : [];
+
+  const registrosSrvFinales = registrosSrv.length ? registrosSrv : registrosSrvPorNombre;
+  const persona = personaActual;
   const nombre = persona ? (nombrePersona(persona) || "PERSONA") :
     (registrosInc[0] ? personaIncidencia(registrosInc[0]) :
     (registrosSrv[0] ? nombreCambioServicio(registrosSrv[0]) : "PERSONA"));
@@ -2817,7 +2861,7 @@ function abrirHistorialPersona(numeroEmpleadoPersona){
     </div>`;
   }).join("") : `<div class="historial-vacio">No hay incidencias registradas.</div>`;
 
-  const filasSrv = registrosSrv.length ? registrosSrv.map((registro, index) => {
+  const filasSrv = registrosSrvFinales.length ? registrosSrvFinales.map((registro, index) => {
     const servicio = servicioCambioServicio(registro) || "SERVICIO NO REGISTRADO";
     const inicio = formatearFechaCambioServicio(fechaCambioServicio(registro,true));
     const fin = formatearFechaCambioServicio(fechaCambioServicio(registro,false));
@@ -2929,13 +2973,19 @@ function crearPersona(persona){
           ${escapeHtml(estatus)}
         </span>
 
-        ${incidenciaActual ? (() => {
-          const tipo = tipoIncidencia(incidenciaActual) || "INCIDENCIA";
-          const inicio = formatearFechaIncidencia(fechaIncidencia(incidenciaActual, true));
-          const fin = formatearFechaIncidencia(fechaIncidencia(incidenciaActual, false));
+        ${(() => {
+          const historial = incidenciasDePersona(persona);
+          const incidencia = incidenciaActual;
+          if(!historial.length) return "";
+          if(!incidencia){
+            return `<button type="button" class="person-incidencia person-incidencia-history" onclick='event.stopPropagation(); abrirHistorialIncidencias(${JSON.stringify(String(numero))})'>HISTORIAL DE INCIDENCIAS<small>${historial.length} registro${historial.length === 1 ? "" : "s"} · consultar</small></button>`;
+          }
+          const tipo = tipoIncidencia(incidencia) || "INCIDENCIA";
+          const inicio = formatearFechaIncidencia(fechaIncidencia(incidencia, true));
+          const fin = formatearFechaIncidencia(fechaIncidencia(incidencia, false));
           const rango = fin ? `${inicio} → ${fin}` : `${inicio} → VIGENTE`;
-          return `<div class="person-incidencia">${escapeHtml(tipo)}<small>${escapeHtml(rango)}</small></div>`;
-        })() : ""}
+          return `<button type="button" class="person-incidencia person-incidencia-history" onclick='event.stopPropagation(); abrirHistorialIncidencias(${JSON.stringify(String(numero))})'>${escapeHtml(tipo)}<small>${escapeHtml(rango)} · ver historial</small></button>`;
+        })()}
 
       </div>
 
