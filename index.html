@@ -486,6 +486,16 @@ body{
   font-weight:bold;
 }
 
+.person-status.inactivo{
+  background:#fff4e5;
+  color:#b54708;
+}
+
+.person-status.vacante{
+  background:#eef2ff;
+  color:#4338ca;
+}
+
 /* =========================
    BAJAS
 ========================= */
@@ -1543,13 +1553,41 @@ function esActivo(persona){
 }
 
 
-function esBaja(persona){
+function esInactivo(persona){
 
   return (
     normalizarTexto(
       estatusPersona(persona)
-    ) === "BAJA"
+    ) === "INACTIVO"
   );
+
+}
+
+
+function esVacante(persona){
+
+  return (
+    normalizarTexto(
+      estatusPersona(persona)
+    ) === "VACANTE"
+  );
+
+}
+
+
+function esBaja(persona){
+
+  const fecha =
+    normalizarTexto(
+      fechaBaja(persona)
+    );
+
+  const estatus =
+    normalizarTexto(
+      estatusPersona(persona)
+    );
+
+  return Boolean(fecha) || estatus === "BAJA";
 
 }
 
@@ -1840,7 +1878,11 @@ function valoresUnicos(lista){
 function construirFiltros(){
 
   const activos =
-    personal.filter(esActivo);
+    personal.filter(persona =>
+      esActivo(persona) ||
+      esInactivo(persona) ||
+      esVacante(persona)
+    );
 
 
   const areas =
@@ -1927,7 +1969,11 @@ function obtenerPersonalFiltrado(){
 
   return personal.filter(persona => {
 
-    if(!esActivo(persona)){
+    if(
+      !esActivo(persona) &&
+      !esInactivo(persona) &&
+      !esVacante(persona)
+    ){
       return false;
     }
 
@@ -2137,8 +2183,8 @@ function renderizarOrganigrama(){
     activos.length +
     (
       activos.length === 1
-        ? " persona activa"
-        : " personas activas"
+        ? " registro"
+        : " registros"
     );
 
 
@@ -2526,9 +2572,16 @@ function renderizarOrganigrama(){
 
 function crearPersona(persona){
 
+  const estatus =
+    normalizarTexto(
+      estatusPersona(persona)
+    ) ||
+    "ACTIVO";
+
+
   const nombre =
     nombrePersona(persona) ||
-    "SIN NOMBRE";
+    (estatus === "VACANTE" ? "VACANTE" : "SIN NOMBRE");
 
 
   const numero =
@@ -2576,8 +2629,14 @@ function crearPersona(persona){
 
         <div class="person-position">${escapeHtml(posicionPersona(persona) || "SIN POSICIÓN")}</div>
 
-        <span class="person-status">
-          ACTIVO
+        <span class="person-status ${
+          estatus === "INACTIVO"
+            ? "inactivo"
+            : estatus === "VACANTE"
+              ? "vacante"
+              : ""
+        }">
+          ${escapeHtml(estatus)}
         </span>
 
       </div>
