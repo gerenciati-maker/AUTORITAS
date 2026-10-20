@@ -922,7 +922,7 @@ body.sidebar-collapsed .sidebar{width:74px;flex-basis:74px;padding-left:10px;pad
 
 /* INCIDENCIA VIGENTE: foto normal + bloque inferior ámbar */
 .person.con-incidencia{
-  border-left:0;
+  border-left:4px solid #F59E0B;
 }
 .person.con-incidencia .person-info{
   background:#F59E0B;
@@ -2836,6 +2836,7 @@ function crearPersona(persona){
         class="person-photo"
         src="${escapeHtml(imagen)}"
         alt="${escapeHtml(nombre)}"
+        ${incidenciasDePersona(persona).length ? `onclick='event.stopPropagation(); abrirHistorialIncidencias(${JSON.stringify(String(numero))})' title="Consultar historial de incidencias"` : ""}
         onerror="this.onerror=null;this.src='${avatarFallback(nombre)}';"
       >
 
@@ -2863,17 +2864,13 @@ function crearPersona(persona){
         </span>
 
         ${(() => {
-          const historial = incidenciasDePersona(persona);
           const incidencia = incidenciaActual;
-          if(!historial.length) return "";
-          if(!incidencia){
-            return `<button type="button" class="person-incidencia person-incidencia-history" onclick='event.stopPropagation(); abrirHistorialIncidencias(${JSON.stringify(String(numero))})'>HISTORIAL DE INCIDENCIAS<small>${historial.length} registro${historial.length === 1 ? "" : "s"} · consultar</small></button>`;
-          }
+          if(!incidencia) return "";
           const tipo = tipoIncidencia(incidencia) || "INCIDENCIA";
           const inicio = formatearFechaIncidencia(fechaIncidencia(incidencia, true));
           const fin = formatearFechaIncidencia(fechaIncidencia(incidencia, false));
           const rango = fin ? `${inicio} → ${fin}` : `${inicio} → VIGENTE`;
-          return `<button type="button" class="person-incidencia person-incidencia-history" onclick='event.stopPropagation(); abrirHistorialIncidencias(${JSON.stringify(String(numero))})'>${escapeHtml(tipo)}<small>${escapeHtml(rango)} · ver historial</small></button>`;
+          return `<div class="person-incidencia">${escapeHtml(tipo)}<small>${escapeHtml(rango)}</small></div>`;
         })()}
 
       </div>
