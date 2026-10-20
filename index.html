@@ -894,6 +894,34 @@ body.sidebar-collapsed .sidebar{width:74px;flex-basis:74px;padding-left:10px;pad
 @media(max-width:700px){.menu-toggle{display:flex}.workspace{display:block}.sidebar{position:fixed;left:0;top:70px;bottom:0;width:270px!important;z-index:80;display:flex!important;transform:translateX(-105%);padding:16px 12px!important}.sidebar.mobile-open{transform:translateX(0)}.sidebar .sidebar-label,.sidebar .sidebar-link>span:not(.sidebar-icon),.sidebar .sidebar-footer{display:flex!important}.sidebar .sidebar-footer{display:block!important}.sidebar .sidebar-link{justify-content:flex-start!important}.container,body.sidebar-collapsed .container{width:100%!important}.people{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.person-photo{height:190px}}
 @media(max-width:430px){.people{grid-template-columns:1fr 1fr}.person-photo{height:170px}.person-info{padding:10px}.person-name{font-size:11px}.person-number,.person-position{font-size:9px}}
 
+/* INCIDENCIA VIGENTE: foto normal + bloque inferior ámbar */
+.person.con-incidencia{
+  border-left:0;
+}
+.person.con-incidencia .person-info{
+  background:#F59E0B;
+  color:#fff;
+}
+.person.con-incidencia .person-name,
+.person.con-incidencia .person-number,
+.person.con-incidencia .person-position{
+  color:#fff;
+}
+.person.con-incidencia .person-status{
+  background:rgba(255,255,255,.20);
+  color:#fff;
+  border:1px solid rgba(255,255,255,.55);
+}
+.person.con-incidencia .person-incidencia{
+  background:rgba(255,255,255,.16);
+  color:#fff;
+  border:1px solid rgba(255,255,255,.35);
+}
+.person.con-incidencia .person-incidencia small{
+  color:#fff;
+}
+
+
 
 /* ===== V5 DIRECTORIO JERÁRQUICO ===== */
 .dir-supervisor-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(290px,1fr));gap:16px;padding:18px;background:transparent!important;overflow:visible!important}
@@ -2655,19 +2683,26 @@ function incidenciaVigente(incidencia){
   return hoy >= desde && (!hasta || hoy <= hasta);
 }
 
-function incidenciaDePersona(persona){
+function incidenciasDePersona(persona){
   const numero = normalizarTexto(numeroEmpleado(persona));
   const nombre = normalizarTexto(nombrePersona(persona));
 
-  return incidencias.find(incidencia => {
-    if(!incidenciaVigente(incidencia)) return false;
+  return incidencias
+    .filter(incidencia => {
+      const numeroInc = normalizarTexto(numeroEmpleadoIncidencia(incidencia));
+      const nombreInc = normalizarTexto(personaIncidencia(incidencia));
+      if(numero && numeroInc) return numero === numeroInc;
+      return Boolean(nombre && nombreInc && nombre === nombreInc);
+    })
+    .sort((a,b) => {
+      const da = convertirFechaIncidencia(fechaIncidencia(a, true));
+      const db = convertirFechaIncidencia(fechaIncidencia(b, true));
+      return (db ? db.getTime() : 0) - (da ? da.getTime() : 0);
+    });
+}
 
-    const numeroInc = normalizarTexto(numeroEmpleadoIncidencia(incidencia));
-    const nombreInc = normalizarTexto(personaIncidencia(incidencia));
-
-    if(numero && numeroInc) return numero === numeroInc;
-    return Boolean(nombre && nombreInc && nombre === nombreInc);
-  }) || null;
+function incidenciaDePersona(persona){
+  return incidenciasDePersona(persona).find(incidenciaVigente) || null;
 }
 
 function formatearFechaIncidencia(valor){
@@ -2716,8 +2751,10 @@ function crearPersona(persona){
     avatarFallback(nombre);
 
 
+  const incidenciaActual = incidenciaDePersona(persona);
+
   return `
-    <div class="person">
+    <div class="person ${incidenciaActual ? "con-incidencia" : ""}">
 
       <img
         loading="lazy"
@@ -2752,7 +2789,7 @@ function crearPersona(persona){
         </span>
 
         ${(() => {
-          const incidencia = incidenciaDePersona(persona);
+          const incidencia = incidenciaActual;
           if(!incidencia) return "";
           const tipo = tipoIncidencia(incidencia) || "INCIDENCIA";
           const inicio = formatearFechaIncidencia(fechaIncidencia(incidencia, true));
