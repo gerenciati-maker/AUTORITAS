@@ -518,6 +518,32 @@ body{
   color:#92400E;
 }
 
+
+.person-incidencia-history{
+  width:100%;
+  text-align:left;
+  cursor:pointer;
+  font:inherit;
+}
+.person-incidencia-history:hover{
+  filter:brightness(.97);
+}
+.incidencias-modal{position:fixed;inset:0;z-index:9999;display:flex;align-items:center;justify-content:center;padding:20px}
+.incidencias-modal-backdrop{position:absolute;inset:0;background:rgba(15,23,42,.55)}
+.incidencias-modal-box{position:relative;width:min(620px,100%);max-height:85vh;background:#fff;border-radius:18px;box-shadow:0 20px 60px rgba(0,0,0,.25);overflow:hidden}
+.incidencias-modal-head{display:flex;justify-content:space-between;gap:16px;padding:20px;border-bottom:1px solid #e7ebf0}
+.incidencias-modal-head small{font-size:10px;font-weight:900;letter-spacing:.08em;color:#98a2b3}
+.incidencias-modal-head h3{margin:4px 0;color:#102d49;font-size:19px}
+.incidencias-modal-head p{margin:0;color:#667085;font-size:12px}
+.incidencias-modal-head button{border:0;background:#f2f4f7;border-radius:10px;width:34px;height:34px;font-size:22px;cursor:pointer}
+.incidencias-modal-body{padding:18px;overflow:auto;max-height:65vh;display:grid;gap:10px}
+.incidencia-historial-item{border:1px solid #e4e7ec;border-radius:12px;padding:13px;background:#f8fafc;font-size:11px;color:#475467}
+.incidencia-historial-item.vigente{border-color:#f59e0b;background:#fff7e6}
+.incidencia-historial-head{display:flex;justify-content:space-between;gap:10px;margin-bottom:5px;color:#102d49}
+.incidencia-historial-head span{font-size:9px;font-weight:900;padding:3px 7px;border-radius:10px;background:#eef2f6;color:#667085}
+.incidencia-historial-item.vigente .incidencia-historial-head span{background:#f59e0b;color:#fff}
+.incidencia-historial-rango{font-weight:800;margin-bottom:6px}
+
 /* =========================
    BAJAS
 ========================= */
@@ -2713,6 +2739,54 @@ function formatearFechaIncidencia(valor){
     d.getFullYear();
 }
 
+function abrirHistorialIncidencias(numeroEmpleadoPersona){
+  const numero = normalizarTexto(numeroEmpleadoPersona);
+  const registros = incidencias.filter(incidencia => {
+    const noInc = normalizarTexto(numeroEmpleadoIncidencia(incidencia));
+    return numero && noInc && numero === noInc;
+  }).sort((a,b) => {
+    const da = convertirFechaIncidencia(fechaIncidencia(a, true));
+    const db = convertirFechaIncidencia(fechaIncidencia(b, true));
+    return (da ? da.getTime() : 0) - (db ? db.getTime() : 0);
+  });
+
+  if(!registros.length){
+    alert("No hay historial de incidencias registrado para esta persona.");
+    return;
+  }
+
+  const persona = personal.find(p => normalizarTexto(numeroEmpleado(p)) === numero);
+  const nombre = persona ? (nombrePersona(persona) || "PERSONA") : (personaIncidencia(registros[0]) || "PERSONA");
+
+  const filas = registros.map((incidencia, index) => {
+    const tipo = tipoIncidencia(incidencia) || "INCIDENCIA";
+    const inicio = formatearFechaIncidencia(fechaIncidencia(incidencia, true));
+    const fin = formatearFechaIncidencia(fechaIncidencia(incidencia, false));
+    const vigente = incidenciaVigente(incidencia);
+    const motivo = campoIncidencia(incidencia, ["MOTIVO"]) || "";
+    const observacion = campoIncidencia(incidencia, ["OBSERVACIÓN", "OBSERVACION"]) || "";
+    const rango = fin ? `${inicio} → ${fin}` : `${inicio} → VIGENTE`;
+    return `<div class="incidencia-historial-item ${vigente ? "vigente" : "terminada"}">
+      <div class="incidencia-historial-head"><strong>${index + 1}. ${escapeHtml(tipo)}</strong><span>${vigente ? "VIGENTE" : "TERMINADA"}</span></div>
+      <div class="incidencia-historial-rango">${escapeHtml(rango)}</div>
+      ${motivo ? `<div><b>Motivo:</b> ${escapeHtml(motivo)}</div>` : ""}
+      ${observacion ? `<div><b>Observación:</b> ${escapeHtml(observacion)}</div>` : ""}
+    </div>`;
+  }).join("");
+
+  const modal = document.createElement("div");
+  modal.className = "incidencias-modal";
+  modal.innerHTML = `<div class="incidencias-modal-backdrop" onclick="this.parentElement.remove()"></div>
+    <div class="incidencias-modal-box">
+      <div class="incidencias-modal-head">
+        <div><small>HISTORIAL DE INCIDENCIAS</small><h3>${escapeHtml(nombre)}</h3><p>No. empleado: ${escapeHtml(numeroEmpleadoPersona)}</p></div>
+        <button type="button" onclick="this.closest('.incidencias-modal').remove()">×</button>
+      </div>
+      <div class="incidencias-modal-body">${filas}</div>
+    </div>`;
+  document.body.appendChild(modal);
+}
+
 /* =====================================================
    TARJETA DE PERSONA
 ===================================================== */
@@ -2789,13 +2863,17 @@ function crearPersona(persona){
         </span>
 
         ${(() => {
+          const historial = incidenciasDePersona(persona);
           const incidencia = incidenciaActual;
-          if(!incidencia) return "";
+          if(!historial.length) return "";
+          if(!incidencia){
+            return `<button type="button" class="person-incidencia person-incidencia-history" onclick='event.stopPropagation(); abrirHistorialIncidencias(${JSON.stringify(String(numero))})'>HISTORIAL DE INCIDENCIAS<small>${historial.length} registro${historial.length === 1 ? "" : "s"} · consultar</small></button>`;
+          }
           const tipo = tipoIncidencia(incidencia) || "INCIDENCIA";
           const inicio = formatearFechaIncidencia(fechaIncidencia(incidencia, true));
           const fin = formatearFechaIncidencia(fechaIncidencia(incidencia, false));
           const rango = fin ? `${inicio} → ${fin}` : `${inicio} → VIGENTE`;
-          return `<div class="person-incidencia">${escapeHtml(tipo)}<small>${escapeHtml(rango)}</small></div>`;
+          return `<button type="button" class="person-incidencia person-incidencia-history" onclick='event.stopPropagation(); abrirHistorialIncidencias(${JSON.stringify(String(numero))})'>${escapeHtml(tipo)}<small>${escapeHtml(rango)} · ver historial</small></button>`;
         })()}
 
       </div>
