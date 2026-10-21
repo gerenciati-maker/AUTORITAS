@@ -1,4 +1,4 @@
-!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="es">
 <head>
 <meta charset="UTF-8"> 
@@ -496,10 +496,6 @@ body{
   color:#4338ca;
 }
 
-.person:has(.person-incidencia){
-  border-left:4px solid #F59E0B;
-}
-
 .person-incidencia{
   margin-top:8px;
   padding:7px 8px;
@@ -922,7 +918,6 @@ body.sidebar-collapsed .sidebar{width:74px;flex-basis:74px;padding-left:10px;pad
 
 /* INCIDENCIA VIGENTE: foto normal + bloque inferior ámbar */
 .person.con-incidencia{
-  border-left:0;
 }
 .person.con-incidencia .person-info{
   background:#F59E0B;
@@ -2925,8 +2920,6 @@ function crearPersona(persona){
         class="person-photo"
         src="${escapeHtml(imagen)}"
         alt="${escapeHtml(nombre)}"
-        onclick='event.stopPropagation(); abrirHistorialPersona(${JSON.stringify(String(numero))})'
-        title="Consultar historial"
         onerror="this.onerror=null;this.src='${avatarFallback(nombre)}';"
       >
 
@@ -3007,8 +3000,6 @@ function renderizarBajas(){
               class="baja-photo"
               src="${escapeHtml(foto)}"
               alt="${escapeHtml(nombre)}"
-              onclick='event.stopPropagation(); abrirHistorialPersona(${JSON.stringify(String(numero))})'
-              title="Consultar historial"
               onerror="this.onerror=null;this.src='${avatarFallback(nombre)}';"
             >
             <div class="baja-info">
@@ -4226,4 +4217,3 @@ cargarDatos();
 </script>
 
 </body>
-</html>
