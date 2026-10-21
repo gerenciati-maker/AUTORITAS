@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>AUTORITAS | Portal Administrativo</title>
+<title>AUTORITAS | CONCENTRADO DE OPERACIONES </title>
 
 <style>
 
@@ -601,6 +601,7 @@ body{
 }
 
 .baja-person .baja-photo{
+  cursor:pointer;
   width:82px;
   height:96px;
   border-radius:11px;
@@ -984,7 +985,7 @@ body.sidebar-collapsed .sidebar{width:74px;flex-basis:74px;padding-left:10px;pad
 
       <div>
         <h1>AUTORITAS</h1>
-        <p>Portal Administrativo</p>
+        <p>Concentrado de Operaciones</p>
       </div>
 
     </div>
@@ -3019,6 +3020,7 @@ function renderizarBajas(){
               class="baja-photo"
               src="${escapeHtml(foto)}"
               alt="${escapeHtml(nombre)}"
+              onclick='event.stopPropagation(); abrirHistorialPersona(${JSON.stringify(String(numero))})'
               onerror="this.onerror=null;this.src='${avatarFallback(nombre)}';"
             >
             <div class="baja-info">
@@ -3283,22 +3285,18 @@ function cambiarModulo(modulo, boton){
 
   if(modulo === 'asistencias'){
     // ASISTENCIAS usa su propio catálogo real desde HISTORIAL.
-    // Nunca toma servicios de ESTADO DE FUERZA.
-    if(!serviciosAsistencia.length){
-      const info = document.getElementById('asistenciasInfo');
-      if(info) info.textContent = 'Cargando servicios validados por TCR...';
+    // Cada vez que se entra al módulo se valida nuevamente contra la fuente.
+    // El Apps Script conserva el caché solo si la hoja no ha cambiado.
+    const info = document.getElementById('asistenciasInfo');
+    if(info) info.textContent = 'Cargando servicios validados por TCR...';
 
-      solicitarModulo('asistenciacatalogo', function(data){
-        serviciosAsistencia = Array.isArray(data.serviciosAsistencia)
-          ? data.serviciosAsistencia
-          : [];
-        construirServiciosAsistencias();
-        inicializarAsistenciasAutomaticas();
-      });
-    }else{
+    solicitarModulo('asistenciacatalogo', function(data){
+      serviciosAsistencia = Array.isArray(data.serviciosAsistencia)
+        ? data.serviciosAsistencia
+        : [];
       construirServiciosAsistencias();
       inicializarAsistenciasAutomaticas();
-    }
+    });
   }
 }
 
@@ -3953,7 +3951,7 @@ function construirServiciosAsistencias(){
     .map(v => String(v || "").trim())
     .filter(Boolean)
     .filter(v => {
-      const clave = normalizarTexto(v);
+      const clave = normalizarTexto(v).replace(/[^A-Z0-9]/g, '');
       if(!clave || vistos.has(clave)) return false;
       vistos.add(clave);
       return true;
