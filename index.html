@@ -1,10 +1,10 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-<meta charset="UTF-8"> 
+<meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>AUTORITAS | CONCENTRADO DE OPERACIONES </title>
+<title>AUTORITAS | Portal Administrativo</title>
 
 <style>
 
@@ -918,6 +918,7 @@ body.sidebar-collapsed .sidebar{width:74px;flex-basis:74px;padding-left:10px;pad
 
 /* INCIDENCIA VIGENTE: foto normal + bloque inferior ámbar */
 .person.con-incidencia{
+  border-left:0;
 }
 .person.con-incidencia .person-info{
   background:#F59E0B;
@@ -983,7 +984,7 @@ body.sidebar-collapsed .sidebar{width:74px;flex-basis:74px;padding-left:10px;pad
 
       <div>
         <h1>AUTORITAS</h1>
-        <p>CONCENTRADO DE OPERACIONES</p>
+        <p>Portal Administrativo</p>
       </div>
 
     </div>
@@ -2805,9 +2806,19 @@ function registrosCambioServicioDePersona(numeroEmpleadoPersona){
 
 function abrirHistorialPersona(numeroEmpleadoPersona){
   const numero = normalizarTexto(numeroEmpleadoPersona);
+
+  // El historial debe funcionar también para elementos en BAJA.
+  // Primero identifica la persona desde ESTADO DE FUERZA y usa su nombre
+  // como respaldo cuando algún registro histórico no tenga el No. de Empleado
+  // exactamente con el mismo encabezado/formato.
+  const personaActual = personal.find(p => normalizarTexto(numeroEmpleado(p)) === numero);
+  const nombrePersonaActual = personaActual ? normalizarTexto(nombrePersona(personaActual)) : "";
+
   const registrosInc = incidencias.filter(incidencia => {
     const noInc = normalizarTexto(numeroEmpleadoIncidencia(incidencia));
-    return numero && noInc && numero === noInc;
+    const nombreInc = normalizarTexto(personaIncidencia(incidencia));
+    return (numero && noInc && numero === noInc) ||
+           (nombrePersonaActual && nombreInc && nombrePersonaActual === nombreInc);
   }).sort((a,b) => {
     const da = convertirFechaIncidencia(fechaIncidencia(a, true));
     const db = convertirFechaIncidencia(fechaIncidencia(b, true));
@@ -2815,7 +2826,17 @@ function abrirHistorialPersona(numeroEmpleadoPersona){
   });
 
   const registrosSrv = registrosCambioServicioDePersona(numeroEmpleadoPersona);
-  const persona = personal.find(p => normalizarTexto(numeroEmpleado(p)) === numero);
+  const registrosSrvPorNombre = nombrePersonaActual ? cambiosServicio.filter(registro => {
+    const nombreSrv = normalizarTexto(nombreCambioServicio(registro));
+    return nombreSrv && nombrePersonaActual === nombreSrv;
+  }).sort((a,b) => {
+    const da = fechaCambioServicioDate(fechaCambioServicio(a,true));
+    const db = fechaCambioServicioDate(fechaCambioServicio(b,true));
+    return (da ? da.getTime() : 0) - (db ? db.getTime() : 0);
+  }) : [];
+
+  const registrosSrvFinales = registrosSrv.length ? registrosSrv : registrosSrvPorNombre;
+  const persona = personaActual;
   const nombre = persona ? (nombrePersona(persona) || "PERSONA") :
     (registrosInc[0] ? personaIncidencia(registrosInc[0]) :
     (registrosSrv[0] ? nombreCambioServicio(registrosSrv[0]) : "PERSONA"));
@@ -2836,7 +2857,7 @@ function abrirHistorialPersona(numeroEmpleadoPersona){
     </div>`;
   }).join("") : `<div class="historial-vacio">No hay incidencias registradas.</div>`;
 
-  const filasSrv = registrosSrv.length ? registrosSrv.map((registro, index) => {
+  const filasSrv = registrosSrvFinales.length ? registrosSrvFinales.map((registro, index) => {
     const servicio = servicioCambioServicio(registro) || "SERVICIO NO REGISTRADO";
     const inicio = formatearFechaCambioServicio(fechaCambioServicio(registro,true));
     const fin = formatearFechaCambioServicio(fechaCambioServicio(registro,false));
@@ -2920,6 +2941,8 @@ function crearPersona(persona){
         class="person-photo"
         src="${escapeHtml(imagen)}"
         alt="${escapeHtml(nombre)}"
+        onclick='event.stopPropagation(); abrirHistorialPersona(${JSON.stringify(String(numero))})'
+        title="Consultar historial"
         onerror="this.onerror=null;this.src='${avatarFallback(nombre)}';"
       >
 
@@ -2947,17 +2970,13 @@ function crearPersona(persona){
         </span>
 
         ${(() => {
-          const historial = incidenciasDePersona(persona);
           const incidencia = incidenciaActual;
-          if(!historial.length) return "";
-          if(!incidencia){
-            return `<button type="button" class="person-incidencia person-incidencia-history" onclick='event.stopPropagation(); abrirHistorialIncidencias(${JSON.stringify(String(numero))})'>HISTORIAL DE INCIDENCIAS<small>${historial.length} registro${historial.length === 1 ? "" : "s"} · consultar</small></button>`;
-          }
+          if(!incidencia) return "";
           const tipo = tipoIncidencia(incidencia) || "INCIDENCIA";
           const inicio = formatearFechaIncidencia(fechaIncidencia(incidencia, true));
           const fin = formatearFechaIncidencia(fechaIncidencia(incidencia, false));
           const rango = fin ? `${inicio} → ${fin}` : `${inicio} → VIGENTE`;
-          return `<button type="button" class="person-incidencia person-incidencia-history" onclick='event.stopPropagation(); abrirHistorialIncidencias(${JSON.stringify(String(numero))})'>${escapeHtml(tipo)}<small>${escapeHtml(rango)} · ver historial</small></button>`;
+          return `<div class="person-incidencia">${escapeHtml(tipo)}<small>${escapeHtml(rango)}</small></div>`;
         })()}
 
       </div>
@@ -4217,3 +4236,4 @@ cargarDatos();
 </script>
 
 </body>
+</html>
