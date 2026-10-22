@@ -1,4 +1,4 @@
-<!DOCTYPE html> 
+<!DOCTYPE html>
 <html lang="es">
 <head>
 <meta charset="UTF-8">
@@ -2258,12 +2258,12 @@ function nivelJerarquicoPosicion(posicion){
   const p = normalizarTexto(posicion);
 
   // La coincidencia es por palabras/variantes para respetar nombres
-  // como GERENCIA DE OPERACIONES, COORDINADOR OPERATIVO, etc.
+  // como GERENTE DE OPERACIONES, COORDINADOR OPERATIVO, etc.
   if(/\bDIRECTOR(A|ES)?\b/.test(p)) return 10;
-  if(/\bGERENTE(S)?\b/.test(p)) return 20;
-  if(/\bSUBGERENTE(S)?\b/.test(p)) return 30;
-  if(/\bCOORDINADOR(A|ES)?\b/.test(p)) return 40;
-  if(/\bSUPERVISOR(A|ES)?\b/.test(p)) return 50;
+  if(/\bGERENTE(S)?\b|\bGERENCIA(S)?\b/.test(p)) return 20;
+  if(/\bSUBGERENTE(S)?\b|\bSUBGERENCIA(S)?\b/.test(p)) return 30;
+  if(/\bCOORDINADOR(A|ES)?\b|\bCOORDINACION(ES)?\b/.test(p)) return 40;
+  if(/\bSUPERVISOR(A|ES)?\b|\bSUPERVISION(ES)?\b/.test(p)) return 50;
   if(/JEFE DE TURNO|JEFE TURNO|ENCARGAD[OA]/.test(p)) return 60;
   if(/\bGUARDIA(S)?\b|\bELEMENTO(S)?\b|SEGURIDAD/.test(p)) return 70;
   if(/VACANTE/.test(p)) return 80;
