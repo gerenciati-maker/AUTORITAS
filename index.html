@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>AUTORITAS | CONCNETRADO DE OPERACIONES </title>
+<title>AUTORITAS | Portal Administrativo</title>
 
 <style>
 
@@ -601,7 +601,6 @@ body{
 }
 
 .baja-person .baja-photo{
-  cursor:pointer;
   width:82px;
   height:96px;
   border-radius:11px;
@@ -985,7 +984,7 @@ body.sidebar-collapsed .sidebar{width:74px;flex-basis:74px;padding-left:10px;pad
 
       <div>
         <h1>AUTORITAS</h1>
-        <p>CONCENTRADO DE OPERACIONES </p>
+        <p>Portal Administrativo</p>
       </div>
 
     </div>
@@ -1038,6 +1037,7 @@ body.sidebar-collapsed .sidebar{width:74px;flex-basis:74px;padding-left:10px;pad
       <button class="demo-module-card" onclick="cambiarModulo('directorio',document.querySelector('[data-module=directorio]'))"><span class="demo-icon">▤</span><strong>Directorio de servicios</strong><small>Servicios, responsables, ubicación, sector, estatus y plantilla.</small><span class="demo-arrow">→</span></button>
       <button class="demo-module-card" onclick="cambiarModulo('protocolos',document.querySelector('[data-module=protocolos]'))"><span class="demo-icon">✚</span><strong>Protocolos de emergencia</strong><small>Catálogo operativo y secuencias de actuación disponibles para consulta.</small><span class="demo-arrow">→</span></button>
       <button class="demo-module-card" onclick="cambiarModulo('vehicular',document.querySelector('[data-module=vehicular]'))"><span class="demo-icon">▣</span><strong>Unidades</strong><small>Asignaciones, combustible, mantenimiento, fotomultas e historial vehicular.</small><span class="demo-arrow">→</span></button>
+      <button class="demo-module-card" onclick="cargarDatos()"><span class="demo-icon">↻</span><strong>Actualizar información</strong><small>Actualiza la información disponible del portal.</small><span class="demo-arrow">→</span></button>
     </div>
   </div>
 </section>
@@ -2250,6 +2250,51 @@ function obtenerInfoServicio(nombre){
    RENDERIZAR DIRECTORIO
 ===================================================== */
 
+/* =====================================================
+   ORDEN JERÁRQUICO - ESTADO DE FUERZA
+===================================================== */
+
+function nivelJerarquicoPosicion(posicion){
+  const p = normalizarTexto(posicion);
+
+  // La coincidencia es por palabras/variantes para respetar nombres
+  // como GERENTE DE OPERACIONES, COORDINADOR OPERATIVO, etc.
+  if(/\bDIRECTOR(A|ES)?\b/.test(p)) return 10;
+  if(/\bGERENTE(S)?\b/.test(p)) return 20;
+  if(/\bSUBGERENTE(S)?\b/.test(p)) return 30;
+  if(/\bCOORDINADOR(A|ES)?\b/.test(p)) return 40;
+  if(/\bSUPERVISOR(A|ES)?\b/.test(p)) return 50;
+  if(/JEFE DE TURNO|JEFE TURNO|ENCARGAD[OA]/.test(p)) return 60;
+  if(/\bGUARDIA(S)?\b|\bELEMENTO(S)?\b|SEGURIDAD/.test(p)) return 70;
+  if(/VACANTE/.test(p)) return 80;
+  if(/SIN POSICION/.test(p)) return 999;
+
+  // Puestos no reconocidos quedan después de los niveles conocidos.
+  return 90;
+}
+
+function compararPosicionesJerarquia(a, b){
+  const nivelA = nivelJerarquicoPosicion(a);
+  const nivelB = nivelJerarquicoPosicion(b);
+
+  if(nivelA !== nivelB) return nivelA - nivelB;
+
+  return normalizarTexto(a).localeCompare(
+    normalizarTexto(b),
+    "es",
+    {sensitivity:"base"}
+  );
+}
+
+function compararPersonasEstadoFuerza(a, b){
+  return normalizarTexto(nombrePersona(a)).localeCompare(
+    normalizarTexto(nombrePersona(b)),
+    "es",
+    {sensitivity:"base"}
+  );
+}
+
+
 function renderizarOrganigrama(){
 
   const contenedor =
@@ -2561,8 +2606,12 @@ function renderizarOrganigrama(){
                   <div class="service-body">`;
 
 
-              posiciones.forEach(
-                (personas, posicion) => {
+              [...posiciones.entries()]
+                .sort((a,b) => compararPosicionesJerarquia(a[0], b[0]))
+                .forEach(
+                ([posicion, personas]) => {
+
+                  personas.sort(compararPersonasEstadoFuerza);
 
                   html +=
                     `<div class="position">
@@ -3019,7 +3068,6 @@ function renderizarBajas(){
               class="baja-photo"
               src="${escapeHtml(foto)}"
               alt="${escapeHtml(nombre)}"
-              onclick='event.stopPropagation(); abrirHistorialPersona(${JSON.stringify(String(numero))})'
               onerror="this.onerror=null;this.src='${avatarFallback(nombre)}';"
             >
             <div class="baja-info">
@@ -3284,18 +3332,22 @@ function cambiarModulo(modulo, boton){
 
   if(modulo === 'asistencias'){
     // ASISTENCIAS usa su propio catálogo real desde HISTORIAL.
-    // Cada vez que se entra al módulo se valida nuevamente contra la fuente.
-    // El Apps Script conserva el caché solo si la hoja no ha cambiado.
-    const info = document.getElementById('asistenciasInfo');
-    if(info) info.textContent = 'Cargando servicios validados por TCR...';
+    // Nunca toma servicios de ESTADO DE FUERZA.
+    if(!serviciosAsistencia.length){
+      const info = document.getElementById('asistenciasInfo');
+      if(info) info.textContent = 'Cargando servicios validados por TCR...';
 
-    solicitarModulo('asistenciacatalogo', function(data){
-      serviciosAsistencia = Array.isArray(data.serviciosAsistencia)
-        ? data.serviciosAsistencia
-        : [];
+      solicitarModulo('asistenciacatalogo', function(data){
+        serviciosAsistencia = Array.isArray(data.serviciosAsistencia)
+          ? data.serviciosAsistencia
+          : [];
+        construirServiciosAsistencias();
+        inicializarAsistenciasAutomaticas();
+      });
+    }else{
       construirServiciosAsistencias();
       inicializarAsistenciasAutomaticas();
-    });
+    }
   }
 }
 
@@ -3950,7 +4002,7 @@ function construirServiciosAsistencias(){
     .map(v => String(v || "").trim())
     .filter(Boolean)
     .filter(v => {
-      const clave = normalizarTexto(v).replace(/[^A-Z0-9]/g, '');
+      const clave = normalizarTexto(v);
       if(!clave || vistos.has(clave)) return false;
       vistos.add(clave);
       return true;
@@ -4155,7 +4207,6 @@ function consultarAsistencias(automatica=false){
     "&servicio=" + encodeURIComponent(servicio) +
     "&fechaInicio=" + encodeURIComponent(fechaInicio) +
     "&fechaFin=" + encodeURIComponent(fechaFin) +
-    (forzarActualizacion ? "&forzar=1" : "") +
     "&t=" + Date.now();
 
   script.onerror = function(){
@@ -4202,8 +4253,27 @@ function pintarApoyosV7(cajaId,contId,a,rec){const caja=document.getElementById(
 function jsonpAsistenciaV7(params){return new Promise((res,rej)=>{const cb='cbh_'+Date.now()+'_'+Math.random().toString(36).slice(2),sc=document.createElement('script');const tm=setTimeout(()=>{delete window[cb];sc.remove();rej(new Error('La consulta tardó demasiado.'))},45000);window[cb]=d=>{clearTimeout(tm);delete window[cb];sc.remove();res(d)};params.callback=cb;sc.src=API_URL+'?'+new URLSearchParams(params).toString();sc.onerror=()=>{clearTimeout(tm);delete window[cb];sc.remove();rej(new Error('No fue posible conectar con la API.'))};document.body.appendChild(sc)});}
 function abrirModalAsistencia(h){document.getElementById('asistenciaModal').innerHTML=h;document.getElementById('asistenciaModalBg').style.display='flex'}function cerrarModalAsistencia(){document.getElementById('asistenciaModalBg').style.display='none'}
 function mesNombreV7(n){return ['ENERO','FEBRERO','MARZO','ABRIL','MAYO','JUNIO','JULIO','AGOSTO','SEPTIEMBRE','OCTUBRE','NOVIEMBRE','DICIEMBRE'][n]}function isoV7(d){return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0')}
-async function verHistorialFaltaV7(numero,fecha,nombre){const d=new Date(fecha+'T12:00:00'),ini=new Date(d.getFullYear(),d.getMonth()-1,1),fin=new Date(d.getFullYear(),d.getMonth()+1,0);abrirModalAsistencia('<div class="asistencia-modal-head"><h3>Historial de faltas</h3><button class="asistencia-modal-close" onclick="cerrarModalAsistencia()">Cerrar</button></div><div class="loading">Consultando…</div>');try{const rr=await jsonpAsistenciaV7({modulo:'historialfaltas',numeroEmpleado:numero,fechaInicio:isoV7(ini),fechaFin:isoV7(fin)});if(!rr||rr.ok===false)throw new Error(rr?.error||'Error');const hi=rr.historialFaltas||{},m=new Map();(hi.registros||[]).forEach(x=>{const fx=normalizarFechaAsistencia(x.fecha);if(fx&&!m.has(fx))m.set(fx,Object.assign({},x,{fecha:fx}))});const seleccionada=normalizarFechaAsistencia(fecha);if(seleccionada&&!m.has(seleccionada))m.set(seleccionada,{fecha:seleccionada,servicio:'',seleccionada:true});let h=`<div style="margin-top:14px"><strong>${escapeHtml(hi.nombre||nombre)}</strong><br><span style="color:#667085;font-size:12px">No. ${escapeHtml(numero)}</span></div><p style="font-size:12px"><b>Falta seleccionada:</b> ${escapeHtml(formatearFechaCorta(seleccionada))}</p>`;[new Date(d.getFullYear(),d.getMonth(),1),new Date(d.getFullYear(),d.getMonth()-1,1)].forEach(mm=>{const ym=mm.getFullYear()+'-'+String(mm.getMonth()+1).padStart(2,'0'),a=[...m.values()].filter(x=>String(x.fecha).startsWith(ym)).sort((a,b)=>a.fecha.localeCompare(b.fecha));h+=`<div class="asistencia-mes"><strong>${mesNombreV7(mm.getMonth())} ${mm.getFullYear()}</strong> · ${a.length} falta(s)`+(a.length?a.map(x=>`<div class="asistencia-fecha-falta ${x.fecha===seleccionada?'seleccionada':''}">${escapeHtml(formatearFechaCorta(x.fecha))}${x.servicio?' · '+escapeHtml(x.servicio):''}</div>`).join(''):'<div style="padding:8px 0;color:#667085;font-size:12px">Sin faltas.</div>')+'</div>'});abrirModalAsistencia('<div class="asistencia-modal-head"><h3>Historial de faltas</h3><button class="asistencia-modal-close" onclick="cerrarModalAsistencia()">Cerrar</button></div>'+h)}catch(e){abrirModalAsistencia('<div class="asistencia-modal-head"><h3>Historial de faltas</h3><button class="asistencia-modal-close" onclick="cerrarModalAsistencia()">Cerrar</button></div><div style="color:#b42318;padding-top:14px">'+escapeHtml(e.message)+'</div>')}}
-function verDetalleApoyoV7(numero,fecha){const data=datosAsistencias&&datosAsistencias.asistencias?datosAsistencias.asistencias:datosAsistencias,r=registrosApoyoV7(data||{}).find(x=>String(x.numeroEmpleado||'')===String(numero)&&x.fecha===fecha);if(!r){abrirModalAsistencia('<div class="asistencia-modal-head"><h3>Apoyo realizado</h3><button class="asistencia-modal-close" onclick="cerrarModalAsistencia()">Cerrar</button></div><p>No se encontró el detalle.</p>');return;}const dest=r.servicioDestino||r.servicio||'',ori=r.servicioOrigen||'No indicado';abrirModalAsistencia(`<div class="asistencia-modal-head"><h3>Apoyo realizado</h3><button class="asistencia-modal-close" onclick="cerrarModalAsistencia()">Cerrar</button></div><div class="asistencia-ap-grid"><div class="asistencia-ap-dato"><b>Elemento</b>${escapeHtml(r.nombre||'')} · No. ${escapeHtml(r.numeroEmpleado||'')}</div><div class="asistencia-ap-dato"><b>Fecha</b>${escapeHtml(formatearFechaCorta(r.fecha))}</div><div class="asistencia-ap-dato"><b>Servicio de origen</b>${escapeHtml(ori)}</div><div class="asistencia-ap-dato"><b>Apoyó en</b>${escapeHtml(dest)}</div></div>${dest?`<div style="margin-top:15px"><button class="btn-clear" onclick="irDestinoV7('${escapeHtml(dest)}')">Ver asistencia en servicio destino</button></div>`:''}`)}
+async function verHistorialFaltaV7(numero,fecha,nombre){const d=new Date(fecha+'T12:00:00'),ini=new Date(d.getFullYear(),d.getMonth()-1,1),fin=new Date(d.getFullYear(),d.getMonth()+1,0);abrirModalAsistencia('<div class="asistencia-modal-head"><h3>Historial de faltas</h3><button class="asistencia-modal-close" onclick="cerrarModalAsistencia()">Cerrar</button></div><div class="loading">Consultando…</div>');try{const rr=await jsonpAsistenciaV7({modulo:'historialfaltas',numeroEmpleado:numero,fechaInicio:isoV7(ini),fechaFin:isoV7(fin)});if(!rr||rr.ok===false)throw new Error(rr?.error||'Error');const hi=rr.historialFaltas||{},m=new Map();(hi.registros||[]).forEach(x=>{if(x.fecha&&!m.has(x.fecha))m.set(x.fecha,x)});let h=`<div style="margin-top:14px"><strong>${escapeHtml(hi.nombre||nombre)}</strong><br><span style="color:#667085;font-size:12px">No. ${escapeHtml(numero)}</span></div><p style="font-size:12px"><b>Falta seleccionada:</b> ${escapeHtml(formatearFechaCorta(fecha))}</p>`;[new Date(d.getFullYear(),d.getMonth(),1),new Date(d.getFullYear(),d.getMonth()-1,1)].forEach(mm=>{const ym=mm.getFullYear()+'-'+String(mm.getMonth()+1).padStart(2,'0'),a=[...m.values()].filter(x=>String(x.fecha).startsWith(ym)).sort((a,b)=>a.fecha.localeCompare(b.fecha));h+=`<div class="asistencia-mes"><strong>${mesNombreV7(mm.getMonth())} ${mm.getFullYear()}</strong> · ${a.length} falta(s)`+(a.length?a.map(x=>`<div class="asistencia-fecha-falta ${x.fecha===fecha?'seleccionada':''}">${escapeHtml(formatearFechaCorta(x.fecha))}${x.servicio?' · '+escapeHtml(x.servicio):''}</div>`).join(''):'<div style="padding:8px 0;color:#667085;font-size:12px">Sin faltas.</div>')+'</div>'});abrirModalAsistencia('<div class="asistencia-modal-head"><h3>Historial de faltas</h3><button class="asistencia-modal-close" onclick="cerrarModalAsistencia()">Cerrar</button></div>'+h)}catch(e){abrirModalAsistencia('<div class="asistencia-modal-head"><h3>Historial de faltas</h3><button class="asistencia-modal-close" onclick="cerrarModalAsistencia()">Cerrar</button></div><div style="color:#b42318;padding-top:14px">'+escapeHtml(e.message)+'</div>')}}
+function verDetalleApoyoV7(numero,fecha){
+  const data=datosAsistencias&&datosAsistencias.asistencias?datosAsistencias.asistencias:datosAsistencias;
+  const todos=Array.isArray(data&&data.registros)?data.registros:[];
+  const numBuscado=String(numero||'').replace(/\D/g,'');
+  const fechaBuscada=normalizarFechaAsistencia(fecha);
+  let candidatos=todos.filter(x=>{
+    const nx=String(x.numeroEmpleado||x.numero||x.noEmpleado||'').replace(/\D/g,'');
+    return nx===numBuscado && normalizarFechaAsistencia(x.fecha)===fechaBuscada;
+  });
+  let r=candidatos.find(x=>obtenerCodigoAsistencia(x)==='AP') || candidatos[0] || null;
+  if(!r){
+    abrirModalAsistencia('<div class="asistencia-modal-head"><h3>Apoyo realizado</h3><button class="asistencia-modal-close" onclick="cerrarModalAsistencia()">Cerrar</button></div><p>No se encontró el registro del apoyo para ese empleado y fecha.</p>');
+    return;
+  }
+  const dest=String(r.servicioDestino||r.servicio||'').trim();
+  const ori=String(r.servicioOrigen||'').trim();
+  const origenMostrar=ori||'No indicado en HISTORIAL';
+  const destinoMostrar=dest||'No indicado en HISTORIAL';
+  abrirModalAsistencia(`<div class="asistencia-modal-head"><h3>Apoyo realizado</h3><button class="asistencia-modal-close" onclick="cerrarModalAsistencia()">Cerrar</button></div><div class="asistencia-ap-grid"><div class="asistencia-ap-dato"><b>Elemento</b>${escapeHtml(r.nombre||'')} · No. ${escapeHtml(r.numeroEmpleado||numero||'')}</div><div class="asistencia-ap-dato"><b>Fecha</b>${escapeHtml(formatearFechaCorta(r.fecha||fecha))}</div><div class="asistencia-ap-dato"><b>Servicio de origen</b>${escapeHtml(origenMostrar)}</div><div class="asistencia-ap-dato"><b>Apoyó en</b>${escapeHtml(destinoMostrar)}</div></div>${dest?`<div style="margin-top:15px"><button class="btn-clear" onclick="irDestinoV7('${escapeHtml(dest)}')">Ver asistencia en servicio destino</button></div>`:''}`);
+}
 function irDestinoV7(dest){const s=document.getElementById('asistenciaServicio');let ok=false;[...s.options].forEach(o=>{if(normalizarTextoAsistenciaV7(o.value)===normalizarTextoAsistenciaV7(dest)){s.value=o.value;ok=true}});cerrarModalAsistencia();if(ok){cacheAsistencias.clear();consultarAsistencias(true)}else alert('El servicio destino no aparece en el catálogo de asistencias.');}
 
 function formatearFechaCorta(fecha){
