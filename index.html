@@ -2258,7 +2258,7 @@ function nivelJerarquicoPosicion(posicion){
   const p = normalizarTexto(posicion);
 
   // La coincidencia es por palabras/variantes para respetar nombres
-  // como GERENTE DE OPERACIONES, COORDINADOR OPERATIVO, etc.
+  // como GERENCIA DE OPERACIONES, COORDINADOR OPERATIVO, etc.
   if(/\bDIRECTOR(A|ES)?\b/.test(p)) return 10;
   if(/\bGERENTE(S)?\b/.test(p)) return 20;
   if(/\bSUBGERENTE(S)?\b/.test(p)) return 30;
