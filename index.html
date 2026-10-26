@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!DOCTYPE html> 
 <html lang="es">
 <head>
 <meta charset="UTF-8">  
@@ -1031,7 +1031,7 @@ body.sidebar-collapsed .sidebar{width:74px;flex-basis:74px;padding-left:10px;pad
       <div class="demo-welcome-mark">A</div>
     </div>
     <div class="demo-section-head"><h3>Módulos del sistema</h3><span>Accesos principales</span></div>
-    <div class="demo-module-grid">
+    <div class="demo-module-grid"> 
       <button class="demo-module-card" onclick="cambiarModulo('estado',document.querySelector('[data-module=estado]'))"><span class="demo-icon">▦</span><strong>Estado de fuerza</strong><small>Consulta de personal activo, proyectos, servicios, posiciones y bajas.</small><span class="demo-arrow">→</span></button>
       <button class="demo-module-card" onclick="cambiarModulo('asistencias',document.querySelector('[data-module=asistencias]'))"><span class="demo-icon">✓</span><strong>Asistencias</strong><small>Consulta por servicio e inmueble, periodo, faltas y novedades de asistencia.</small><span class="demo-arrow">→</span></button>
       <button class="demo-module-card" onclick="cambiarModulo('directorio',document.querySelector('[data-module=directorio]'))"><span class="demo-icon">▤</span><strong>Directorio de servicios</strong><small>Servicios, responsables, ubicación, sector, estatus y plantilla.</small><span class="demo-arrow">→</span></button>
@@ -3063,12 +3063,16 @@ function renderizarBajas(){
         return `
           <article class="baja-person">
             <img
-              loading="lazy"
-              decoding="async"
-              class="baja-photo"
-              src="${escapeHtml(foto)}"
-              alt="${escapeHtml(nombre)}"
-              onerror="this.onerror=null;this.src='${avatarFallback(nombre)}';"
+            <img
+            loading="lazy"
+            decoding="async"
+            class="baja-photo"
+            src="${escapeHtml(foto)}"
+            alt="${escapeHtml(nombre)}"
+            onclick='event.stopPropagation(); abrirHistorialPersona(${JSON.stringify(String(numero))})'
+            title="Consultar historial"
+            onerror="this.onerror=null;this.src='${avatarFallback(nombre)}';"
+>
             >
             <div class="baja-info">
               <div class="baja-name">${escapeHtml(nombre)}</div>
