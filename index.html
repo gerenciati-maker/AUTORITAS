@@ -3063,7 +3063,6 @@ function renderizarBajas(){
         return `
           <article class="baja-person">
             <img
-            <img
             loading="lazy"
             decoding="async"
             class="baja-photo"
@@ -3071,9 +3070,9 @@ function renderizarBajas(){
             alt="${escapeHtml(nombre)}"
             onclick='event.stopPropagation(); abrirHistorialPersona(${JSON.stringify(String(numero))})'
             title="Consultar historial"
-            onerror="this.onerror=null;this.src='${avatarFallback(nombre)}';"
->
+            onerror="this.onerror=null;this.src='${avatarFallback(nombre)}';">
             >
+            
             <div class="baja-info">
               <div class="baja-name">${escapeHtml(nombre)}</div>
               <div class="baja-line"><strong>No. empleado:</strong> ${escapeHtml(numero)}</div>
