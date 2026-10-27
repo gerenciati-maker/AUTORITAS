@@ -3650,79 +3650,37 @@ function numeroFotomulta(r,nombres){
   const n=Number(v); return Number.isFinite(n)?n:0;
 }
 function fechaFotomulta(r,nombres){
-  const raw=valorFotomulta(r,nombres);
-  if(raw===null || raw===undefined || raw==='') return null;
-
-  /* Si ya viene como Date, conservar SOLO el día local. */
-  if(raw instanceof Date && !Number.isNaN(raw.getTime())){
-    return new Date(raw.getFullYear(),raw.getMonth(),raw.getDate());
-  }
-
-  const texto=String(raw).trim();
-
-  /*
-     ISO / yyyy-mm-dd: tomar directamente año, mes y día.
-     No usamos new Date(texto) aquí porque UTC puede mover la fecha
-     al día anterior en México cuando la fuente incluye hora/Z.
-  */
-  let m=texto.match(/^(\d{4})[\/.\-](\d{1,2})[\/.\-](\d{1,2})(?:\D|$)/);
-  if(m){
-    const x=new Date(Number(m[1]),Number(m[2])-1,Number(m[3]));
-    if(!Number.isNaN(x.getTime())) return x;
-  }
-
-  /* dd/mm/yyyy, dd-mm-yyyy o dd.mm.yyyy, con o sin hora. */
-  m=texto.match(/^(\d{1,2})[\/.\-](\d{1,2})[\/.\-](\d{2,4})(?:\D|$)/);
-  if(m){
-    let y=Number(m[3]);
-    if(y<100)y+=2000;
-    const x=new Date(y,Number(m[2])-1,Number(m[1]));
-    if(!Number.isNaN(x.getTime())) return x;
-  }
-
-  /* Número serial de Google Sheets / Excel. */
-  if(/^\d+(?:\.\d+)?$/.test(texto)){
-    const serial=Number(texto);
-    if(Number.isFinite(serial) && serial>20000 && serial<100000){
-      const base=new Date(1899,11,30);
-      const x=new Date(base.getFullYear(),base.getMonth(),base.getDate()+Math.floor(serial));
-      if(!Number.isNaN(x.getTime())) return x;
-    }
-  }
-
-  /* Último respaldo para formatos no contemplados. */
-  const d=new Date(texto);
-  if(!Number.isNaN(d.getTime())){
-    return new Date(d.getFullYear(),d.getMonth(),d.getDate());
-  }
-
+  const raw=valorFotomulta(r,nombres); if(!raw)return null;
+  if(raw instanceof Date && !Number.isNaN(raw.getTime())) return raw;
+  const d=new Date(raw); if(!Number.isNaN(d.getTime()))return d;
+  const m=String(raw).match(/(\d{1,2})[\/.\-](\d{1,2})[\/.\-](\d{2,4})/);
+  if(m){let y=Number(m[3]);if(y<100)y+=2000;const x=new Date(y,Number(m[2])-1,Number(m[1]));if(!Number.isNaN(x.getTime()))return x;}
   return null;
-}
-function claveFechaFotomulta(r,nombres){
-  const f=fechaFotomulta(r,nombres);
-  if(!f)return '';
-  const y=f.getFullYear();
-  const m=String(f.getMonth()+1).padStart(2,'0');
-  const d=String(f.getDate()).padStart(2,'0');
-  return `${y}-${m}-${d}`;
 }
 function textoFechaFotomulta(r,nombres){
   const f=fechaFotomulta(r,nombres);
-  if(!(f instanceof Date)) return String(valorFotomulta(r,nombres)||'');
-  return new Intl.DateTimeFormat('es-MX',{day:'2-digit',month:'2-digit',year:'numeric'}).format(f);
+  return f instanceof Date ? f.toLocaleDateString('es-MX') : String(valorFotomulta(r,nombres)||'');
 }
 function esRegistroConMulta(r){
   const resultado=normalizarTexto(valorFotomulta(r,['Resultado de revisión','RESULTADO DE REVISIÓN']));
-  const folio=String(valorFotomulta(r,['Folio de infracción','FOLIO DE INFRACCIÓN'])).trim();
+  const folio=String(valorFotomulta(r,['Folio de infracción','FOLIO DE INFRACCIÓN'])||'').trim();
   const cantidad=numeroFotomulta(r,['Cantidad de infracciones detectadas','CANTIDAD DE INFRACCIONES DETECTADAS']);
-  return resultado.includes('MULTA') || !!folio || cantidad>0;
+  const importe=numeroFotomulta(r,['Importe total detectado (MXN)','IMPORTE TOTAL DETECTADO (MXN)']);
+  const sinMulta=
+    resultado.includes('SIN MULTA') ||
+    resultado.includes('SIN FOTOMULTA') ||
+    resultado.includes('NO SE DETECTO') ||
+    resultado.includes('NO SE DETECTÓ') ||
+    resultado.includes('SIN INFRACC');
+  if(sinMulta) return false;
+  return resultado.includes('MULTA') || !!folio || cantidad>0 || importe>0;
 }
 function pagoFotomulta(r){ return normalizarTexto(valorFotomulta(r,['PAGO REALIZADO','Pago realizado'])); }
 function descuentoFotomulta(r){ return normalizarTexto(valorFotomulta(r,['DESCUENTO A SUPERVISOR','Descuento a supervisor'])); }
 function estatusFotomulta(r){
+  if(!esRegistroConMulta(r)) return 'SIN FOTOMULTAS';
   const e=String(valorFotomulta(r,['ESTATUS DE SEGUIMIENTO','Estatus de seguimiento'])||'').trim();
   if(e) return e;
-  if(!esRegistroConMulta(r)) return 'SIN FOTOMULTAS';
   if(pagoFotomulta(r)==='SI' && ['APLICADO','SI'].includes(descuentoFotomulta(r))) return 'CERRADA';
   if(pagoFotomulta(r)==='SI') return 'PAGADA / DESCUENTO PENDIENTE';
   return 'PAGO PENDIENTE';
