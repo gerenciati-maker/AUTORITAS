@@ -1842,6 +1842,14 @@ function cargarDatos(){
     construirFiltros();
     actualizarTodo();
 
+    // Precargar el resumen diario de asistencias desde el inicio del portal.
+    // Se marca como inicializado para reutilizar esta misma consulta al abrir el módulo.
+    if(!asistenciasInicializadasV2){
+      asistenciasInicializadasV2 = true;
+      construirServiciosAsistencias();
+      inicializarAsistenciasAutomaticas();
+    }
+
   }, finalizarCargaInicialEstado);
 
 }
