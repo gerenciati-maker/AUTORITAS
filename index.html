@@ -4659,9 +4659,28 @@ function consultarAsistencias(automatica=false){
 
       const segundos = ((performance.now() - inicioConsulta) / 1000).toFixed(2);
       const diagnostico = data?.diagnostico || resultado?.diagnostico || null;
-      document.getElementById("asistenciasInfo").title = diagnostico?.estrategia
-        ? "V3 " + diagnostico.estrategia + " · " + segundos + " s"
-        : "Consulta completada en " + segundos + " s";
+      if(diagnostico){
+        console.info("AUTORITAS / ASISTENCIAS diagnóstico:", {
+          msOpenById: diagnostico.msOpenById,
+          msConsulta: diagnostico.msConsulta,
+          msServidorAntesRespuesta: diagnostico.msServidorAntesRespuesta,
+          msLecturaDatos: diagnostico.msLecturaDatos,
+          msFiltrado: diagnostico.msFiltrado,
+          msProcesamientoTotal: diagnostico.msProcesamientoTotal,
+          filasHistorial: diagnostico.filasHistorial,
+          filasLeidas: diagnostico.filasLeidas,
+          filasResultado: diagnostico.filasResultado,
+          respuestaCompactada: diagnostico.respuestaCompactada
+        });
+      }
+      const detalleDiagnostico = diagnostico
+        ? "Servidor " + Number(diagnostico.msServidorAntesRespuesta || diagnostico.msProcesamientoTotal || 0) + " ms"
+          + " · lectura " + Number(diagnostico.msLecturaDatos || 0) + " ms"
+          + " · filas " + Number(diagnostico.filasLeidas || 0)
+        : "sin diagnóstico del servidor";
+      document.getElementById("asistenciasInfo").title =
+        (diagnostico?.estrategia ? "V5 " + diagnostico.estrategia : "Consulta completada")
+        + " · navegador " + segundos + " s · " + detalleDiagnostico;
 
     }catch(error){
       console.error("Error asistencias:", error);
