@@ -1842,13 +1842,7 @@ function cargarDatos(){
     construirFiltros();
     actualizarTodo();
 
-    // Precargar el resumen diario de asistencias desde el inicio del portal.
-    // Se marca como inicializado para reutilizar esta misma consulta al abrir el módulo.
-    if(!asistenciasInicializadasV2){
-      asistenciasInicializadasV2 = true;
-      construirServiciosAsistencias();
-      inicializarAsistenciasAutomaticas();
-    }
+    // Asistencias se consulta al abrir su módulo, para evitar trabajo de fondo innecesario.
 
   }, finalizarCargaInicialEstado);
 
@@ -4575,8 +4569,9 @@ function consultarAsistencias(automatica=false){
   const claveCache = [servicio,fechaInicio,fechaFin].join("|");
   const forzarActualizacion = automatica === "forzar";
 
-  if(!forzarActualizacion && cacheAsistencias.has(claveCache)){
-    datosAsistencias = cacheAsistencias.get(claveCache);
+  const entradaCacheLocal = cacheAsistencias.get(claveCache);
+  if(!forzarActualizacion && entradaCacheLocal && Date.now() - entradaCacheLocal.guardadoEn < 20000){
+    datosAsistencias = entradaCacheLocal.datos;
     contextoExportacionAsistencias = { servicio, fechaInicio, fechaFin };
     const resultadoCache = datosAsistencias && datosAsistencias.asistencias ? datosAsistencias.asistencias : datosAsistencias;
     if(Array.isArray(resultadoCache.registros)) actualizarCatalogoServiciosDesdeHistorialV2(resultadoCache.registros);
@@ -4661,7 +4656,7 @@ function consultarAsistencias(automatica=false){
       resultado.empleados=normalizarEmpleadosHistorialV2(resultado);
       actualizarCatalogoServiciosDesdeHistorialV2(resultado.registros||[]);
       datosAsistencias = { ...data, asistencias: resultado };
-      cacheAsistencias.set(claveCache, datosAsistencias);
+      cacheAsistencias.set(claveCache, { datos: datosAsistencias, guardadoEn: Date.now() });
       contextoExportacionAsistencias = { servicio, fechaInicio, fechaFin };
       renderizarAsistencias(resultado);
 
@@ -4678,7 +4673,8 @@ function consultarAsistencias(automatica=false){
           filasHistorial: diagnostico.filasHistorial,
           filasLeidas: diagnostico.filasLeidas,
           filasResultado: diagnostico.filasResultado,
-          respuestaCompactada: diagnostico.respuestaCompactada
+          respuestaCompactada: diagnostico.respuestaCompactada,
+          cacheServidor: diagnostico.cacheServidor
         });
       }
       const detalleDiagnostico = diagnostico
@@ -4706,6 +4702,7 @@ function consultarAsistencias(automatica=false){
     "&servicio=" + encodeURIComponent(servicio) +
     "&fechaInicio=" + encodeURIComponent(fechaInicio) +
     "&fechaFin=" + encodeURIComponent(fechaFin) +
+    "&forzar=" + (forzarActualizacion ? "1" : "0") +
     "&t=" + Date.now();
 
   script.onerror = function(){
