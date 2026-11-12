@@ -1232,7 +1232,7 @@ button.attendance-status-card{cursor:pointer}button.attendance-status-card:hover
           <div class="v2-coverage-head"><div><small>Personal con asistencia registrada</small><strong id="homeAsistenciaRegistrada">N/D</strong></div><span class="v2-pill">Consulta diaria</span></div>
           <div class="v2-coverage-bar"><span id="homeAsistenciasProgress"></span></div>
           <div class="v2-coverage-legend"><span>Presentes <b id="homeAsistenciaPresentesResumen">N/D</b></span><span>Incidencias <b id="homeAsistenciaIncidencias">N/D</b></span><span>Por validar <b id="homeAsistenciaPendientes">N/D</b></span></div>
-          <div class="v2-pending-note"><b id="homeAsistenciaNota">Los indicadores se cargan al abrir Asistencias.</b><span>La cobertura se calcula con el padrón activo asignado de Estado de Fuerza.</span></div>
+          <div class="v2-pending-note"><b id="homeAsistenciaNota">Los indicadores se consultan de forma independiente.</b><span>La cobertura se calcula con el padrón activo asignado de Estado de Fuerza.</span></div>
         </div>
       </section>
       <section class="v2-panel">
@@ -1387,6 +1387,7 @@ const API_URL =
 
 let servicios = [];
 let serviciosAsistencia = [];
+let resumenAsistenciasInicioPendiente = null;
 
 let personal = [];
 let incidencias = [];
@@ -1822,6 +1823,11 @@ function finalizarCargaInicialEstado(){
 
 function cargarDatos(){
 
+  // Catálogo oficial e indicadores de Asistencias se cargan en paralelo,
+  // sin esperar a que el usuario abra el módulo Asistencias.
+  cargarCatalogoServiciosAsistenciasOficial();
+  cargarIndicadoresInicioAsistencias();
+
   // Iniciar la consulta de UNIDADES en paralelo con ESTADO DE FUERZA.
   // Así, si el usuario abre directamente el módulo Unidades, la solicitud ya
   // estará en curso (o habrá terminado) y no tendrá que esperar a otra vista.
@@ -1841,6 +1847,7 @@ function cargarDatos(){
 
     construirFiltros();
     actualizarTodo();
+    if(resumenAsistenciasInicioPendiente) actualizarIndicadoresInicioDesdeAPI(resumenAsistenciasInicioPendiente);
 
     // Asistencias se consulta al abrir su módulo, para evitar trabajo de fondo innecesario.
 
@@ -4395,45 +4402,63 @@ function construirServiciosAsistencias(registrosExtra=[]){
   const actual=select.value;
   const catalogo=[];
   const vistos=new Set();
-  const agregar=(value,label)=>{
-    value=String(value||"").trim(); label=String(label||value).trim();
-    if(!value || !label) return;
-    const key=normalizarTextoAsistenciaV7(value);
-    if(!key || vistos.has(key)) return;
-    vistos.add(key); catalogo.push({value,label});
-  };
-  // Fuente principal: catálogo real de SERVICIOS recibido del Apps Script.
-  (Array.isArray(servicios)?servicios:[]).forEach(r=>{
-    if(typeof r==="string") { agregar(r,r); return; }
-    const code=codigoServicioCatalogoAsistenciasV2(r);
-    const name=nombreServicioCatalogoAsistenciasV2(r);
+  (Array.isArray(serviciosAsistencia)?serviciosAsistencia:[]).forEach(r=>{
+    const code=typeof r==="string"?"":codigoServicioCatalogoAsistenciasV2(r);
+    const name=typeof r==="string"?r:nombreServicioCatalogoAsistenciasV2(r);
     const full=etiquetaCompletaServicioAsistenciasV2(code,name);
-    if(full) agregar(full,full);
-  });
-  // Respaldo: servicios que sí aparecen en HISTORIAL y que no existan en el catálogo principal.
-  (Array.isArray(registrosExtra)?registrosExtra:[]).forEach(r=>{
-    const raw=String(r.servicio||r.servicioDestino||r.inmueble||"").trim();
-    if(!raw) return;
-    const match=catalogo.find(x=>coincideServicioAsistenciasV2(raw,x.value));
-    if(!match) agregar(raw,etiquetaServicioAsistenciasV2(raw));
+    const value=full||name||code;
+    const key=normalizarTextoAsistenciaV7(value);
+    if(!key||vistos.has(key))return;
+    vistos.add(key);catalogo.push({value,label:value});
   });
   catalogo.sort((a,b)=>{
     const ia=idServicioAsistenciasV2(a.label), ib=idServicioAsistenciasV2(b.label);
     const na=Number((ia.match(/\d+/)||[])[0]||0), nb=Number((ib.match(/\d+/)||[])[0]||0);
-    if(ia && ib && na!==nb) return na-nb;
-    if(ia && !ib) return -1;
-    if(!ia && ib) return 1;
+    if(ia&&ib&&na!==nb)return na-nb;
+    if(ia&&!ib)return -1;if(!ia&&ib)return 1;
     return a.label.localeCompare(b.label,"es");
   });
   select.innerHTML='<option value="">Todos los servicios</option>';
-  catalogo.forEach(item=>{
-    const option=document.createElement("option");
-    option.value=item.value;
-    option.textContent=item.label;
-    select.appendChild(option);
+  catalogo.forEach(item=>{const option=document.createElement("option");option.value=item.value;option.textContent=item.label;select.appendChild(option);});
+  if(actual&&[...select.options].some(o=>o.value===actual))select.value=actual;
+}
+
+function cargarCatalogoServiciosAsistenciasOficial(){
+  const callback='callback_asistenciacatalogo_'+Date.now();
+  const script=document.createElement('script');
+  let terminado=false;
+  const limpiar=()=>{try{delete window[callback]}catch(e){};try{script.remove()}catch(e){}};
+  const timeout=setTimeout(()=>{if(terminado)return;terminado=true;limpiar();console.warn('No fue posible cargar el catálogo oficial BASE QR.');},20000);
+  window[callback]=function(data){if(terminado)return;terminado=true;clearTimeout(timeout);try{
+    if(!data||data.ok!==true||!Array.isArray(data.serviciosAsistencia))throw new Error(data?.error||'Respuesta de catálogo inválida');
+    serviciosAsistencia=data.serviciosAsistencia;
+    construirServiciosAsistencias();
+  }catch(error){console.error('Catálogo oficial de asistencias:',error)}finally{limpiar()}};
+  script.onerror=function(){if(terminado)return;terminado=true;clearTimeout(timeout);limpiar();console.error('Error de conexión al catálogo BASE QR')};
+  script.src=API_URL+'?modulo=asistenciacatalogo&callback='+callback+'&_='+Date.now();
+  document.head.appendChild(script);
+}
+
+function claveIncidenciaUnicaAsistenciasV2(r){
+  const fecha=normalizarFechaAsistencia(r&& (r.fecha||r.fechaRegistro||r.dia));
+  const numero=String(r&& (r.numeroEmpleado||r.noEmpleado||r.numero||'')||'').replace(/\D/g,'');
+  const servicio=normalizarTextoAsistenciaV7(r&& (r.servicio||r.servicioDestino||r.inmueble||''));
+  const codigo=codigoDesdeRegistroHistorialV2(r);
+  const apoyo=codigo==='AP';
+  const origen=apoyo?normalizarTextoAsistenciaV7(r.servicioOrigen||''):'';
+  const destino=apoyo?normalizarTextoAsistenciaV7(r.servicioDestino||r.servicio||''):'';
+  return [fecha,numero||normalizarTextoAsistenciaV7(r&&r.nombre||''),servicio,codigo,origen,destino].join('|');
+}
+function registrosUnicosParaConteoAsistenciasV2(registros){
+  const vistos=new Set(),salida=[];
+  (Array.isArray(registros)?registros:[]).forEach(r=>{
+    const codigo=codigoDesdeRegistroHistorialV2(r);
+    if(codigo==='A')return;
+    const key=claveIncidenciaUnicaAsistenciasV2(r);
+    if(!key||vistos.has(key))return;
+    vistos.add(key);salida.push(r);
   });
-  if(actual && [...select.options].some(o=>o.value===actual)) select.value=actual;
-  serviciosAsistencia=catalogo.map(x=>x.value);
+  return salida;
 }
 
 function normalizarFechaAsistencia(fecha){
@@ -4522,10 +4547,8 @@ function inicializarAsistenciasAutomaticas(){
 }
 
 function actualizarCatalogoServiciosDesdeHistorialV2(registros){
-  const actual=document.getElementById('asistenciaServicio')?.value||"";
-  construirServiciosAsistencias(Array.isArray(registros)?registros:[]);
-  const select=document.getElementById('asistenciaServicio');
-  if(select && actual && [...select.options].some(o=>o.value===actual)) select.value=actual;
+  // El historial no alimenta el catálogo: la fuente oficial es exclusivamente BASE QR.
+  construirServiciosAsistencias();
 }
 function normalizarEmpleadosHistorialV2(data){
  const empleados=Array.isArray(data&&data.empleados)?data.empleados:[];
@@ -4739,7 +4762,7 @@ function renderizarIncidenciasDiaAsistenciasV7(data,empleados){
  const total=Object.values(conteos).reduce((x,y)=>x+y,0),totalEl=document.getElementById('incidenciasDiaTotal');if(totalEl)totalEl.textContent=total.toLocaleString('es-MX')+' incidencias';
  const labels=[['F','FALTA CONFIRMADA','F','Requiere seguimiento'],['INC','INCAPACIDAD','INC','Incapacidad reportada'],['FR','FALTA DE REGISTRO EN FORMULARIO','FR','Formulario sin registro'],['V','VACANTE REPORTADA','V','Vacante informada'],['VAC','VACACIONES','VAC','Vacaciones autorizadas'],['AP','APOYO','AP','Apoyos del periodo']];const host=document.getElementById('resumenIncidenciasDia');
  if(host)host.innerHTML=labels.map(([code,label,icon,sub])=>`<button type="button" class="demo-att-kpi demo-att-kpi-${code}" onclick="mostrarDetalleIncidenciaV2('${code}')"><span class="demo-att-kpi-icon">${icon}</span><span class="demo-att-kpi-copy"><b>${label}</b><small>${sub}</small></span><strong>${conteos[code].toLocaleString('es-MX')}</strong></button>`).join('');
- const d=document.getElementById('incidenciasDiaLista');if(d&&d.style.display!=='none')pintarDetalleIncidenciaV2(window.categoriaIncidenciaSeleccionadaV2||'TODAS',raw,ini,fin,esDia);
+ const d=document.getElementById('incidenciasDiaLista');if(d&&d.style.display!=='none')pintarDetalleIncidenciaV2(window.categoriaIncidenciaSeleccionadaV2||'TODAS',registrosUnicosParaConteoAsistenciasV2(raw),ini,fin,esDia);
 }function actualizarResumenAsistenciasInicio(data,empleados){
  const fecha=fechaISOHoy(),codigos={A:0,F:0,INC:0,FR:0,V:0,VAC:0,AP:0},vistos=new Set();
  (Array.isArray(empleados)?empleados:[]).forEach(e=>{const dias=e&&e.dias||{};let r=dias[fecha];if(r===undefined){const k=Object.keys(dias).find(x=>normalizarFechaAsistencia(x)===fecha);r=k?dias[k]:null}const code=obtenerCodigoAsistencia(r);const ident=String(e.numeroEmpleado||e.numero||e.noEmpleado||e.nombre||'').trim();if(!ident||!code||vistos.has(ident))return;vistos.add(ident);if(Object.prototype.hasOwnProperty.call(codigos,code))codigos[code]++});
@@ -4748,6 +4771,31 @@ function renderizarIncidenciasDiaAsistenciasV7(data,empleados){
  const set=(id,value)=>{const el=document.getElementById(id);if(el)el.textContent=String(value)};set('homeAsistenciaPresentes',presentes);set('homeAsistenciaAusentes',ausentes);set('homeAsistenciaRegistrada',registrados+' con registros');set('homeAsistenciaPresentesResumen',presentes);set('homeAsistenciaIncidencias',incidencias);set('homeAsistenciaPendientes',pendientes);
  const coverage=document.getElementById('homeAsistenciaCobertura');if(coverage)coverage.innerHTML=cobertura===null?'N/D':cobertura+'<small>%</small>';const bar=document.getElementById('homeAsistenciasProgress');if(bar)bar.style.width=(cobertura===null?0:cobertura)+'%';set('homeAsistenciaNota',cobertura===null?'No hay padrón activo asignado para calcular cobertura.':'Cobertura diaria: '+registrados+' de '+total+' personas activas con registro.');
 }
+function actualizarIndicadoresInicioDesdeAPI(data){
+ const resumen=data&&data.resumenAsistencias;if(!resumen||!resumen.codigos)return;
+ resumenAsistenciasInicioPendiente=data;
+ const c=resumen.codigos, registrados=Number(resumen.registrados||0);
+ const presentes=Number(c.A||0),ausentes=Number(c.F||0);
+ const incidencias=Number(c.F||0)+Number(c.INC||0)+Number(c.FR||0)+Number(c.V||0)+Number(c.VAC||0)+Number(c.AP||0);
+ const pendientes=Number(c.FR||0);
+ const activos=Array.isArray(personal)?personal.filter(p=>esActivo(p)&&String(servicioPersona(p)||'').trim()):[];
+ const padron=new Set(activos.map(p=>String(numeroEmpleado(p)||nombrePersona(p)||'').trim()).filter(Boolean));
+ const total=padron.size,cobertura=total?Math.min(100,Math.round(registrados/total*100)):null;
+ const set=(id,value)=>{const el=document.getElementById(id);if(el)el.textContent=String(value)};
+ set('homeAsistenciaPresentes',presentes);set('homeAsistenciaAusentes',ausentes);set('homeAsistenciaRegistrada',registrados+' con registros');set('homeAsistenciaPresentesResumen',presentes);set('homeAsistenciaIncidencias',incidencias);set('homeAsistenciaPendientes',pendientes);
+ const coverage=document.getElementById('homeAsistenciaCobertura');if(coverage)coverage.innerHTML=cobertura===null?'N/D':cobertura+'<small>%</small>';
+ const bar=document.getElementById('homeAsistenciasProgress');if(bar)bar.style.width=(cobertura===null?0:cobertura)+'%';
+ set('homeAsistenciaNota',cobertura===null?'No hay padrón activo asignado para calcular cobertura.':'Indicadores independientes · '+(resumen.fecha||fechaISOHoy())+' · '+registrados+' de '+total+' personas activas con registro.');
+}
+function cargarIndicadoresInicioAsistencias(){
+ const callback='callback_asistenciasresumen_'+Date.now(),script=document.createElement('script');let fin=false;
+ const limpiar=()=>{try{delete window[callback]}catch(e){};try{script.remove()}catch(e){}};
+ const timeout=setTimeout(()=>{if(fin)return;fin=true;marcarResumenAsistenciasInicioError('tiempo de espera');limpiar()},30000);
+ window[callback]=function(data){if(fin)return;fin=true;clearTimeout(timeout);try{if(!data||data.ok!==true)throw new Error(data?.error||'Respuesta inválida');actualizarIndicadoresInicioDesdeAPI(data)}catch(e){marcarResumenAsistenciasInicioError(e.message)}finally{limpiar()}};
+ script.onerror=()=>{if(fin)return;fin=true;clearTimeout(timeout);marcarResumenAsistenciasInicioError('conexión');limpiar()};
+ script.src=API_URL+'?modulo=asistenciasresumen&callback='+callback+'&_='+Date.now();document.head.appendChild(script);
+}
+
 function marcarResumenAsistenciasInicioError(mensaje){['homeAsistenciaPresentes','homeAsistenciaAusentes','homeAsistenciaRegistrada','homeAsistenciaPresentesResumen','homeAsistenciaIncidencias','homeAsistenciaPendientes','homeAsistenciaCobertura'].forEach(id=>{const el=document.getElementById(id);if(el)el.textContent='N/D'});const nota=document.getElementById('homeAsistenciaNota');if(nota)nota.textContent='No fue posible consultar asistencias: '+String(mensaje||'error de conexión');}function renderizarAsistencias(data){
   const fechas=Array.isArray(data.fechas)?data.fechas:[];
   const empleados=Array.isArray(data.empleados)?data.empleados:[];
@@ -5592,11 +5640,11 @@ function renderizarIncidenciasDiaAsistenciasV7(data,empleados){
  const ini=document.getElementById('asistenciaFechaInicio')?.value||fechaISOHoy(),fin=document.getElementById('asistenciaFechaFin')?.value||ini,esDia=ini===fin;
  const desc=document.getElementById('incidenciasDiaDescripcion');if(desc)desc.textContent=esDia?'Todos los servicios · Día: '+formatearFechaCorta(ini):'Todos los servicios · Periodo: '+formatearFechaCorta(ini)+' – '+formatearFechaCorta(fin);
  const raw=Array.isArray(data.registros)?data.registros:[],conteos={F:0,INC:0,FR:0,V:0,VAC:0,AP:0};
- raw.forEach(r=>{const fecha=normalizarFechaAsistencia(r.fecha||r.fechaRegistro||r.dia);if(fecha&&(fecha<ini||fecha>fin))return;const code=codigoDesdeRegistroHistorialV2(r);if(Object.prototype.hasOwnProperty.call(conteos,code))conteos[code]++});
+ registrosUnicosParaConteoAsistenciasV2(raw).forEach(r=>{const fecha=normalizarFechaAsistencia(r.fecha||r.fechaRegistro||r.dia);if(fecha&&(fecha<ini||fecha>fin))return;const code=codigoDesdeRegistroHistorialV2(r);if(Object.prototype.hasOwnProperty.call(conteos,code))conteos[code]++});
  const total=Object.values(conteos).reduce((a,b)=>a+b,0);const totalEl=document.getElementById('incidenciasDiaTotal');if(totalEl)totalEl.textContent=total.toLocaleString('es-MX')+' incidencias';
  const labels=[['F','FALTA CONFIRMADA','F','Requiere seguimiento'],['INC','INCAPACIDAD','INC','Incapacidad reportada'],['FR','FALTA DE REGISTRO EN FORMULARIO','FR','Formulario sin registro'],['V','VACANTE REPORTADA','V','Vacante informada'],['VAC','VACACIONES','VAC','Vacaciones autorizadas'],['AP','APOYO','AP','Apoyos del periodo']];const host=document.getElementById('resumenIncidenciasDia');
  if(host)host.innerHTML=labels.map(([code,label,icon,sub])=>{const n=conteos[code],body=`<span class="demo-att-kpi-icon">${icon}</span><span class="demo-att-kpi-copy"><b>${label}</b><small>${sub}</small></span><strong>${n.toLocaleString('es-MX')}</strong>`;return `<button type="button" class="demo-att-kpi demo-att-kpi-${code}" onclick="mostrarDetalleIncidenciaV2('${code}')" aria-label="Ver detalle: ${label}">${body}</button>`}).join('');
- const d=document.getElementById('incidenciasDiaLista');if(d&&d.style.display!=='none')pintarDetalleIncidenciaV2(window.categoriaIncidenciaSeleccionadaV2||'TODAS',raw,ini,fin,esDia);
+ const d=document.getElementById('incidenciasDiaLista');if(d&&d.style.display!=='none')pintarDetalleIncidenciaV2(window.categoriaIncidenciaSeleccionadaV2||'TODAS',registrosUnicosParaConteoAsistenciasV2(raw),ini,fin,esDia);
  const desgl=document.getElementById('desgloseServiciosAsistencias');if(desgl&&desgl.style.display!=='none')renderizarDesgloseServiciosAsistenciasV2(data);
 }
 function alternarDesgloseServiciosAsistenciasV2(){
@@ -5623,7 +5671,7 @@ function renderizarDesgloseServiciosAsistenciasV2(data){
   const label=String(o.textContent||o.value).trim(),key=normalizarTextoAsistenciaV7(label);
   if(key&&!items.has(key))items.set(key,{value:o.value,label:label,conteos:{F:0,INC:0,FR:0,V:0,VAC:0,AP:0},total:0});
  });
- const registros=Array.isArray(data&&data.registros)?data.registros:[];
+ const registros=registrosUnicosParaConteoAsistenciasV2(data&&data.registros);
  registros.forEach(r=>{
   const fecha=normalizarFechaAsistencia(r.fecha||r.fechaRegistro||r.dia);
   if(fecha&&(fecha<ini||fecha>fin))return;
@@ -5656,7 +5704,7 @@ function renderizarAsistencias(data){
  const main=document.getElementById('attendanceMainTitle');if(main)main.textContent='Consulta y análisis de asistencias';const description=document.getElementById('attendanceMainDescription');if(description)description.textContent=general?'Consulta incidencias generales del día o del rango seleccionado.':'Matriz individual de asistencia del servicio seleccionado.';
  const serviceText=document.getElementById('asistenciaServicioTexto');if(serviceText)serviceText.textContent=general?'':etiquetaServicioAsistenciasV2(servicio);const f1=document.getElementById('asistenciaFechaInicioTexto');if(f1)f1.textContent=formatearFechaCorta(data.fechaInicio||document.getElementById('asistenciaFechaInicio')?.value);const f2=document.getElementById('asistenciaFechaFinTexto');if(f2)f2.textContent=formatearFechaCorta(data.fechaFin||document.getElementById('asistenciaFechaFin')?.value);
  const matrixTitle=document.getElementById('attendanceMatrixTitle');if(matrixTitle)matrixTitle.textContent='Matriz de asistencias';const matrixDesc=document.getElementById('attendanceMatrixDescription');if(matrixDesc)matrixDesc.textContent=general?'':'Códigos diarios del personal adscrito al servicio.';const count=document.getElementById('attendanceMatrixCount');if(count)count.textContent=empleados.length.toLocaleString('es-MX')+' empleados';
- const inicioConsulta=document.getElementById('asistenciaFechaInicio')?.value||'',finConsulta=document.getElementById('asistenciaFechaFin')?.value||'';if(general&&inicioConsulta===finConsulta&&finConsulta===fechaISOHoy())actualizarResumenAsistenciasInicio(data,empleados);
+ const inicioConsulta=document.getElementById('asistenciaFechaInicio')?.value||'',finConsulta=document.getElementById('asistenciaFechaFin')?.value||'';// Los indicadores de Inicio se consultan por separado; no dependen de esta vista.
  const details=document.getElementById('incidenciasDiaLista');if(details&&general&&details.style.display!=='none')pintarDetalleIncidenciaV2(window.categoriaIncidenciaSeleccionadaV2||'TODAS',registros,document.getElementById('asistenciaFechaInicio').value,document.getElementById('asistenciaFechaFin').value,document.getElementById('asistenciaFechaInicio').value===document.getElementById('asistenciaFechaFin').value);if(details&&!general)details.style.display='none';
  if(general){if(follow)follow.style.display='none';if(matrix)matrix.style.display='none';if(supports)supports.style.display='none';const fr=document.getElementById('frRegistroBox');if(fr)fr.style.display='none';const period=document.getElementById('resumenAsistenciasPeriodo');if(period)period.style.display='none';renderizarIncidenciasDiaAsistenciasV7(data,empleados);return;}
  renderizarSeguimientoFaltas(faltas);renderizarMatrizAsistencias(fechas,empleados,false);renderizarApoyosAsistenciasV7(data,servicio);const fr=document.getElementById('frRegistroBox');if(fr)fr.style.display='none';const period=document.getElementById('resumenAsistenciasPeriodo');if(period)period.style.display='none';
