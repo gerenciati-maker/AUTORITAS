@@ -1865,92 +1865,73 @@ function solicitarModulo(modulo, onSuccess, onComplete){
   const callback = 'callback_' + modulo + '_' + Date.now();
   const inicio = performance.now();
   let terminado = false;
-
-  window[callback] = function(data){
-
-    if(terminado) return;
-    terminado = true;
-
-    try{
-      if(!data || data.ok !== true){
-        throw new Error(data?.error || 'Respuesta inválida');
-      }
-
-      if(typeof onSuccess === 'function'){
-        onSuccess(data);
-      }
-
-      console.log(
-        'AUTORITAS / ' + modulo + ':',
-        ((performance.now() - inicio) / 1000).toFixed(2) + ' s'
-      );
-
-    }catch(error){
-      console.error('Error módulo ' + modulo + ':', error);
-
-      const mensaje =
-        modulo === 'directorio'
-          ? 'No fue posible cargar el directorio.'
-          : modulo === 'unidades'
-            ? 'No fue posible cargar las unidades.'
-            : 'No fue posible cargar la información.';
-
-      const destino =
-        modulo === 'directorio'
-          ? document.getElementById('directorioBody')
-          : modulo === 'unidades'
-            ? document.getElementById('unidadesBody')
-            : document.getElementById('organigrama');
-
-      if(destino){
-        destino.innerHTML =
-          `<div class="empty">${mensaje}<br><br>${escapeHtml(error.message)}</div>`;
-      }
-
-    }finally{
-      try{ delete window[callback]; }catch(e){}
-      try{ script.remove(); }catch(e){}
-      if(typeof onComplete === 'function'){
-        try{ onComplete(); }catch(e){ console.error('Error al finalizar módulo '+modulo+':',e); }
-      }
-    }
-
-  };
-
   const script = document.createElement('script');
 
-  script.src =
-    API_URL +
-    '?callback=' + encodeURIComponent(callback) +
-    '&modulo=' + encodeURIComponent(modulo) +
-    '&t=' + Date.now();
-
-  script.onerror = function(){
-    if(terminado) return;
-    terminado = true;
-
-    const destino =
-      modulo === 'directorio'
-        ? document.getElementById('directorioBody')
-        : modulo === 'unidades'
-          ? document.getElementById('unidadesBody')
-          : document.getElementById('organigrama');
-
-    if(destino){
-      destino.innerHTML =
-        '<div class="empty">No fue posible conectar con la base de datos.</div>';
-    }
-
+  function limpiarSolicitud(){
     try{ delete window[callback]; }catch(e){}
     try{ script.remove(); }catch(e){}
+    clearTimeout(temporizador);
+  }
+
+  function finalizarModulo(){
     if(typeof onComplete === 'function'){
       try{ onComplete(); }catch(e){ console.error('Error al finalizar módulo '+modulo+':',e); }
     }
+  }
+
+  function mostrarError(error){
+    const mensaje = modulo === 'directorio'
+      ? 'No fue posible cargar el directorio.'
+      : modulo === 'unidades'
+        ? 'No fue posible cargar las unidades.'
+        : 'No fue posible cargar la información.';
+    const destino = modulo === 'directorio'
+      ? document.getElementById('directorioBody')
+      : modulo === 'unidades'
+        ? document.getElementById('unidadesBody')
+        : document.getElementById('organigrama');
+    if(destino){
+      destino.innerHTML = `<div class="empty">${mensaje}<br><br>${escapeHtml(error && error.message ? error.message : 'La solicitud tardó demasiado.')}</div>`;
+    }
+  }
+
+  const temporizador = setTimeout(function(){
+    if(terminado) return;
+    terminado = true;
+    mostrarError(new Error('El servidor no respondió en 25 segundos. Puedes volver a intentarlo.'));
+    limpiarSolicitud();
+    finalizarModulo();
+    console.warn('AUTORITAS / '+modulo+': solicitud cancelada por tiempo de espera.');
+  },25000);
+
+  window[callback] = function(data){
+    if(terminado) return;
+    terminado = true;
+    clearTimeout(temporizador);
+    try{
+      if(!data || data.ok !== true) throw new Error(data?.error || 'Respuesta inválida');
+      if(typeof onSuccess === 'function') onSuccess(data);
+      console.log('AUTORITAS / ' + modulo + ':', ((performance.now() - inicio) / 1000).toFixed(2) + ' s');
+    }catch(error){
+      console.error('Error módulo ' + modulo + ':', error);
+      mostrarError(error);
+    }finally{
+      limpiarSolicitud();
+      finalizarModulo();
+    }
   };
 
+  script.src = API_URL + '?callback=' + encodeURIComponent(callback) + '&modulo=' + encodeURIComponent(modulo) + '&t=' + Date.now();
+  script.onerror = function(){
+    if(terminado) return;
+    terminado = true;
+    clearTimeout(temporizador);
+    mostrarError(new Error('No fue posible conectar con la base de datos.'));
+    limpiarSolicitud();
+    finalizarModulo();
+  };
   document.body.appendChild(script);
 }
-
 
 /* =====================================================
    ESCAPE HTML
