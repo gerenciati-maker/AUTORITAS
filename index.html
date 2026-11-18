@@ -458,6 +458,11 @@ body{
   flex-shrink:0;
 }
 
+.person-media{width:76px;flex:0 0 76px;display:flex;flex-direction:column;align-items:center;gap:5px}
+.person-media .person-photo{width:100%;height:88px}
+.person-actions{display:flex;flex-direction:column;align-items:center;gap:3px;width:100%;line-height:1.1}
+.person-actions button{border:0;background:none;padding:1px 0;color:#1769aa;text-decoration:underline;font-size:9px;font-weight:800;cursor:pointer;white-space:nowrap}
+.person-actions button:hover{color:#0b4778}
 .person-info{
   min-width:0;
 }
@@ -914,7 +919,7 @@ body.sidebar-collapsed .sidebar{width:74px;flex-basis:74px;padding-left:10px;pad
 .people{grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:14px}.person{display:block;padding:0;overflow:hidden;border-radius:14px;background:#fff;box-shadow:0 5px 16px rgba(0,55,110,.07);transition:.18s}.person:hover{transform:translateY(-2px);box-shadow:0 10px 24px rgba(0,55,110,.12)}.person-photo{width:100%;height:220px;border-radius:0;display:block;object-fit:cover;object-position:center top;background:#eaf1f8}.person-info{padding:12px 13px 14px}.person-name{font-size:13px;min-height:32px}.person-number{margin-top:5px}.person-position{font-size:10px;color:#475467;margin-top:5px;font-weight:700}.person-status{margin-top:8px}
 .export-btn{height:42px;border:0;border-radius:9px;padding:0 16px;background:#0875bd;color:#fff;cursor:pointer;font-weight:800;white-space:nowrap}.export-btn:hover{background:#075f9d}
 #exportarAsistenciasExcelBtn:disabled{opacity:.48;cursor:not-allowed;filter:grayscale(.25)}
-@media(max-width:700px){.menu-toggle{display:flex}.workspace{display:block}.sidebar{position:fixed;left:0;top:70px;bottom:0;width:270px!important;z-index:80;display:flex!important;transform:translateX(-105%);padding:16px 12px!important}.sidebar.mobile-open{transform:translateX(0)}.sidebar .sidebar-label,.sidebar .sidebar-link>span:not(.sidebar-icon),.sidebar .sidebar-footer{display:flex!important}.sidebar .sidebar-footer{display:block!important}.sidebar .sidebar-link{justify-content:flex-start!important}.container,body.sidebar-collapsed .container{width:100%!important}.people{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.person-photo{height:190px}}
+@media(max-width:700px){.person-media{width:70px;flex-basis:70px}.person-media .person-photo{height:82px}.menu-toggle{display:flex}.workspace{display:block}.sidebar{position:fixed;left:0;top:70px;bottom:0;width:270px!important;z-index:80;display:flex!important;transform:translateX(-105%);padding:16px 12px!important}.sidebar.mobile-open{transform:translateX(0)}.sidebar .sidebar-label,.sidebar .sidebar-link>span:not(.sidebar-icon),.sidebar .sidebar-footer{display:flex!important}.sidebar .sidebar-footer{display:block!important}.sidebar .sidebar-link{justify-content:flex-start!important}.container,body.sidebar-collapsed .container{width:100%!important}.people{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.person-photo{height:190px}}
 @media(max-width:430px){.people{grid-template-columns:1fr 1fr}.person-photo{height:170px}.person-info{padding:10px}.person-name{font-size:11px}.person-number,.person-position{font-size:9px}}
 
 /* INCIDENCIA VIGENTE: foto normal + bloque inferior ámbar */
@@ -2934,6 +2939,61 @@ function abrirHistorialIncidencias(numeroEmpleadoPersona){
 }
 
 /* =====================================================
+   FICHA TÉCNICA INDIVIDUAL (BASE DE RH)
+===================================================== */
+function abrirFichaTecnica(numeroEmpleadoFicha){
+  const numero = String(numeroEmpleadoFicha || "").trim();
+  if(!numero || numero === "SIN NÚMERO") return;
+  const modal = document.createElement("div");
+  modal.className = "incidencias-modal";
+  modal.innerHTML = `<div class="incidencias-modal-backdrop" onclick="this.parentElement.remove()"></div>
+    <div class="incidencias-modal-box" style="max-width:850px;max-height:90vh;overflow:auto">
+      <div class="incidencias-modal-head"><div><small>RECURSOS HUMANOS · AUTORITAS</small><h3>FICHA TÉCNICA</h3><p>No. empleado: ${escapeHtml(numero)}</p></div><button type="button" onclick="this.closest('.incidencias-modal').remove()">×</button></div>
+      <div class="incidencias-modal-body" id="fichaTecnicaContenido"><div class="loading">Consultando expediente de RH...</div></div>
+    </div>`;
+  document.body.appendChild(modal);
+
+  const callback = "cbFichaRH_" + Date.now() + "_" + Math.random().toString(36).slice(2);
+  const script = document.createElement("script");
+  let terminado = false;
+  const limpiar = () => { if(terminado) return; terminado=true; clearTimeout(timeout); try{delete window[callback]}catch(e){window[callback]=undefined} script.remove(); };
+  const timeout = setTimeout(() => {
+    limpiar();
+    const c=document.getElementById("fichaTecnicaContenido");
+    if(c) c.innerHTML='<div class="historial-vacio">No fue posible conectar con la ficha de RH. Verifica que la nueva versión del API esté implementada.</div>';
+  }, 25000);
+  window[callback] = respuesta => {
+    if(terminado) return;
+    limpiar();
+    const c=document.getElementById("fichaTecnicaContenido");
+    if(!c) return;
+    if(!respuesta || respuesta.ok !== true || !respuesta.fichaTecnica){
+      c.innerHTML=`<div class="historial-vacio">${escapeHtml(respuesta && respuesta.error ? respuesta.error : "No se encontró una ficha para este número de empleado.")}</div>`;
+      return;
+    }
+    const f=respuesta.fichaTecnica;
+    const grupos=[
+      ["DATOS GENERALES",["RAZON SOCIAL","NOMBRE","NÚMERO DE EMPLEADO","FECHA DE INGRESO","EDAD","SEXO","ESTADO CIVIL","LUGAR Y FECHA DE NACIMIENTO"]],
+      ["DATOS PERSONALES",["CURP","RFC","DOMICILIO","CP","NUMERO DE CELULAR","NOMBRE DEL ESPOSO (A)","NÚMERO DE CONTACTO EN CASO DE EMERGENCIA","NOMBRE Y EDAD DE HIJO (S)"]],
+      ["PERFIL Y EVALUACIÓN",["GRÁDO MÁXIMO DE ESTUDIOS","EXPERIENCIA","ESTATURA","TONO DE PIEL","COLOR DE OJOS","PESO","SEÑAS PARTICULARES","RESULTADO PSICOMÉTRICOS","APTO/ NO APTO"]]
+    ];
+    const fotoRaw=f.FOTOGRAFIA || "";
+    const foto=fotoRaw ? normalizarFoto(fotoRaw) : "";
+    let html=`<div style="display:flex;gap:18px;align-items:flex-start;flex-wrap:wrap;margin-bottom:18px">${foto?`<img src="${escapeHtml(foto)}" alt="Fotografía de ${escapeHtml(f.NOMBRE||numero)}" style="width:130px;height:170px;object-fit:cover;border-radius:8px;border:1px solid #d0d5dd" onerror="this.style.display='none'">`:""}<div style="flex:1;min-width:220px"><div style="font-size:11px;font-weight:900;letter-spacing:.08em;color:#667085">AUTORITAS MÉXICO, S.A. DE C.V.</div><h2 style="margin:6px 0;color:#17365d;font-size:18px">FICHA TÉCNICA PARA ELEMENTOS DE SEGURIDAD PRIVADA</h2><div style="font-size:11px;color:#667085">Documento de consulta individual · Recursos Humanos</div></div></div>`;
+    grupos.forEach(([titulo,campos])=>{
+      html+=`<h4 class="historial-seccion-titulo">${titulo}</h4><div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:9px">`;
+      campos.forEach(campo=>{const valor=f[campo];html+=`<div style="border:1px solid #e4e7ec;border-radius:8px;padding:9px;background:#fff"><div style="font-size:9px;font-weight:900;color:#667085;margin-bottom:4px">${escapeHtml(campo)}</div><div style="font-size:12px;color:#344054;white-space:pre-wrap;overflow-wrap:anywhere">${escapeHtml(valor===undefined||valor===null||valor===""?"—":String(valor))}</div></div>`});
+      html+='</div>';
+    });
+    html+='<p style="margin:18px 0 0;padding-top:10px;border-top:1px solid #e4e7ec;font-size:9px;color:#667085;text-align:center">Documento de uso confidencial para el manejo de información y complemento de expedientes laborales<br>REGISTRO DE AUTORIZACIÓN NÚMERO SSP/SUBCOP/DGSP/330-19/301</p>';
+    c.innerHTML=html;
+  };
+  script.onerror=()=>{limpiar();const c=document.getElementById("fichaTecnicaContenido");if(c)c.innerHTML='<div class="historial-vacio">No fue posible conectar con el API de AUTORITAS.</div>'};
+  script.src=API_URL+'?modulo=fichatecnica&numeroEmpleado='+encodeURIComponent(numero)+'&callback='+encodeURIComponent(callback)+'&_='+Date.now();
+  document.head.appendChild(script);
+}
+
+/* =====================================================
    TARJETA DE PERSONA
 ===================================================== */
 
@@ -2976,16 +3036,23 @@ function crearPersona(persona){
   return `
     <div class="person ${incidenciaActual ? "con-incidencia" : ""}">
 
-      <img
-        loading="lazy"
-        decoding="async"
-        class="person-photo"
-        src="${escapeHtml(imagen)}"
-        alt="${escapeHtml(nombre)}"
-        onclick='event.stopPropagation(); abrirHistorialPersona(${JSON.stringify(String(numero))})'
-        title="Consultar historial"
-        onerror="this.onerror=null;this.src='${avatarFallback(nombre)}';"
-      >
+      <div class="person-media">
+        <img
+          loading="lazy"
+          decoding="async"
+          class="person-photo"
+          src="${escapeHtml(imagen)}"
+          alt="${escapeHtml(nombre)}"
+          onclick='event.stopPropagation(); abrirHistorialPersona(${JSON.stringify(String(numero))})'
+          title="Consultar historial"
+          onerror="this.onerror=null;this.src='${avatarFallback(nombre)}';"
+        >
+        ${numero !== "SIN NÚMERO" && estatus !== "VACANTE" ? `
+          <div class="person-actions">
+            <button type="button" onclick='event.stopPropagation(); abrirFichaTecnica(${JSON.stringify(String(numero))})'>FICHA TÉCNICA</button>
+            <button type="button" onclick='event.stopPropagation(); abrirHistorialPersona(${JSON.stringify(String(numero))})'>HISTORIAL</button>
+          </div>` : ""}
+      </div>
 
       <div class="person-info">
 
