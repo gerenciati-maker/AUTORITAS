@@ -2975,8 +2975,11 @@ function mostrarFormatoOficialFichaRH(contenedor, ficha, numero){
   const limpiarClaveRH=(v)=>String(v||'').normalize('NFD')
     .replace(/[\u0300-\u036f]/g,'').toUpperCase().replace(/[^A-Z0-9]/g,'');
   const entradas=Object.entries(ficha||{});
+  // El Apps Script devuelve la razón social en __plantillaRH y elimina RAZON SOCIAL.
+  // Conservar compatibilidad con ambas variantes sin modificar otros módulos.
   const razonEntrada=entradas.find(([clave,valor])=>
-    limpiarClaveRH(clave)==='RAZONSOCIAL' && valor!=null && String(valor).trim()!=='');
+    (clave==='__plantillaRH' || limpiarClaveRH(clave)==='RAZONSOCIAL') &&
+    valor!=null && String(valor).trim()!=='');
   const razon=razonEntrada?String(razonEntrada[1]).trim():'';
   const normalizada=razon.normalize('NFD').replace(/[\u0300-\u036f]/g,'').toUpperCase();
   const letras=normalizada.replace(/[^A-Z0-9]/g,'');
@@ -2984,7 +2987,7 @@ function mostrarFormatoOficialFichaRH(contenedor, ficha, numero){
     || /ASMI/.test(letras);
   const esAutoritas=/AUTORITAS/.test(letras);
   if(!esASMI&&!esAutoritas){
-    const detalle=razon?('Valor recibido: '+razon):'El API no devolvió un valor de RAZON SOCIAL.';
+    const detalle=razon?('Valor recibido: '+razon):'El API no devolvió un valor de __plantillaRH ni de RAZON SOCIAL.';
     contenedor.innerHTML='<div class="historial-vacio">No se pudo identificar la razón social del empleado.<div style="margin-top:8px;font-size:12px">'+escapeHtml(detalle)+'</div></div>';
     console.warn('Ficha RH sin razón social reconocible:', {numero,razon,campos:Object.keys(ficha||{})});
     return;
