@@ -2941,54 +2941,101 @@ function abrirHistorialIncidencias(numeroEmpleadoPersona){
 /* =====================================================
    FICHA TÉCNICA INDIVIDUAL (BASE DE RH)
 ===================================================== */
+function instalarEstilosFichaRH(){
+  if(document.getElementById('estilosFichaRH')) return;
+  const style=document.createElement('style');
+  style.id='estilosFichaRH';
+  style.textContent=`
+    .ficha-rh-toolbar{display:flex;justify-content:flex-end;gap:8px;margin:0 0 12px}
+    .ficha-rh-btn{border:0;border-radius:6px;padding:9px 14px;font-weight:800;cursor:pointer;background:#17365d;color:#fff}
+    .ficha-rh-btn.sec{background:#667085}
+    .ficha-rh-paper{width:100%;max-width:760px;margin:0 auto;background:#fff;color:#111827;border:1px solid #d0d5dd;padding:28px 34px;box-sizing:border-box;font-family:Arial,sans-serif}
+    .ficha-rh-brand{text-align:center;font-size:16px;font-weight:800;line-height:1.15;margin-bottom:3px}
+    .ficha-rh-tag{text-align:center;font-size:9px;font-weight:700;letter-spacing:.5px;margin-bottom:14px}
+    .ficha-rh-title{text-align:center;font-size:12px;font-weight:800;margin:0 0 17px}
+    .ficha-rh-grid{display:grid;grid-template-columns:1fr 1fr;column-gap:18px;row-gap:12px}
+    .ficha-rh-field{min-height:27px;border-bottom:1px solid #555;padding:0 2px 3px;box-sizing:border-box;min-width:0}
+    .ficha-rh-field.full{grid-column:1/-1}
+    .ficha-rh-field label{display:block;font-size:8px;font-weight:800;margin-bottom:3px;text-transform:uppercase}
+    .ficha-rh-field span{display:block;font-size:10px;min-height:12px;white-space:pre-wrap;overflow-wrap:anywhere}
+    .ficha-rh-row3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:15px;grid-column:1/-1}
+    .ficha-rh-photoarea{display:grid;grid-template-columns:1fr 150px;gap:18px;align-items:center;margin-top:17px;min-height:170px}
+    .ficha-rh-eval{text-align:center;font-size:10px;font-weight:700}
+    .ficha-rh-eval strong{display:block;font-size:10px;margin-bottom:18px}
+    .ficha-rh-photo{width:130px;height:155px;object-fit:contain;border:1px solid #777;display:block;margin:0 auto}
+    .ficha-rh-photo-empty{height:155px;width:130px;border:1px solid #777;display:flex;align-items:center;justify-content:center;text-align:center;font-size:9px;color:#777;margin:auto}
+    .ficha-rh-footer{text-align:center;font-size:8px;margin-top:22px;line-height:1.5}
+    .ficha-rh-footer strong{display:block;margin-top:8px;font-size:8px}
+    @media(max-width:650px){.ficha-rh-paper{padding:18px 14px}.ficha-rh-grid{column-gap:10px}.ficha-rh-photoarea{grid-template-columns:1fr 115px}.ficha-rh-photo,.ficha-rh-photo-empty{width:105px;height:130px}}
+    @media print{
+      @page{size:letter portrait;margin:10mm}
+      body *{visibility:hidden!important}
+      #fichaTecnicaContenido,#fichaTecnicaContenido *{visibility:visible!important}
+      #fichaTecnicaContenido{position:absolute!important;left:0!important;top:0!important;width:100%!important;margin:0!important;padding:0!important}
+      .ficha-rh-toolbar{display:none!important}
+      .ficha-rh-paper{max-width:none!important;width:100%!important;border:0!important;padding:4mm 6mm!important;margin:0!important;box-shadow:none!important;break-inside:avoid}
+      .incidencias-modal-head,.incidencias-modal-backdrop{display:none!important}
+    }
+  `;
+  document.head.appendChild(style);
+}
+
 function abrirFichaTecnica(numeroEmpleadoFicha){
-  const numero = String(numeroEmpleadoFicha || "").trim();
-  if(!numero || numero === "SIN NÚMERO") return;
-  const modal = document.createElement("div");
-  modal.className = "incidencias-modal";
-  modal.innerHTML = `<div class="incidencias-modal-backdrop" onclick="this.parentElement.remove()"></div>
-    <div class="incidencias-modal-box" style="max-width:850px;max-height:90vh;overflow:auto">
+  const numero=String(numeroEmpleadoFicha||'').trim();
+  if(!numero||numero==='SIN NÚMERO') return;
+  instalarEstilosFichaRH();
+  const modal=document.createElement('div');
+  modal.className='incidencias-modal';
+  modal.innerHTML=`<div class="incidencias-modal-backdrop" onclick="this.parentElement.remove()"></div>
+    <div class="incidencias-modal-box" style="max-width:900px;max-height:94vh;overflow:auto">
       <div class="incidencias-modal-head"><div><small>RECURSOS HUMANOS · AUTORITAS</small><h3>FICHA TÉCNICA</h3><p>No. empleado: ${escapeHtml(numero)}</p></div><button type="button" onclick="this.closest('.incidencias-modal').remove()">×</button></div>
       <div class="incidencias-modal-body" id="fichaTecnicaContenido"><div class="loading">Consultando expediente de RH...</div></div>
     </div>`;
   document.body.appendChild(modal);
-
-  const callback = "cbFichaRH_" + Date.now() + "_" + Math.random().toString(36).slice(2);
-  const script = document.createElement("script");
-  let terminado = false;
-  const limpiar = () => { if(terminado) return; terminado=true; clearTimeout(timeout); try{delete window[callback]}catch(e){window[callback]=undefined} script.remove(); };
-  const timeout = setTimeout(() => {
-    limpiar();
-    const c=document.getElementById("fichaTecnicaContenido");
-    if(c) c.innerHTML='<div class="historial-vacio">No fue posible conectar con la ficha de RH. Verifica que la nueva versión del API esté implementada.</div>';
-  }, 25000);
-  window[callback] = respuesta => {
-    if(terminado) return;
-    limpiar();
-    const c=document.getElementById("fichaTecnicaContenido");
-    if(!c) return;
-    if(!respuesta || respuesta.ok !== true || !respuesta.fichaTecnica){
-      c.innerHTML=`<div class="historial-vacio">${escapeHtml(respuesta && respuesta.error ? respuesta.error : "No se encontró una ficha para este número de empleado.")}</div>`;
-      return;
-    }
+  const callback='cbFichaRH_'+Date.now()+'_'+Math.random().toString(36).slice(2);
+  const script=document.createElement('script');
+  let terminado=false;
+  const limpiar=()=>{if(terminado)return;terminado=true;clearTimeout(timeout);try{delete window[callback]}catch(e){window[callback]=undefined}script.remove()};
+  const timeout=setTimeout(()=>{limpiar();const c=document.getElementById('fichaTecnicaContenido');if(c)c.innerHTML='<div class="historial-vacio">La consulta de RH excedió el tiempo de espera. Intenta nuevamente.</div>'},25000);
+  window[callback]=respuesta=>{
+    if(terminado)return;limpiar();
+    const c=document.getElementById('fichaTecnicaContenido');if(!c)return;
+    if(!respuesta||respuesta.ok!==true||!respuesta.fichaTecnica){c.innerHTML=`<div class="historial-vacio">${escapeHtml(respuesta&&respuesta.error?respuesta.error:'No se encontró una ficha para este número de empleado.')}</div>`;return}
     const f=respuesta.fichaTecnica;
-    const grupos=[
-      ["DATOS GENERALES",["RAZON SOCIAL","NOMBRE","NÚMERO DE EMPLEADO","FECHA DE INGRESO","EDAD","SEXO","ESTADO CIVIL","LUGAR Y FECHA DE NACIMIENTO"]],
-      ["DATOS PERSONALES",["CURP","RFC","DOMICILIO","CP","NUMERO DE CELULAR","NOMBRE DEL ESPOSO (A)","NÚMERO DE CONTACTO EN CASO DE EMERGENCIA","NOMBRE Y EDAD DE HIJO (S)"]],
-      ["PERFIL Y EVALUACIÓN",["GRÁDO MÁXIMO DE ESTUDIOS","EXPERIENCIA","ESTATURA","TONO DE PIEL","COLOR DE OJOS","PESO","SEÑAS PARTICULARES","RESULTADO PSICOMÉTRICOS","APTO/ NO APTO"]]
-    ];
-    const fotoRaw=f.FOTOGRAFIA || "";
-    const foto=fotoRaw ? normalizarFoto(fotoRaw) : "";
-    let html=`<div style="display:flex;gap:18px;align-items:flex-start;flex-wrap:wrap;margin-bottom:18px">${foto?`<img src="${escapeHtml(foto)}" alt="Fotografía de ${escapeHtml(f.NOMBRE||numero)}" style="width:130px;height:170px;object-fit:cover;border-radius:8px;border:1px solid #d0d5dd" onerror="this.style.display='none'">`:""}<div style="flex:1;min-width:220px"><div style="font-size:11px;font-weight:900;letter-spacing:.08em;color:#667085">AUTORITAS MÉXICO, S.A. DE C.V.</div><h2 style="margin:6px 0;color:#17365d;font-size:18px">FICHA TÉCNICA PARA ELEMENTOS DE SEGURIDAD PRIVADA</h2><div style="font-size:11px;color:#667085">Documento de consulta individual · Recursos Humanos</div></div></div>`;
-    grupos.forEach(([titulo,campos])=>{
-      html+=`<h4 class="historial-seccion-titulo">${titulo}</h4><div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:9px">`;
-      campos.forEach(campo=>{const valor=f[campo];html+=`<div style="border:1px solid #e4e7ec;border-radius:8px;padding:9px;background:#fff"><div style="font-size:9px;font-weight:900;color:#667085;margin-bottom:4px">${escapeHtml(campo)}</div><div style="font-size:12px;color:#344054;white-space:pre-wrap;overflow-wrap:anywhere">${escapeHtml(valor===undefined||valor===null||valor===""?"—":String(valor))}</div></div>`});
-      html+='</div>';
-    });
-    html+='<p style="margin:18px 0 0;padding-top:10px;border-top:1px solid #e4e7ec;font-size:9px;color:#667085;text-align:center">Documento de uso confidencial para el manejo de información y complemento de expedientes laborales<br>REGISTRO DE AUTORIZACIÓN NÚMERO SSP/SUBCOP/DGSP/330-19/301</p>';
-    c.innerHTML=html;
+    const val=k=>{const v=f[k];return v===undefined||v===null||String(v).trim()===''?'—':String(v)};
+    const field=(label,key,full=false)=>`<div class="ficha-rh-field ${full?'full':''}"><label>${label}</label><span>${escapeHtml(val(key))}</span></div>`;
+    const row3=(items)=>`<div class="ficha-rh-row3">${items.map(([l,k])=>field(l,k)).join('')}</div>`;
+    const foto=f.FOTOGRAFIA?normalizarFoto(f.FOTOGRAFIA):'';
+    // RAZON SOCIAL solo determina internamente cuál de las dos variantes oficiales corresponde.
+    const razonInterna=String(f.__plantillaRH||'').toUpperCase();
+    const varianteDos=razonInterna.includes('ASISTENCIA SEGURA');
+    const empresa=varianteDos?'ASISTENCIA SEGURA EN MOVILIDAD E INSTALACIONES, S.A. de C.V.':'AUTORITAS MÉXICO, S.A. de C.V.';
+    const registro=varianteDos?'SSP/SUBCOP/DGSP/555-24/504':'SSP/SUBCOP/DGSP/330-19/301';
+    c.innerHTML=`<div class="ficha-rh-toolbar"><button class="ficha-rh-btn" type="button" onclick="window.print()">DESCARGAR / IMPRIMIR PDF</button></div>
+      <article class="ficha-rh-paper" id="fichaRHImprimible">
+        <header class="ficha-rh-brand">${empresa}</header>
+        <div class="ficha-rh-tag">${varianteDos?'ASISTENCIA SEGURA EN MOVILIDAD E INSTALACIONES':'LÍDERES EN PROTECCIÓN PATRIMONIAL'}</div>
+        <h2 class="ficha-rh-title">FICHA TÉCNICA PARA ELEMENTOS SEGURIDAD PRIVADA</h2>
+        <div class="ficha-rh-grid">
+          ${field('NOMBRE','NOMBRE',true)}
+          ${field('NÚMERO DE EMPLEADO','NÚMERO DE EMPLEADO')}${field('FECHA DE INGRESO','FECHA DE INGRESO')}
+          ${row3([['EDAD','EDAD'],['SEXO','SEXO'],['ESTADO CIVIL','ESTADO CIVIL']])}
+          ${field('LUGAR Y FECHA DE NACIMIENTO','LUGAR Y FECHA DE NACIMIENTO',true)}
+          ${field('CURP','CURP')}${field('RFC','RFC')}
+          ${field('DOMICILIO','DOMICILIO')}${field('C.P.','CP')}
+          ${field('NÚMERO DE CELULAR','NUMERO DE CELULAR',true)}
+          ${field('NOMBRE DEL ESPOSO (A)','NOMBRE DEL ESPOSO (A)',true)}
+          ${field('NÚMERO DE CONTACTO EN CASO DE EMERGENCIA','NÚMERO DE CONTACTO EN CASO DE EMERGENCIA',true)}
+          ${field('NOMBRE Y EDAD DE HIJO (S)','NOMBRE Y EDAD DE HIJO (S)',true)}
+          ${field('GRÁDO MÁXIMO DE ESTUDIOS','GRÁDO MÁXIMO DE ESTUDIOS')}${field('EXPERIENCIA','EXPERIENCIA')}
+          ${row3([['ESTATURA','ESTATURA'],['TONO DE PIEL','TONO DE PIEL'],['COLOR DE OJOS','COLOR DE OJOS']])}
+          ${field('PESO','PESO')}${field('SEÑAS PARTICULARES','SEÑAS PARTICULARES')}
+        </div>
+        <div class="ficha-rh-photoarea"><div class="ficha-rh-eval"><strong>RECURSOS HUMANOS</strong>RESULTADO PSICOMÉTRICOS: ${escapeHtml(val('RESULTADO PSICOMÉTRICOS'))}<p style="margin-top:16px">${escapeHtml(val('APTO/ NO APTO'))}</p></div>${foto?`<img class="ficha-rh-photo" src="${escapeHtml(foto)}" alt="Fotografía del empleado" onerror="this.outerHTML='<div class=\'ficha-rh-photo-empty\'>FOTOGRAFÍA NO DISPONIBLE</div>'">`:'<div class="ficha-rh-photo-empty">FOTOGRAFÍA</div>'}</div>
+        <footer class="ficha-rh-footer">Documento de uso confidencial para el manejo de información y complemento de expedientes laborales<strong>REGISTRO DE AUTORIZACIÓN NÚMERO ${registro}</strong></footer>
+      </article>`;
   };
-  script.onerror=()=>{limpiar();const c=document.getElementById("fichaTecnicaContenido");if(c)c.innerHTML='<div class="historial-vacio">No fue posible conectar con el API de AUTORITAS.</div>'};
+  script.onerror=()=>{limpiar();const c=document.getElementById('fichaTecnicaContenido');if(c)c.innerHTML='<div class="historial-vacio">No fue posible conectar con el API de AUTORITAS.</div>'};
   script.src=API_URL+'?modulo=fichatecnica&numeroEmpleado='+encodeURIComponent(numero)+'&callback='+encodeURIComponent(callback)+'&_='+Date.now();
   document.head.appendChild(script);
 }
