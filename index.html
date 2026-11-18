@@ -2970,12 +2970,23 @@ const RH_CAMPOS_POSICIONES = [
  ['PESO',100,569,130],['SEÑAS PARTICULARES',420,569,489]
 ];
 function mostrarFormatoOficialFichaRH(contenedor, ficha, numero){
-  const razon=String(ficha['RAZON SOCIAL']||ficha['RAZÓN SOCIAL']||'').trim().toUpperCase();
-  const normalizada=razon.normalize('NFD').replace(/[\u0300-\u036f]/g,'');
-  const esASMI=/\bASMI\b|ASISTENCIA SEGURA/.test(normalizada);
-  const esAutoritas=/AUTORITAS/.test(normalizada);
+  // Buscar la razón social por encabezado normalizado, sin depender de tildes,
+  // espacios, guiones o mayúsculas del API de RH.
+  const limpiarClaveRH=(v)=>String(v||'').normalize('NFD')
+    .replace(/[\u0300-\u036f]/g,'').toUpperCase().replace(/[^A-Z0-9]/g,'');
+  const entradas=Object.entries(ficha||{});
+  const razonEntrada=entradas.find(([clave,valor])=>
+    limpiarClaveRH(clave)==='RAZONSOCIAL' && valor!=null && String(valor).trim()!=='');
+  const razon=razonEntrada?String(razonEntrada[1]).trim():'';
+  const normalizada=razon.normalize('NFD').replace(/[\u0300-\u036f]/g,'').toUpperCase();
+  const letras=normalizada.replace(/[^A-Z0-9]/g,'');
+  const esASMI=/ASISTENCIA\s+SEGURA|MOVILIDAD\s+E\s+INSTALACIONES/.test(normalizada)
+    || /ASMI/.test(letras);
+  const esAutoritas=/AUTORITAS/.test(letras);
   if(!esASMI&&!esAutoritas){
-    contenedor.innerHTML='<div class="historial-vacio">No se pudo identificar la razón social del empleado. Verifica el campo RAZON SOCIAL en RH.</div>';
+    const detalle=razon?('Valor recibido: '+razon):'El API no devolvió un valor de RAZON SOCIAL.';
+    contenedor.innerHTML='<div class="historial-vacio">No se pudo identificar la razón social del empleado.<div style="margin-top:8px;font-size:12px">'+escapeHtml(detalle)+'</div></div>';
+    console.warn('Ficha RH sin razón social reconocible:', {numero,razon,campos:Object.keys(ficha||{})});
     return;
   }
   const ns='http://www.w3.org/2000/svg';
