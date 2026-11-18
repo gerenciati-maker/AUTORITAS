@@ -458,8 +458,8 @@ body{
   flex-shrink:0;
 }
 
-.person-media{width:76px;flex:0 0 76px;display:flex;flex-direction:column;align-items:center;gap:5px}
-.person-media .person-photo{width:100%;height:88px}
+.person-media{width:100%;flex:0 0 100%;display:flex;flex-direction:column;align-items:center;gap:7px}
+.person-media .person-photo{width:100%;height:220px}
 .person-actions{display:flex;flex-direction:column;align-items:center;gap:3px;width:100%;line-height:1.1}
 .person-actions button{border:0;background:none;padding:1px 0;color:#1769aa;text-decoration:underline;font-size:9px;font-weight:800;cursor:pointer;white-space:nowrap}
 .person-actions button:hover{color:#0b4778}
@@ -919,8 +919,8 @@ body.sidebar-collapsed .sidebar{width:74px;flex-basis:74px;padding-left:10px;pad
 .people{grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:14px}.person{display:block;padding:0;overflow:hidden;border-radius:14px;background:#fff;box-shadow:0 5px 16px rgba(0,55,110,.07);transition:.18s}.person:hover{transform:translateY(-2px);box-shadow:0 10px 24px rgba(0,55,110,.12)}.person-photo{width:100%;height:220px;border-radius:0;display:block;object-fit:cover;object-position:center top;background:#eaf1f8}.person-info{padding:12px 13px 14px}.person-name{font-size:13px;min-height:32px}.person-number{margin-top:5px}.person-position{font-size:10px;color:#475467;margin-top:5px;font-weight:700}.person-status{margin-top:8px}
 .export-btn{height:42px;border:0;border-radius:9px;padding:0 16px;background:#0875bd;color:#fff;cursor:pointer;font-weight:800;white-space:nowrap}.export-btn:hover{background:#075f9d}
 #exportarAsistenciasExcelBtn:disabled{opacity:.48;cursor:not-allowed;filter:grayscale(.25)}
-@media(max-width:700px){.person-media{width:70px;flex-basis:70px}.person-media .person-photo{height:82px}.menu-toggle{display:flex}.workspace{display:block}.sidebar{position:fixed;left:0;top:70px;bottom:0;width:270px!important;z-index:80;display:flex!important;transform:translateX(-105%);padding:16px 12px!important}.sidebar.mobile-open{transform:translateX(0)}.sidebar .sidebar-label,.sidebar .sidebar-link>span:not(.sidebar-icon),.sidebar .sidebar-footer{display:flex!important}.sidebar .sidebar-footer{display:block!important}.sidebar .sidebar-link{justify-content:flex-start!important}.container,body.sidebar-collapsed .container{width:100%!important}.people{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.person-photo{height:190px}}
-@media(max-width:430px){.people{grid-template-columns:1fr 1fr}.person-photo{height:170px}.person-info{padding:10px}.person-name{font-size:11px}.person-number,.person-position{font-size:9px}}
+@media(max-width:700px){.person-media{width:100%;flex-basis:100%}.person-media .person-photo{height:190px}.menu-toggle{display:flex}.workspace{display:block}.sidebar{position:fixed;left:0;top:70px;bottom:0;width:270px!important;z-index:80;display:flex!important;transform:translateX(-105%);padding:16px 12px!important}.sidebar.mobile-open{transform:translateX(0)}.sidebar .sidebar-label,.sidebar .sidebar-link>span:not(.sidebar-icon),.sidebar .sidebar-footer{display:flex!important}.sidebar .sidebar-footer{display:block!important}.sidebar .sidebar-link{justify-content:flex-start!important}.container,body.sidebar-collapsed .container{width:100%!important}.people{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.person-photo{height:190px}}
+@media(max-width:430px){.people{grid-template-columns:1fr 1fr}.person-media .person-photo{height:170px}.person-photo{height:170px}.person-info{padding:10px}.person-name{font-size:11px}.person-number,.person-position{font-size:9px}}
 
 /* INCIDENCIA VIGENTE: foto normal + bloque inferior ámbar */
 .person.con-incidencia{
