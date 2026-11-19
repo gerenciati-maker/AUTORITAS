@@ -1276,7 +1276,7 @@ button.attendance-status-card{cursor:pointer}button.attendance-status-card:hover
   <div class="home-v2">
     <div class="v2-hero">
       <div><div class="v2-eyebrow">CENTRO DE CONTROL · AUTORITAS MÉXICO</div><h1>Buen día, equipo.</h1><p>Una vista clara de la operación y los principales módulos de seguimiento.</p></div>
-      <div class="v2-hero-actions"><span class="v2-date-pill" id="inicioFechaActual">▦ Actualizado con información del portal</span><button class="v2-primary" type="button" onclick="cargarDatos()">↻ Actualizar vista</button></div>
+      <div class="v2-hero-actions"><label class="inicio-fecha-chip inicio-fecha-global"><span>Consultar fecha</span><input id="homeIncidenciasFechaInicio" type="date" aria-label="Fecha de indicadores de Inicio" onchange="consultarIncidenciasInicioV2()"></label><span class="v2-date-pill" id="inicioFechaActual">▦ Actualizado con información del portal</span><button class="v2-primary" type="button" onclick="cargarDatos()">↻ Actualizar vista</button></div>
     </div>
     <div class="v2-metrics">
       <article class="v2-metric" style="--accent:#1378bd;--pale:#e6f3ff"><div class="v2-metric-head"><span>Personal total</span><i>♙</i></div><strong id="homeV2Personal">—</strong><div class="v2-metric-foot"><b>Estado de fuerza</b><span>· padrón del portal</span></div><div class="v2-mini-bar"><span></span></div></article>
@@ -1304,8 +1304,19 @@ button.attendance-status-card{cursor:pointer}button.attendance-status-card:hover
         </div>
       </section>
     </div>
-    <div class="inicio-incidencias-toolbar" id="homeIncidenciasFiltros"><div><span class="demo-att-eyebrow">OPERACIÓN DEL DÍA</span><h2>Incidencias generales por servicio</h2></div><label class="inicio-fecha-chip"><span>Consultar fecha</span><input id="homeIncidenciasFechaInicio" type="date" aria-label="Fecha de incidencias" onchange="consultarIncidenciasInicioV2()"></label></div>
-  <section id="attendanceDailyPanel" class="demo-att-card"><div class="demo-att-section-title"><div><span class="demo-att-eyebrow">TODOS LOS SERVICIOS</span><h2 id="incidenciasDiaTitulo">Concentrado general de incidencias</h2><p id="incidenciasDiaDescripcion">Consulta las incidencias del día seleccionado.</p></div><span class="demo-att-total" id="incidenciasDiaTotal">Consultando...</span></div><div id="avisoIncidenciasInicio" class="demo-att-notice" style="display:none" role="status"></div><div id="resumenIncidenciasDia" class="demo-att-kpis"><div class="demo-att-empty">Preparando indicadores...</div></div><button id="desgloseServiciosToggle" class="demo-att-service-breakdown-toggle" type="button" aria-expanded="true" onclick="alternarDesgloseServiciosAsistenciasV2()">OCULTAR DESGLOSE POR SERVICIO</button><div id="desgloseServiciosAsistencias" class="demo-att-service-breakdown" style="display:block"></div><p class="demo-att-footnote">La asistencia correcta se muestra como A en la matriz; no se contabiliza como incidencia.</p><div class="demo-att-all-action"><button class="demo-att-button demo-att-secondary" type="button" onclick="mostrarTodasIncidenciasV2()">VER TODAS</button></div><div id="incidenciasDiaLista" class="demo-att-detail" style="display:none"></div></section>
+    <div class="v2-modules-heading"><div><div class="v2-eyebrow">NAVEGACIÓN RÁPIDA</div><h2>Módulos del sistema</h2><p>Accede directamente a cada área de trabajo.</p></div><span class="v2-date-pill">Accesos principales</span></div>
+    <div class="v2-module-grid">
+      <button type="button" onclick="cambiarModulo('estado',document.querySelector('[data-module=estado]'))" style="--accent:#0875bd;--pale:#e5f3ff"><i>▦</i><b>Estado de fuerza</b><small>Personal activo, vacantes, asignaciones y bajas.</small><em>↗</em></button>
+      <button type="button" onclick="cambiarModulo('asistencias',document.querySelector('[data-module=asistencias]'))" style="--accent:#149a80;--pale:#e2f7ef"><i>✓</i><b>Asistencias</b><small>Incidencias del día, historial y exportación.</small><em>↗</em></button>
+      <button type="button" onclick="cambiarModulo('directorio',document.querySelector('[data-module=directorio]'))" style="--accent:#6c5abb;--pale:#eeeaff"><i>▤</i><b>Directorio de servicios</b><small>Contactos, responsables y plantilla asignada.</small><em>↗</em></button>
+      <button type="button" onclick="cambiarModulo('protocolos',document.querySelector('[data-module=protocolos]'))" style="--accent:#c77914;--pale:#fff0d9"><i>✚</i><b>Protocolos de emergencia</b><small>Procedimientos y secuencias de actuación.</small><em>↗</em></button>
+      <button type="button" onclick="abrirModuloUnidades(document.querySelector('[data-module=vehicular]'))" style="--accent:#176bb2;--pale:#e5f2ff"><i>▰</i><b>Unidades</b><small>Inventario y rubros vehiculares.</small><em>↗</em></button>
+      <button type="button" onclick="cambiarVehicularSubmodulo('fotomultas',null)" style="--accent:#d64a4a;--pale:#fdeaea"><i>⌁</i><b>Multas / Fotomultas</b><small>Infracciones y seguimiento de pago.</small><em>↗</em></button>
+      <button type="button" onclick="cambiarVehicularSubmodulo('combustible',null)" style="--accent:#159b72;--pale:#e4f7ef"><i>⛽</i><b>Combustible y gastos</b><small>Bitácora general de cargas e importes.</small><em>↗</em></button>
+    </div>
+
+
+  <section id="attendanceDailyPanel" class="demo-att-card"><div class="demo-att-section-title"><div><span class="demo-att-eyebrow">TODOS LOS SERVICIOS</span><h2 id="incidenciasDiaTitulo">Concentrado general de incidencias</h2><p id="incidenciasDiaDescripcion">Consulta las incidencias del día seleccionado.</p></div><span class="demo-att-total" id="incidenciasDiaTotal">Consultando...</span></div><div id="avisoIncidenciasInicio" class="demo-att-notice" style="display:none" role="status"></div><div id="resumenIncidenciasDia" class="demo-att-kpis"><div class="demo-att-empty">Preparando indicadores...</div></div><p class="demo-att-footnote">La asistencia correcta se muestra como A en la matriz; no se contabiliza como incidencia.</p></section>
   </div>
 </section>
 <div class="module-view" id="estadoView">
@@ -1877,7 +1888,6 @@ function cargarDatos(){
   // Catálogo oficial e indicadores de Asistencias se cargan en paralelo,
   // sin esperar a que el usuario abra el módulo Asistencias.
   cargarCatalogoServiciosAsistenciasOficial();
-  cargarIndicadoresInicioAsistencias();
   if(!asistenciasInicializadasV2){
     asistenciasInicializadasV2=true;
     construirServiciosAsistencias();
@@ -3507,7 +3517,10 @@ function cambiarModulo(modulo, boton){
       construirServiciosAsistencias();
       inicializarAsistenciasAutomaticas();
     }else if(!datosAsistencias && !consultaAsistenciasEnCurso){
-      inicializarAsistenciasAutomaticas();
+      const fi=document.getElementById('asistenciaFechaInicio');
+      const ff=document.getElementById('asistenciaFechaFin');
+      if(fi&&!fi.value)fi.value=fechaISOHoy();
+      if(ff&&!ff.value)ff.value=fechaISOHoy();
     }
   }
 }
@@ -4774,7 +4787,7 @@ function consultarAsistencias(automatica=false){
   if(botonExportar) botonExportar.disabled = true;
   contextoExportacionAsistencias = null;
   document.getElementById("matrizAsistencias").innerHTML = '<div class="loading">Cargando información validada por TCR...</div>';
-  actualizarEstadoResumenGeneralAsistencias('Consultando incidencias...');
+  // La consulta de Asistencias no modifica los indicadores de Inicio.
   // Ocultar resultados de la consulta anterior mientras llega el nuevo resultado.
   ["seguimientoFaltas","frRegistroBox","apoyosPeriodo","apoyosRealizados","resumenAsistenciasPeriodo"].forEach(id=>{
     const el=document.getElementById(id); if(el) el.style.display="none";
@@ -4813,7 +4826,7 @@ function consultarAsistencias(automatica=false){
     if(terminado || miSecuencia !== secuenciaConsultaAsistencias) return;
     terminado = true;
     document.getElementById("asistenciasInfo").textContent = "La consulta tardó demasiado";
-    actualizarEstadoResumenGeneralAsistencias("La consulta tardó demasiado. Actualiza o reduce el periodo.",true);
+    // Error de Asistencias aislado de Inicio.
     document.getElementById("matrizAsistencias").innerHTML = '<div class="empty">La consulta superó 45 segundos. Intenta reducir el periodo o actualizar nuevamente.</div>';
     limpiar();
   },45000);
@@ -4875,7 +4888,7 @@ function consultarAsistencias(automatica=false){
     }catch(error){
       console.error("Error asistencias:", error);
       document.getElementById("asistenciasInfo").textContent = "Error en la consulta";
-      actualizarEstadoResumenGeneralAsistencias(error.message||"No fue posible consultar las asistencias.",true);
+      // Fallo de Asistencias: no modificar Inicio.
       document.getElementById("matrizAsistencias").innerHTML = `<div class="empty">Error al consultar las asistencias.<br><br>${escapeHtml(error.message)}</div>`;
     }
 
@@ -4897,7 +4910,7 @@ function consultarAsistencias(automatica=false){
     clearTimeout(timeout);
     if(miSecuencia === secuenciaConsultaAsistencias){
       document.getElementById("asistenciasInfo").textContent = "Error de conexión";
-    actualizarEstadoResumenGeneralAsistencias("No fue posible conectar con Apps Script.",true);
+    // Fallo de Asistencias: no modificar Inicio.
       document.getElementById("matrizAsistencias").innerHTML = '<div class="empty">No fue posible conectar con el historial de asistencias.</div>';
     }
     limpiar();
@@ -4967,7 +4980,7 @@ function actualizarEstadoResumenGeneralAsistencias(mensaje,esError=false){
  if(esError){marcarResumenAsistenciasInicioError(mensaje);if(document.getElementById("asistenciaServicio")?.value)return;}
  const servicio=document.getElementById('asistenciaServicio')?.value||'';if(servicio)return;
  const host=document.getElementById('resumenIncidenciasDia'),total=document.getElementById('incidenciasDiaTotal');
- if(host)host.innerHTML=`<div class="demo-att-empty">${escapeHtml(mensaje)}</div>`;
+ // Inicio mantiene sus indicadores aun si Asistencias está consultando.
  if(total)total.textContent=esError?'Error de consulta':'Consultando...';
 }
 function pintarDetalleIncidenciaV2(codigo,registros,ini,fin,esDia){
@@ -5373,28 +5386,29 @@ function mostrarAvisoConsultaInicio(mensaje,puedeReintentar){
 function consultarIncidenciasInicioIndependientes(fecha){
  fecha=fecha||fechaISOHoy();
  const secuencia=++secuenciaIncidenciasInicio;
- // Evitar mostrar datos del día anterior al cambiar el filtro.
- datosIncidenciasInicioIndependientes=null;
  fechaIncidenciasInicioConsultada=fecha;
  pintarModulitosInicioSinDatos();
- mostrarAvisoConsultaInicio('Consultando HISTORIAL para '+formatearFechaCorta(fecha)+'...',false);
- const desglose=document.getElementById('desgloseServiciosAsistencias');if(desglose)desglose.innerHTML='';
- const detalle=document.getElementById('incidenciasDiaLista');if(detalle){detalle.innerHTML='';detalle.style.display='none';}
+ mostrarAvisoConsultaInicio('Consultando indicadores del '+formatearFechaCorta(fecha)+'...',false);
  const total=document.getElementById('incidenciasDiaTotal');if(total)total.textContent='Consultando...';
- const callback='callback_inicio_incidencias_'+Date.now()+'_'+secuencia;
+ const callback='callback_inicio_diario_'+Date.now()+'_'+secuencia;
  const script=document.createElement('script');let terminado=false;
  const limpiar=()=>{try{delete window[callback]}catch(e){}try{script.remove()}catch(e){}};
- const fallar=(mensaje)=>{if(terminado)return;terminado=true;clearTimeout(timeout);limpiar();if(secuencia!==secuenciaIncidenciasInicio)return;if(total)total.textContent='Datos no disponibles';mostrarAvisoConsultaInicio(mensaje,true);};
- // HISTORIAL puede tardar más de 30 s; no borrar los módulos durante la espera.
- const timeout=setTimeout(()=>fallar('HISTORIAL no respondió dentro de 60 segundos.'),60000);
+ const fallar=(mensaje)=>{if(terminado)return;terminado=true;clearTimeout(timeout);limpiar();if(secuencia!==secuenciaIncidenciasInicio)return;
+   if(total)total.textContent='Datos no disponibles';mostrarAvisoConsultaInicio(mensaje,true);marcarResumenAsistenciasInicioError(mensaje);};
+ const timeout=setTimeout(()=>fallar('La consulta no respondió. Revisa la versión publicada del API.'),45000);
  window[callback]=function(respuesta){if(terminado)return;terminado=true;clearTimeout(timeout);limpiar();if(secuencia!==secuenciaIncidenciasInicio)return;
-  if(!respuesta||respuesta.ok===false){if(total)total.textContent='Error de consulta';mostrarAvisoConsultaInicio('Error de HISTORIAL: '+String(respuesta?.error||'No fue posible consultar incidencias'),true);return;}
-  datosIncidenciasInicioIndependientes=respuesta.asistencias||respuesta;
+  if(!respuesta||respuesta.ok!==true||!respuesta.incidenciasInicio){if(total)total.textContent='Error de consulta';mostrarAvisoConsultaInicio('Error del API: '+String(respuesta?.error||'Endpoint iniciodiario no disponible; publica el nuevo Apps Script.'),true);return;}
   const aviso=document.getElementById('avisoIncidenciasInicio');if(aviso){aviso.textContent='';aviso.style.display='none';}
-  renderizarIncidenciasDiaAsistenciasV7(datosIncidenciasInicioIndependientes,datosIncidenciasInicioIndependientes.empleados||[]);
+  actualizarIndicadoresInicioDesdeAPI(respuesta);
+  const conteos=respuesta.incidenciasInicio.conteos||{};
+  const labels=[['F','FALTA CONFIRMADA','Requiere seguimiento'],['INC','INCAPACIDAD','Incapacidad reportada'],['FR','FALTA DE REGISTRO EN FORMULARIO','Formulario sin registro'],['V','VACANTE REPORTADA','Vacantes vigentes'],['VAC','VACACIONES','Vacaciones autorizadas'],['AP','APOYO','Apoyos del periodo']];
+  const host=document.getElementById('resumenIncidenciasDia');
+  if(host)host.innerHTML=labels.map(([code,label,sub])=>`<div class="demo-att-kpi demo-att-kpi-${code}"><span class="demo-att-kpi-icon">${code}</span><span class="demo-att-kpi-copy"><b>${label}</b><small>${sub}</small></span><strong>${Number(conteos[code]||0).toLocaleString('es-MX')}</strong></div>`).join('');
+  if(total)total.textContent=Object.keys(conteos).reduce((n,k)=>n+Number(conteos[k]||0),0).toLocaleString('es-MX')+' incidencias';
+  const desc=document.getElementById('incidenciasDiaDescripcion');if(desc)desc.textContent='Todos los servicios · '+formatearFechaCorta(fecha);
  };
- script.onerror=()=>fallar('No se pudo establecer conexión con la API de HISTORIAL.');
- script.src=API_URL+'?modulo=asistencias&servicio=&fechaInicio='+encodeURIComponent(fecha)+'&fechaFin='+encodeURIComponent(fecha)+'&forzar=1&callback='+callback+'&_='+Date.now();
+ script.onerror=()=>fallar('No se pudo conectar con el API.');
+ script.src=API_URL+'?modulo=iniciodiario&fechaInicio='+encodeURIComponent(fecha)+'&callback='+callback+'&_='+Date.now();
  document.head.appendChild(script);
 }
 // INICIO: V representa las vacantes VIGENTES del último turno con reporte
@@ -5532,3 +5546,4 @@ cargarDatos();
 
 </body>
 </html>
+
