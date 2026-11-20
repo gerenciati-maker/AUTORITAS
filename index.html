@@ -1316,7 +1316,7 @@ button.attendance-status-card{cursor:pointer}button.attendance-status-card:hover
     </div>
 
 
-  <section id="attendanceDailyPanel" class="demo-att-card"><div class="demo-att-section-title"><div><span class="demo-att-eyebrow">TODOS LOS SERVICIOS</span><h2 id="incidenciasDiaTitulo">Concentrado general de incidencias</h2><p id="incidenciasDiaDescripcion">Consulta las incidencias del día seleccionado.</p></div><span class="demo-att-total" id="incidenciasDiaTotal">Consultando...</span></div><div id="avisoIncidenciasInicio" class="demo-att-notice" style="display:none" role="status"></div><div id="resumenIncidenciasDia" class="demo-att-kpis"><div class="demo-att-empty">Preparando indicadores...</div></div><p class="demo-att-footnote">La asistencia correcta se muestra como A en la matriz; no se contabiliza como incidencia.</p></section>
+  <section id="attendanceDailyPanel" class="demo-att-card"><div class="demo-att-section-title"><div><span class="demo-att-eyebrow">TODOS LOS SERVICIOS</span><h2 id="incidenciasDiaTitulo">Concentrado general de incidencias</h2><p id="incidenciasDiaDescripcion">Consulta las incidencias del día seleccionado.</p></div><span class="demo-att-total" id="incidenciasDiaTotal">Consultando...</span></div><div id="avisoIncidenciasInicio" class="demo-att-notice" style="display:none" role="status"></div><div id="resumenIncidenciasDia" class="demo-att-kpis"><div class="demo-att-empty">Preparando indicadores...</div></div><div id="incidenciasDiaLista" class="attendance-detail-panel" style="display:none" aria-live="polite"></div><p class="demo-att-footnote">La asistencia correcta se muestra como A en la matriz; no se contabiliza como incidencia.</p></section>
   </div>
 </section>
 <div class="module-view" id="estadoView">
@@ -1911,7 +1911,7 @@ function cargarDatos(){
     cambiosServicio = Array.isArray(data.cambiosServicio) ? data.cambiosServicio : [];
 
     construirFiltros();
-    // Catálogo disponible desde Estado de Fuerza mientras llega HISTORIAL.
+    // La lista de servicios se alimenta únicamente desde HISTORIAL.
     construirServiciosAsistencias();
     actualizarTodo();
     if(resumenAsistenciasInicioPendiente) actualizarIndicadoresInicioDesdeAPI(resumenAsistenciasInicioPendiente);
@@ -3511,7 +3511,7 @@ function cambiarModulo(modulo, boton){
 
   if(modulo === 'asistencias'){
     construirServiciosAsistencias();
-    if(!Array.isArray(servicios)||!servicios.length) cargarCatalogoServiciosAsistenciasOficial();
+    cargarCatalogoServiciosAsistenciasOficial();
     // La API de HISTORIAL permite servicio vacío: significa todos los servicios.
     // El catálogo del filtro se llena con los servicios que regresen en la consulta real.
     if(!asistenciasInicializadasV2){
@@ -4571,7 +4571,7 @@ function construirServiciosAsistencias(registrosExtra=[]){
   const actual=select.value;
   const catalogo=[];
   const vistos=new Set();
-  const origenCatalogo=(Array.isArray(serviciosAsistencia)&&serviciosAsistencia.length)?serviciosAsistencia:(Array.isArray(servicios)?servicios:[]);
+  const origenCatalogo=Array.isArray(serviciosAsistencia)?serviciosAsistencia:[];
   origenCatalogo.forEach(r=>{
     const code=typeof r==="string"?"":codigoServicioCatalogoAsistenciasV2(r);
     const name=typeof r==="string"?r:nombreServicioCatalogoAsistenciasV2(r);
@@ -4604,7 +4604,7 @@ function cargarCatalogoServiciosAsistenciasOficial(){
     serviciosAsistencia=data.serviciosAsistencia;
     construirServiciosAsistencias();
   }catch(error){console.error('Catálogo oficial de asistencias:',error)}finally{limpiar()}};
-  script.onerror=function(){if(terminado)return;terminado=true;clearTimeout(timeout);limpiar();console.error('Error de conexión al catálogo BASE QR')};
+  script.onerror=function(){if(terminado)return;terminado=true;clearTimeout(timeout);limpiar();console.error('Error de conexión al catálogo HISTORIAL')};
   script.src=API_URL+'?modulo=asistenciacatalogo&callback='+callback+'&_='+Date.now();
   document.head.appendChild(script);
 }
@@ -4728,7 +4728,7 @@ function inicializarAsistenciasAutomaticas(){
  consultarIncidenciasInicioIndependientes(home?.value||hoy);
 }
 function actualizarCatalogoServiciosDesdeHistorialV2(registros){
-  // El historial no alimenta el catálogo: la fuente oficial es exclusivamente BASE QR.
+  // El catálogo oficial se obtiene directamente de HISTORIAL, no de resultados parciales.
   construirServiciosAsistencias();
 }
 function normalizarEmpleadosHistorialV2(data){
@@ -5016,11 +5016,11 @@ function pintarDetalleIncidenciaV2(codigo,registros,ini,fin,esDia){
   const fechaLabel=esDia?'':'<th>Fecha</th>';
   const nombre=labels[codigo]||'INCIDENCIAS';
   if(!filas.length){lista.innerHTML=`<div class="attendance-detail-head"><div><b>${escapeHtml(nombre)}</b><small>0 registros · ${escapeHtml(formatearFechaCorta(ini))}${ini!==fin?' a '+escapeHtml(formatearFechaCorta(fin)):''}</small></div><button type="button" onclick="cerrarDetalleIncidenciasV2()">Cerrar detalle</button></div><div class="attendance-no-incidents"><span>✓</span><div><b>Sin registros para ${escapeHtml(nombre.toLowerCase())}.</b><small>La consulta de HISTORIAL no devolvió códigos explícitos de este rubro en el periodo elegido.</small></div></div>`;return;}
-  lista.innerHTML=`<div class="attendance-detail-head"><div><b>${escapeHtml(nombre)}</b><small>${filas.length} registro(s) · ${escapeHtml(formatearFechaCorta(ini))}${ini!==fin?' a '+escapeHtml(formatearFechaCorta(fin)):''}</small></div><button type="button" onclick="cerrarDetalleIncidenciasV2()">Cerrar detalle</button></div><div class="attendance-incidence-scroll"><table class="attendance-incidence-table"><thead><tr>${fechaLabel}<th>ESTATUS</th><th>SERVICIO / INMUEBLE</th><th>NOMBRE GUARDIA</th><th>No. EMPLEADO</th><th>TURNO</th></tr></thead><tbody>${filas.map(r=>{
+  lista.innerHTML=`<div class="attendance-detail-head"><div><b>${escapeHtml(nombre)}</b><small>${filas.length} registro(s) · ${escapeHtml(formatearFechaCorta(ini))}${ini!==fin?' a '+escapeHtml(formatearFechaCorta(fin)):''}</small></div><button type="button" onclick="cerrarDetalleIncidenciasV2()">Cerrar detalle</button></div><div class="attendance-incidence-scroll"><table class="attendance-incidence-table"><thead><tr>${fechaLabel}<th>ESTATUS</th><th>SERVICIO / INMUEBLE</th><th>NOMBRE GUARDIA</th><th>No. EMPLEADO</th></tr></thead><tbody>${filas.map(r=>{
     const fecha=normalizarFechaAsistencia(r.fecha||r.fechaRegistro||r.dia);
     const cod=codigoDesdeRegistroHistorialV2(r);
     const status=textoEstatusHistorialV2(r);
-    return `<tr>${esDia?'':`<td>${escapeHtml(formatearFechaCorta(fecha))}</td>`}<td><span class="codigo-asistencia codigo-${cod||'OTROS'}">${escapeHtml(status||cod||'OTROS')}</span></td><td>${escapeHtml(etiquetaServicioAsistenciasV2(r.servicio||r.servicioDestino||r.inmueble||'—'))}</td><td><strong>${escapeHtml(r.nombre||r.nombreGuardia||'SIN NOMBRE')}</strong></td><td>${escapeHtml(r.numeroEmpleado||r.numero||r.noEmpleado||'—')}</td><td>${escapeHtml(r.turno||'—')}</td></tr>`;
+    return `<tr>${esDia?'':`<td>${escapeHtml(formatearFechaCorta(fecha))}</td>`}<td><span class="codigo-asistencia codigo-${cod||'OTROS'}">${escapeHtml(status||cod||'OTROS')}</span></td><td>${escapeHtml(etiquetaServicioAsistenciasV2(r.servicio||r.servicioDestino||r.inmueble||'—'))}</td><td><strong>${escapeHtml(r.nombre||r.nombreGuardia||'SIN NOMBRE')}</strong></td><td>${escapeHtml(r.numeroEmpleado||r.numero||r.noEmpleado||'—')}</td></tr>`;
   }).join('')}</tbody></table></div>`;
 }
 
@@ -5440,38 +5440,28 @@ function prioridadTurnoVacantesInicio(turno){
  return 0;
 }
 function registrosIncidenciasInicioSinDuplicados(registros){
- const otros=[],vistos=new Set(),servicios=new Map();
- (Array.isArray(registros)?registros:[]).forEach((r,indice)=>{
+ const salida=[],vistos=new Set();
+ (Array.isArray(registros)?registros:[]).forEach((r)=>{
   const codigo=codigoDesdeRegistroHistorialV2(r);
-  const fecha=normalizarFechaAsistencia(r.fecha||r.fechaRegistro||r.dia);
-  const servicio=normalizarTextoAsistenciaV7(r.servicio||r.servicioDestino||r.inmueble||'');
-  const turno=normalizarTextoAsistenciaV7(r.turno||'');
-  // Se consideran todos los estatus para detectar un reporte nocturno sin vacantes.
-  if(fecha&&servicio&&turno){
-   const clave=fecha+'|'+servicio;
-   if(!servicios.has(clave))servicios.set(clave,new Map());
-   const turnos=servicios.get(clave);
-   if(!turnos.has(turno))turnos.set(turno,{prioridad:prioridadTurnoVacantesInicio(turno),indice, vacantes:[],vistos:new Set()});
-   const actual=turnos.get(turno);actual.indice=Math.max(actual.indice,indice);
-   if(codigo==='V'){
-    // V representa plazas, no personas: NA y números repetidos NO se deduplican.
-    actual.vacantes.push(r);
+  if(codigo==='V'){
+   const fecha=normalizarFechaAsistencia(r.fecha||r.fechaRegistro||r.dia);
+   const servicio=normalizarTextoAsistenciaV7(r.servicio||r.servicioDestino||r.inmueble||'');
+   const nombre=normalizarTextoAsistenciaV7(r.nombre||r.nombreGuardia||'');
+   // Números de plaza: 1, 2, 3...; cada plaza cuenta una vez por día y servicio.
+   // NA o nombres no numéricos conservan sus filas para no perder datos históricos.
+   if(/^\d+$/.test(nombre)&&fecha&&servicio){
+    const clave='V|'+fecha+'|'+servicio+'|'+String(Number(nombre));
+    if(vistos.has(clave))return;
+    vistos.add(clave);
    }
-  }else if(codigo==='V'){
-   // Si HISTORIAL no informa turno, no se puede inferir cuál fue el último.
-   // Se preservan las vacantes identificables sin inventar orden de turnos.
-   otros.push(r);
+   salida.push(r);return;
   }
-  if(codigo==='V'||!['F','INC','FR','VAC','AP'].includes(codigo))return;
+  if(!['F','INC','FR','VAC','AP'].includes(codigo))return;
   const clave=claveIncidenciaUnicaAsistenciasV2(r);
   if(vistos.has(clave))return;
-  vistos.add(clave);otros.push(r);
+  vistos.add(clave);salida.push(r);
  });
- servicios.forEach(turnos=>{
-  const ordenados=[...turnos.values()].sort((a,b)=>b.prioridad-a.prioridad||b.indice-a.indice);
-  if(ordenados.length)otros.push(...ordenados[0].vacantes);
- });
- return otros;
+ return salida;
 }
 function renderizarIncidenciasDiaAsistenciasV7(data,empleados){
  const ini=fechaIncidenciasInicioConsultada||fechaISOHoy(),fin=ini,esDia=true;
@@ -5552,8 +5542,7 @@ function renderizarDesgloseGeneralModuloAsistencias(registros){
  panel.style.display='block';
  const codigos=['F','INC','FR','V','VAC','AP'];
  const conteos=Object.fromEntries(codigos.map(c=>[c,0]));
- // El cálculo de V toma el último turno vigente por servicio; NA representa
- // plazas independientes y nunca se colapsa por nombre o número de empleado.
+ // Las vacantes numeradas se identifican por fecha, servicio y NOMBRE GUARDIA.
  const unicos=registrosIncidenciasInicioSinDuplicados(registros);
  const detalle={};
  unicos.forEach(r=>{
@@ -5589,13 +5578,13 @@ function mostrarDetalleIncidenciaV2(codigo){
  const cb='callback_detalle_inicio_'+Date.now()+'_'+sec;
  const script=document.createElement('script');let terminado=false;
  const limpiar=()=>{try{delete window[cb]}catch(e){}try{script.remove()}catch(e){}};
- const timeout=setTimeout(()=>{if(terminado)return;terminado=true;limpiar();if(sec===detalleInicioSecuencia)d.innerHTML='<div class="attendance-detail-empty">El detalle tardó demasiado. Cierra y vuelve a intentar.</div>';},45000);
+ const timeout=setTimeout(()=>{if(terminado)return;terminado=true;limpiar();if(sec===detalleInicioSecuencia)d.innerHTML='<div class="attendance-detail-empty">La consulta tardó demasiado. <button type="button" onclick="mostrarDetalleIncidenciaV2(window.categoriaIncidenciaSeleccionadaV2)">Reintentar detalle</button></div>';},75000);
  window[cb]=function(respuesta){if(terminado)return;terminado=true;clearTimeout(timeout);limpiar();if(sec!==detalleInicioSecuencia||fecha!==fechaIncidenciasInicioConsultada)return;
   if(!respuesta||respuesta.ok!==true||!Array.isArray(respuesta.registros)){d.innerHTML='<div class="attendance-detail-empty">No se pudo consultar el detalle. Comprueba que el API nuevo esté publicado.</div>';return;}
   detalleInicioFechaCache=fecha;detalleInicioRegistrosCache=respuesta.registros;
   pintarDetalleIncidenciaV2(window.categoriaIncidenciaSeleccionadaV2||codigo,registrosIncidenciasInicioSinDuplicados(respuesta.registros),fecha,fecha,true);
  };
- script.onerror=()=>{if(terminado)return;terminado=true;clearTimeout(timeout);limpiar();if(sec===detalleInicioSecuencia)d.innerHTML='<div class="attendance-detail-empty">Error de conexión al consultar el detalle.</div>';};
+ script.onerror=()=>{if(terminado)return;terminado=true;clearTimeout(timeout);limpiar();if(sec===detalleInicioSecuencia)d.innerHTML='<div class="attendance-detail-empty">Error de conexión al consultar el detalle. <button type="button" onclick="mostrarDetalleIncidenciaV2(window.categoriaIncidenciaSeleccionadaV2)">Reintentar</button></div>';};
  script.src=API_URL+'?modulo=iniciodetalle&fechaInicio='+encodeURIComponent(fecha)+'&callback='+cb+'&_='+Date.now();
  document.head.appendChild(script);
 }
