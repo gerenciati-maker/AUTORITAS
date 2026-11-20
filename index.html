@@ -5387,6 +5387,8 @@ function consultarIncidenciasInicioIndependientes(fecha){
  fecha=fecha||fechaISOHoy();
  const secuencia=++secuenciaIncidenciasInicio;
  fechaIncidenciasInicioConsultada=fecha;
+ detalleInicioFechaCache='';detalleInicioRegistrosCache=null;detalleInicioSecuencia++;
+ const detalleAbierto=document.getElementById('incidenciasDiaLista');if(detalleAbierto)detalleAbierto.style.display='none';
  pintarModulitosInicioSinDatos();
  mostrarAvisoConsultaInicio('Consultando indicadores del '+formatearFechaCorta(fecha)+'...',false);
  const total=document.getElementById('incidenciasDiaTotal');if(total)total.textContent='Consultando...';
@@ -5403,7 +5405,7 @@ function consultarIncidenciasInicioIndependientes(fecha){
   const conteos=respuesta.incidenciasInicio.conteos||{};
   const labels=[['F','FALTA CONFIRMADA','Requiere seguimiento'],['INC','INCAPACIDAD','Incapacidad reportada'],['FR','FALTA DE REGISTRO EN FORMULARIO','Formulario sin registro'],['V','VACANTE REPORTADA','Vacantes vigentes'],['VAC','VACACIONES','Vacaciones autorizadas'],['AP','APOYO','Apoyos del periodo']];
   const host=document.getElementById('resumenIncidenciasDia');
-  if(host)host.innerHTML=labels.map(([code,label,sub])=>`<div class="demo-att-kpi demo-att-kpi-${code}"><span class="demo-att-kpi-icon">${code}</span><span class="demo-att-kpi-copy"><b>${label}</b><small>${sub}</small></span><strong>${Number(conteos[code]||0).toLocaleString('es-MX')}</strong></div>`).join('');
+  if(host)host.innerHTML=labels.map(([code,label,sub])=>`<button type="button" class="demo-att-kpi demo-att-kpi-${code}" onclick="mostrarDetalleIncidenciaV2('${code}')" aria-label="Ver detalle de ${label}"><span class="demo-att-kpi-icon">${code}</span><span class="demo-att-kpi-copy"><b>${label}</b><small>${sub}</small></span><strong>${Number(conteos[code]||0).toLocaleString('es-MX')}</strong></button>`).join('');
   if(total)total.textContent=Object.keys(conteos).reduce((n,k)=>n+Number(conteos[k]||0),0).toLocaleString('es-MX')+' incidencias';
   const desc=document.getElementById('incidenciasDiaDescripcion');if(desc)desc.textContent='Todos los servicios · '+formatearFechaCorta(fecha);
  };
@@ -5436,19 +5438,13 @@ function registrosIncidenciasInicioSinDuplicados(registros){
    if(!turnos.has(turno))turnos.set(turno,{prioridad:prioridadTurnoVacantesInicio(turno),indice, vacantes:[],vistos:new Set()});
    const actual=turnos.get(turno);actual.indice=Math.max(actual.indice,indice);
    if(codigo==='V'){
-    const num=String(r.numeroEmpleado||r.noEmpleado||'').trim();
-    const nombre=normalizarTextoAsistenciaV7(r.nombre||r.nombreGuardia||'');
-    const id=num||nombre;
-    // Duplicados literales dentro del mismo turno no son plazas adicionales.
-    if(id&&actual.vistos.has(id))return;
-    if(id)actual.vistos.add(id);
+    // V representa plazas, no personas: NA y números repetidos NO se deduplican.
     actual.vacantes.push(r);
    }
   }else if(codigo==='V'){
    // Si HISTORIAL no informa turno, no se puede inferir cuál fue el último.
    // Se preservan las vacantes identificables sin inventar orden de turnos.
-   const clave=claveIncidenciaUnicaAsistenciasV2(r);
-   if(!vistos.has('V|'+clave)){vistos.add('V|'+clave);otros.push(r);}
+   otros.push(r);
   }
   if(codigo==='V'||!['F','INC','FR','VAC','AP'].includes(codigo))return;
   const clave=claveIncidenciaUnicaAsistenciasV2(r);
@@ -5531,11 +5527,29 @@ function renderizarAsistencias(data){
  if(general){if(follow)follow.style.display='none';if(matrix)matrix.style.display='none';if(supports)supports.style.display='none';return;}
  renderizarSeguimientoFaltas(faltas);renderizarMatrizAsistencias(fechas,empleados,false);renderizarApoyosAsistenciasV7(data,servicio);const fr=document.getElementById('frRegistroBox');if(fr)fr.style.display='none';const period=document.getElementById('resumenAsistenciasPeriodo');if(period)period.style.display='none';
 }
+let detalleInicioFechaCache='', detalleInicioRegistrosCache=null, detalleInicioSecuencia=0;
 function mostrarDetalleIncidenciaV2(codigo){
  window.categoriaIncidenciaSeleccionadaV2=codigo;
- const d=document.getElementById('incidenciasDiaLista');if(d)d.style.display='block';
+ const d=document.getElementById('incidenciasDiaLista');if(!d)return;
+ d.style.display='block';
  const fecha=fechaIncidenciasInicioConsultada||fechaISOHoy();
- pintarDetalleIncidenciaV2(codigo,registrosIncidenciasInicioSinDuplicados(datosIncidenciasInicioIndependientes?.registros||[]),fecha,fecha,true);
+ if(detalleInicioFechaCache===fecha && Array.isArray(detalleInicioRegistrosCache)){
+  pintarDetalleIncidenciaV2(codigo,registrosIncidenciasInicioSinDuplicados(detalleInicioRegistrosCache),fecha,fecha,true);return;
+ }
+ d.innerHTML='<div class="attendance-detail-empty">Consultando detalle de HISTORIAL…</div>';
+ const sec=++detalleInicioSecuencia;
+ const cb='callback_detalle_inicio_'+Date.now()+'_'+sec;
+ const script=document.createElement('script');let terminado=false;
+ const limpiar=()=>{try{delete window[cb]}catch(e){}try{script.remove()}catch(e){}};
+ const timeout=setTimeout(()=>{if(terminado)return;terminado=true;limpiar();if(sec===detalleInicioSecuencia)d.innerHTML='<div class="attendance-detail-empty">El detalle tardó demasiado. Cierra y vuelve a intentar.</div>';},45000);
+ window[cb]=function(respuesta){if(terminado)return;terminado=true;clearTimeout(timeout);limpiar();if(sec!==detalleInicioSecuencia||fecha!==fechaIncidenciasInicioConsultada)return;
+  if(!respuesta||respuesta.ok!==true||!Array.isArray(respuesta.registros)){d.innerHTML='<div class="attendance-detail-empty">No se pudo consultar el detalle. Comprueba que el API nuevo esté publicado.</div>';return;}
+  detalleInicioFechaCache=fecha;detalleInicioRegistrosCache=respuesta.registros;
+  pintarDetalleIncidenciaV2(window.categoriaIncidenciaSeleccionadaV2||codigo,registrosIncidenciasInicioSinDuplicados(respuesta.registros),fecha,fecha,true);
+ };
+ script.onerror=()=>{if(terminado)return;terminado=true;clearTimeout(timeout);limpiar();if(sec===detalleInicioSecuencia)d.innerHTML='<div class="attendance-detail-empty">Error de conexión al consultar el detalle.</div>';};
+ script.src=API_URL+'?modulo=iniciodetalle&fechaInicio='+encodeURIComponent(fecha)+'&callback='+cb+'&_='+Date.now();
+ document.head.appendChild(script);
 }
 function mostrarTodasIncidenciasV2(){mostrarDetalleIncidenciaV2('TODAS');}
 function cerrarDetalleIncidenciasV2(){const d=document.getElementById('incidenciasDiaLista');if(d)d.style.display='none';window.categoriaIncidenciaSeleccionadaV2='';}
