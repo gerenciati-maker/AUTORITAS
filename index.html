@@ -1376,8 +1376,9 @@ button.attendance-status-card{cursor:pointer}button.attendance-status-card:hover
 <section class="module-view" id="asistenciasView">
  <div class="demo-att-page">
   <header class="demo-att-hero"><div><span class="demo-att-eyebrow">AUTORITAS · MÓDULO DE ASISTENCIAS</span><h1 id="attendanceMainTitle">Consulta y análisis de asistencias</h1><p id="attendanceMainDescription">Consulta incidencias generales o el historial individual por servicio.</p></div><span class="demo-att-badge" id="asistenciasInfo">Preparando consulta...</span></header>
-  <section class="demo-att-card demo-att-filters"><div class="demo-att-section-title"><div><span class="demo-att-eyebrow">FILTROS</span><h2>Selecciona el alcance y el periodo</h2></div><span class="pill pill-blue" id="attendanceHistoryScope">Todos los servicios</span></div><div class="demo-att-filter-grid"><label>Servicio<select id="asistenciaServicio" onchange="programarConsultaAsistencias()"><option value="">Todos los servicios</option></select></label><label>Fecha inicial<input id="asistenciaFechaInicio" type="date" onchange="programarConsultaAsistencias()"></label><label>Fecha final<input id="asistenciaFechaFin" type="date" onchange="programarConsultaAsistencias()"></label><div class="demo-att-filter-actions"><button class="demo-att-button" type="button" onclick="consultarAsistencias('forzar')">Consultar</button><button class="demo-att-button demo-att-secondary" type="button" onclick="limpiarFiltrosAsistenciasV2()">Restablecer</button><button class="demo-att-button demo-att-secondary" id="exportarAsistenciasExcelBtn" type="button" onclick="exportarAsistenciasExcel()" disabled>Exportar Excel</button></div></div></section>
+  <section class="demo-att-card demo-att-filters"><div class="demo-att-section-title"><div><span class="demo-att-eyebrow">FILTROS</span><h2>Selecciona el alcance y el periodo</h2></div><span class="pill pill-blue" id="attendanceHistoryScope">Todos los servicios</span></div><div class="demo-att-filter-grid"><label>Servicio<select id="asistenciaServicio" onchange="prepararFiltrosAsistenciasSinConsultar()"><option value="">Todos los servicios</option></select></label><label>Fecha inicial<input id="asistenciaFechaInicio" type="date" onchange="prepararFiltrosAsistenciasSinConsultar()"></label><label>Fecha final<input id="asistenciaFechaFin" type="date" onchange="prepararFiltrosAsistenciasSinConsultar()"></label><div class="demo-att-filter-actions"><button class="demo-att-button" type="button" onclick="consultarAsistencias('forzar')">Consultar</button><button class="demo-att-button demo-att-secondary" type="button" onclick="limpiarFiltrosAsistenciasV2()">Restablecer</button><button class="demo-att-button demo-att-secondary" id="exportarAsistenciasExcelBtn" type="button" onclick="exportarAsistenciasExcel()" disabled>Exportar Excel</button></div></div></section>
 
+  <section id="asistenciaDesgloseGeneral" class="demo-att-card" style="display:none"><div class="demo-att-section-title"><div><span class="demo-att-eyebrow">TODOS LOS SERVICIOS</span><h2>Desglose general de incidencias</h2><p>Resultados del periodo consultado por servicio.</p></div></div><div id="asistenciaDesgloseGeneralContenido" class="demo-att-table-wrap"></div></section>
   <section id="asistenciaInfoServicio" class="demo-att-info-grid" style="display:none"><div><span>SERVICIO / INMUEBLE</span><b id="asistenciaServicioTexto">—</b></div><div><span>FECHA INICIAL</span><b id="asistenciaFechaInicioTexto">—</b></div><div><span>FECHA FINAL</span><b id="asistenciaFechaFinTexto">—</b></div></section>
   <section id="seguimientoFaltas" class="demo-att-followup" style="display:none"><h3>⚠️ SEGUIMIENTO DE FALTAS</h3><div id="faltasContenido">Consultando...</div></section>
   <section id="attendanceMatrixSection" class="demo-att-card demo-att-matrix-card" style="display:none"><div class="demo-att-section-title"><div><span class="demo-att-eyebrow">VISTA OPERATIVA DEL SERVICIO</span><h2 id="attendanceMatrixTitle">Matriz de asistencias</h2><p id="attendanceMatrixDescription">Códigos registrados por empleado y fecha.</p></div><span class="demo-att-total" id="attendanceMatrixCount">— empleados</span></div><div id="matrizAsistencias" class="demo-att-table-wrap">Selecciona un servicio y periodo.</div><div class="demo-att-legend"><span><b class="demo-att-code demo-att-code-A">A</b> Asistencia correcta</span><span><b class="demo-att-code demo-att-code-F">F</b> Falta confirmada</span><span><b class="demo-att-code demo-att-code-FR">FR</b> Falta de registro</span><span><b class="demo-att-code demo-att-code-V">V</b> Vacante</span><span><b class="demo-att-code demo-att-code-VAC">VAC</b> Vacaciones</span><span><b class="demo-att-code demo-att-code-AP">AP</b> Apoyo</span><span><b class="demo-att-code demo-att-code-INC">INC</b> Incapacidad</span></div></section>
@@ -1887,7 +1888,6 @@ function cargarDatos(){
 
   // Catálogo oficial e indicadores de Asistencias se cargan en paralelo,
   // sin esperar a que el usuario abra el módulo Asistencias.
-  cargarCatalogoServiciosAsistenciasOficial();
   if(!asistenciasInicializadasV2){
     asistenciasInicializadasV2=true;
     construirServiciosAsistencias();
@@ -1899,9 +1899,7 @@ function cargarDatos(){
   // Así, si el usuario abre directamente el módulo Unidades, la solicitud ya
   // estará en curso (o habrá terminado) y no tendrá que esperar a otra vista.
   // Las banderas internas evitan solicitudes duplicadas.
-  if(!unidadesCargadas && !unidadesCargando){
-    cargarUnidadesDesdeFuente();
-  }
+  // Unidades se consulta al abrir su módulo; no compite con HISTORIAL al iniciar.
 
   estadoInicialFinalizado = false;
   temporizadorEstadoInicial = setTimeout(finalizarCargaInicialEstado, 15000);
@@ -1913,6 +1911,8 @@ function cargarDatos(){
     cambiosServicio = Array.isArray(data.cambiosServicio) ? data.cambiosServicio : [];
 
     construirFiltros();
+    // Catálogo disponible desde Estado de Fuerza mientras llega HISTORIAL.
+    construirServiciosAsistencias();
     actualizarTodo();
     if(resumenAsistenciasInicioPendiente) actualizarIndicadoresInicioDesdeAPI(resumenAsistenciasInicioPendiente);
 
@@ -3510,6 +3510,8 @@ function cambiarModulo(modulo, boton){
   }
 
   if(modulo === 'asistencias'){
+    construirServiciosAsistencias();
+    if(!Array.isArray(servicios)||!servicios.length) cargarCatalogoServiciosAsistenciasOficial();
     // La API de HISTORIAL permite servicio vacío: significa todos los servicios.
     // El catálogo del filtro se llena con los servicios que regresen en la consulta real.
     if(!asistenciasInicializadasV2){
@@ -4569,7 +4571,8 @@ function construirServiciosAsistencias(registrosExtra=[]){
   const actual=select.value;
   const catalogo=[];
   const vistos=new Set();
-  (Array.isArray(serviciosAsistencia)?serviciosAsistencia:[]).forEach(r=>{
+  const origenCatalogo=(Array.isArray(serviciosAsistencia)&&serviciosAsistencia.length)?serviciosAsistencia:(Array.isArray(servicios)?servicios:[]);
+  origenCatalogo.forEach(r=>{
     const code=typeof r==="string"?"":codigoServicioCatalogoAsistenciasV2(r);
     const name=typeof r==="string"?r:nombreServicioCatalogoAsistenciasV2(r);
     const full=etiquetaCompletaServicioAsistenciasV2(code,name);
@@ -4595,7 +4598,7 @@ function cargarCatalogoServiciosAsistenciasOficial(){
   const script=document.createElement('script');
   let terminado=false;
   const limpiar=()=>{try{delete window[callback]}catch(e){};try{script.remove()}catch(e){}};
-  const timeout=setTimeout(()=>{if(terminado)return;terminado=true;limpiar();console.warn('No fue posible cargar el catálogo oficial BASE QR.');},20000);
+  const timeout=setTimeout(()=>{if(terminado)return;terminado=true;limpiar();console.warn('No fue posible cargar el catálogo de HISTORIAL.');},20000);
   window[callback]=function(data){if(terminado)return;terminado=true;clearTimeout(timeout);try{
     if(!data||data.ok!==true||!Array.isArray(data.serviciosAsistencia))throw new Error(data?.error||'Respuesta de catálogo inválida');
     serviciosAsistencia=data.serviciosAsistencia;
@@ -4745,6 +4748,13 @@ function textoEstatusHistorialV2(r){
   return String(r&& (r.estatus||r.estado||r.status||r.codigo)||'').trim();
 }
 
+// Los cambios de filtros no disparan solicitudes mientras el usuario elige fechas.
+function prepararFiltrosAsistenciasSinConsultar(){
+ clearTimeout(timerConsultaAsistencias);
+ const b=document.getElementById('exportarAsistenciasExcelBtn');if(b)b.disabled=true;
+ contextoExportacionAsistencias=null;
+ const info=document.getElementById('asistenciasInfo');if(info)info.textContent='Filtros actualizados. Pulsa Consultar para cargar el periodo.';
+}
 function programarConsultaAsistencias(espera=350){
   window.categoriaIncidenciaSeleccionadaV2 = '';
   const botonExportar = document.getElementById("exportarAsistenciasExcelBtn");
@@ -4771,7 +4781,7 @@ function consultarAsistencias(automatica=false){
   const forzarActualizacion = automatica === "forzar";
 
   const entradaCacheLocal = cacheAsistencias.get(claveCache);
-  if(!forzarActualizacion && entradaCacheLocal && Date.now() - entradaCacheLocal.guardadoEn < 20000){
+  if(!forzarActualizacion && entradaCacheLocal && Date.now() - entradaCacheLocal.guardadoEn < 90000){
     datosAsistencias = entradaCacheLocal.datos;
     contextoExportacionAsistencias = { servicio, fechaInicio, fechaFin };
     const resultadoCache = datosAsistencias && datosAsistencias.asistencias ? datosAsistencias.asistencias : datosAsistencias;
@@ -4792,6 +4802,10 @@ function consultarAsistencias(automatica=false){
   ["seguimientoFaltas","frRegistroBox","apoyosPeriodo","apoyosRealizados","resumenAsistenciasPeriodo"].forEach(id=>{
     const el=document.getElementById(id); if(el) el.style.display="none";
   });
+  const generalPanel=document.getElementById("asistenciaDesgloseGeneral");
+  if(generalPanel)generalPanel.style.display=servicio?"none":"block";
+  const generalContenido=document.getElementById("asistenciaDesgloseGeneralContenido");
+  if(!servicio&&generalContenido)generalContenido.innerHTML="<div class='loading'>Consultando incidencias por servicio...</div>";
   const infoIndividual=document.getElementById("asistenciaInfoServicio");
   if(infoIndividual) infoIndividual.style.display=servicio ? "grid" : "none";
   const matrizIndividual=document.getElementById("attendanceMatrixSection");
@@ -4826,6 +4840,8 @@ function consultarAsistencias(automatica=false){
     if(terminado || miSecuencia !== secuenciaConsultaAsistencias) return;
     terminado = true;
     document.getElementById("asistenciasInfo").textContent = "La consulta tardó demasiado";
+    const desglose=document.getElementById("asistenciaDesgloseGeneralContenido");
+    if(!servicio&&desglose)desglose.innerHTML="<div class='empty'>HISTORIAL no respondió. Prueba un periodo más corto o un servicio específico.</div>";
     // Error de Asistencias aislado de Inicio.
     document.getElementById("matrizAsistencias").innerHTML = '<div class="empty">La consulta superó 45 segundos. Intenta reducir el periodo o actualizar nuevamente.</div>';
     limpiar();
@@ -5524,9 +5540,41 @@ function renderizarAsistencias(data){
  const matrixTitle=document.getElementById('attendanceMatrixTitle');if(matrixTitle)matrixTitle.textContent='Matriz de asistencias';const matrixDesc=document.getElementById('attendanceMatrixDescription');if(matrixDesc)matrixDesc.textContent=general?'':'Códigos diarios del personal adscrito al servicio.';const count=document.getElementById('attendanceMatrixCount');if(count)count.textContent=empleados.length.toLocaleString('es-MX')+' empleados';
  const inicioConsulta=document.getElementById('asistenciaFechaInicio')?.value||'',finConsulta=document.getElementById('asistenciaFechaFin')?.value||'';// Los indicadores de Inicio se consultan por separado; no dependen de esta vista.
  // El detalle de INICIO se administra únicamente desde su consulta independiente.
- if(general){if(follow)follow.style.display='none';if(matrix)matrix.style.display='none';if(supports)supports.style.display='none';return;}
+ if(general){if(follow)follow.style.display='none';if(matrix)matrix.style.display='none';if(supports)supports.style.display='none';renderizarDesgloseGeneralModuloAsistencias(registros);return;}
  renderizarSeguimientoFaltas(faltas);renderizarMatrizAsistencias(fechas,empleados,false);renderizarApoyosAsistenciasV7(data,servicio);const fr=document.getElementById('frRegistroBox');if(fr)fr.style.display='none';const period=document.getElementById('resumenAsistenciasPeriodo');if(period)period.style.display='none';
 }
+
+// Desglose de ASISTENCIAS, independiente de las tarjetas de Inicio.
+function renderizarDesgloseGeneralModuloAsistencias(registros){
+ const panel=document.getElementById('asistenciaDesgloseGeneral');
+ const host=document.getElementById('asistenciaDesgloseGeneralContenido');
+ if(!panel||!host)return;
+ panel.style.display='block';
+ const codigos=['F','INC','FR','V','VAC','AP'];
+ const conteos=Object.fromEntries(codigos.map(c=>[c,0]));
+ // El cálculo de V toma el último turno vigente por servicio; NA representa
+ // plazas independientes y nunca se colapsa por nombre o número de empleado.
+ const unicos=registrosIncidenciasInicioSinDuplicados(registros);
+ const detalle={};
+ unicos.forEach(r=>{
+  const codigo=codigoDesdeRegistroHistorialV2(r);
+  if(!codigos.includes(codigo))return;
+  conteos[codigo]++;
+  (detalle[codigo]||(detalle[codigo]=[])).push(r);
+ });
+ const total=codigos.reduce((n,c)=>n+conteos[c],0);
+ host.innerHTML='<div class="demo-att-kpi-grid">'+codigos.map(c=>
+  '<button type="button" class="demo-att-kpi demo-att-kpi-'+c+'" onclick="abrirDetalleGeneralAsistencias(\''+c+'\')"><span class="demo-att-kpi-icon">'+c+'</span><span class="demo-att-kpi-copy"><b>'+({F:'FALTAS',INC:'INCAPACIDADES',FR:'FALTAS DE REGISTRO',V:'VACANTES VIGENTES',VAC:'VACACIONES',AP:'APOYOS'}[c])+'</b><small>Ver registros</small></span><strong>'+conteos[c]+'</strong></button>').join('')+'</div><p class="demo-att-muted">Total de incidencias: '+total+'</p><div id="asistenciaDetalleGeneralRegistros" class="demo-att-table-wrap"></div>';
+ window.__detalleGeneralAsistencias=detalle;
+}
+function abrirDetalleGeneralAsistencias(codigo){
+ const host=document.getElementById('asistenciaDetalleGeneralRegistros');if(!host)return;
+ const registros=(window.__detalleGeneralAsistencias||{})[codigo]||[];
+ if(!registros.length){host.innerHTML='<div class="empty">No hay registros para este estatus en el periodo.</div>';return;}
+ const esc=v=>String(v??'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+ host.innerHTML='<h3>Detalle de '+esc(codigo)+' ('+registros.length+')</h3><table class="demo-att-table"><thead><tr><th>FECHA</th><th>SERVICIO</th><th>GUARDIA</th><th>NO. EMPLEADO</th><th>TURNO</th></tr></thead><tbody>'+registros.map(r=>'<tr><td>'+esc(r.fecha||r.fechaRegistro||'')+'</td><td>'+esc(r.servicio||r.servicioDestino||r.inmueble||'')+'</td><td>'+esc(r.nombre||'NA')+'</td><td>'+esc(r.numeroEmpleado||r.noEmpleado||'NA')+'</td><td>'+esc(r.turno||'')+'</td></tr>').join('')+'</tbody></table>';
+}
+
 let detalleInicioFechaCache='', detalleInicioRegistrosCache=null, detalleInicioSecuencia=0;
 function mostrarDetalleIncidenciaV2(codigo){
  window.categoriaIncidenciaSeleccionadaV2=codigo;
