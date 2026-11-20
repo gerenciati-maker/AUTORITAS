@@ -5013,6 +5013,22 @@ function pintarDetalleIncidenciaV2(codigo,registros,ini,fin,esDia){
     return cod===codigo;
   });
   filas.sort((a,b)=>String(a.fecha||'').localeCompare(String(b.fecha||''))||String(a.servicio||'').localeCompare(String(b.servicio||''),'es')||String(a.nombre||'').localeCompare(String(b.nombre||''),'es'));
+  // Solo V: agrupar las plazas vacantes únicas por servicio.
+  // El resto de las incidencias conserva su tabla individual original.
+  if(codigo==='V'){
+    const porServicio=new Map();
+    filas.forEach(r=>{
+      const servicio=String(r.servicio||r.servicioDestino||r.inmueble||'').trim()||'SIN SERVICIO';
+      const clave=normalizarTextoAsistenciaV7(servicio);
+      if(!porServicio.has(clave))porServicio.set(clave,{servicio,cantidad:0});
+      porServicio.get(clave).cantidad++;
+    });
+    const grupos=[...porServicio.values()].sort((a,b)=>a.servicio.localeCompare(b.servicio,'es'));
+    const total=grupos.reduce((n,g)=>n+g.cantidad,0);
+    const periodo=escapeHtml(formatearFechaCorta(ini))+(ini!==fin?' a '+escapeHtml(formatearFechaCorta(fin)):'');
+    lista.innerHTML=`<div class="attendance-detail-head"><div><b>VACANTE REPORTADA</b><small>${total} vacante(s) · ${grupos.length} servicio(s) · ${periodo}</small></div><button type="button" onclick="cerrarDetalleIncidenciasV2()">Cerrar detalle</button></div><div class="attendance-incidence-scroll"><table class="attendance-incidence-table"><thead><tr><th>SERVICIO / INMUEBLE</th><th>TOTAL DE VACANTES</th></tr></thead><tbody>${grupos.map(g=>`<tr><td>${escapeHtml(etiquetaServicioAsistenciasV2(g.servicio))}</td><td><strong>${g.cantidad.toLocaleString('es-MX')}</strong></td></tr>`).join('')}</tbody><tfoot><tr><td><strong>TOTAL</strong></td><td><strong>${total.toLocaleString('es-MX')}</strong></td></tr></tfoot></table></div>`;
+    return;
+  }
   const fechaLabel=esDia?'':'<th>Fecha</th>';
   const nombre=labels[codigo]||'INCIDENCIAS';
   if(!filas.length){lista.innerHTML=`<div class="attendance-detail-head"><div><b>${escapeHtml(nombre)}</b><small>0 registros · ${escapeHtml(formatearFechaCorta(ini))}${ini!==fin?' a '+escapeHtml(formatearFechaCorta(fin)):''}</small></div><button type="button" onclick="cerrarDetalleIncidenciasV2()">Cerrar detalle</button></div><div class="attendance-no-incidents"><span>✓</span><div><b>Sin registros para ${escapeHtml(nombre.toLowerCase())}.</b><small>La consulta de HISTORIAL no devolvió códigos explícitos de este rubro en el periodo elegido.</small></div></div>`;return;}
